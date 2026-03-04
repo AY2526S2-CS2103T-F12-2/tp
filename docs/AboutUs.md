@@ -9,27 +9,24 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
-### John Doe
+### (Art) Supachod Trakansirorut
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/spchdt.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
-[[github](https://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/Spchdt)]
 
-* Role: Project Advisor
+* Role: Developer
 
-### Jane Doe
+### Zheng Junwei 
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/junwezheng.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/junwezheng)]
 
 * Role: Team Lead
 * Responsibilities: UI
 
-### Johnny Doe
+### ZhangKai
 
 <img src="images/johndoe.png" width="200px">
 
@@ -38,22 +35,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Data
 
-### Jean Doe
+### Zihan Li (Harry)
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/lzh201023.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
-
-### James Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/lzh201023)]
 
 * Role: Developer
-* Responsibilities: UI
+* Responsibilities: Dev Ops and Threading
+
