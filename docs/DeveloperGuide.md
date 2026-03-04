@@ -262,42 +262,121 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefer desktop apps over other types
+* NUS students who need to manage contacts of classmates, TAs, professors, and project teammates
+* has a need to manage a significant number of contacts across multiple modules and groups
+* prefers desktop apps over other types
 * can type fast
 * prefers typing to mouse interactions
 * is reasonably comfortable using CLI apps
 
-**Value proposition**: manage contacts faster than a typical mouse/GUI driven app
+**Value proposition**: Helps NUS students manage academic contacts faster than a typical mouse/GUI driven app, with convenient grouping by modules, visibility into contacts' available hours, and quick lookup of classmates, TAs, and project teammates
 
 
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
-
-*{More to be added}*
+| Priority | As a …​ | I want to …​ | So that I can…​ |
+| -------- | ------- | ------------ | --------------- |
+| `* * *`  | student | add a contact with details (name, email, position, major, available hours, group) | contact them at the right time and via the correct platform |
+| `* * *`  | student | add a contact to a class or group | click on groups/modules to see members and view people in specific groups |
+| `* * *`  | student | browse through my contact list | look up my friends' contacts |
+| `* * *`  | student | delete a contact | remove people who are no longer relevant to my studies |
+| `* * *`  | new user | see usage instructions | refer to instructions when I forget how to use the App |
+| `* *`    | student | search for contacts by name, title, or group | find the contact I need easily |
+| `* *`    | student | edit existing contact details | keep information up to date as contacts change roles or classes |
+| `* *`    | student | assign custom tags to contacts | categorize them beyond just "Class" or "Group" |
+| `* *`    | student | pin a contact to the top | quickly find frequently used contacts |
+| `* *`    | student | import and export the contact file | migrate data easily when changing computers |
+| `* *`    | student | set a status for a contact (e.g., Prof, Peer, TA) | know the appropriate level of formality when reaching out |
+| `* *`    | student | view a "Recently Added" list | quickly access people I met at a recent event or study session |
+| `* *`    | student | filter contacts by department | find all TAs or students within a specific faculty |
+| `* *`    | student | sort contacts alphabetically by last name | ensure the list is predictable and easy to scan |
+| `* *`    | student | add a "Notes" section to a contact | remember personal details like where we met or project preferences |
+| `* *`    | student | click an email to open my default mail app | initiate communication instantly without copying/pasting |
+| `* *`    | student | add social media handles (LinkedIn/GitHub) to a contact | view their professional portfolio or code contributions |
+| `* *`    | student | create sub-groups within a major group | organise large classes into specific project teams |
+| `* *`    | student | operate using a basic GUI | navigate the app visually if I prefer |
+| `*`      | student | perform a "fuzzy search" | find a contact even if I don't remember the exact spelling |
+| `*`      | student | filter contacts by "Available Hours" | see who is currently free to help me with a bug or project |
+| `*`      | student | use advanced search with combined criteria | narrow down results quickly (e.g., "TA" + "CS1101S") |
+| `*`      | student | track "Last Contacted" date for a contact | see when I last spoke to a mentor and ensure I stay in touch |
+| `*`      | student | set a follow-up reminder for a contact | not forget to send promised project files or messages |
+| `*`      | student | detect and merge duplicate contacts | keep my address book clean and organised |
+| `*`      | student | add a profile picture to a contact | recognise contacts in person on campus |
+| `*`      | student | undo my last action | avoid losing data due to accidental deletions or edits |
+| `*`      | student | password-protect the address book | keep private contact information secure |
+| `*`      | student | "Clear All Data" with a confirmation step | reset for a new semester without manual deletion |
+| `*`      | student | toggle Dark/Light Mode | use the app comfortably in different lighting conditions |
+| `*`      | student | use keyboard shortcuts (e.g., Ctrl+N) | navigate and input data faster |
+| `*`      | student | switch between Summary and Detail views | choose between high-level scanning and deep-dive info |
 
 ### Use cases
 
 (For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: Add a contact with details**
+
+**MSS**
+
+1.  User enters the add command with the contact's details (name, email, and optional fields such as position, major, available hours, and group)
+2.  AddressBook validates the input
+3.  AddressBook adds the contact and displays a success message
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. A required field (name or email) is missing or invalid.
+
+    * 2a1. AddressBook shows an error message indicating the invalid field.
+
+      Use case resumes at step 1.
+
+* 2b. A contact with the same name and email already exists.
+
+    * 2b1. AddressBook shows a duplicate contact error message.
+
+      Use case resumes at step 1.
+
+* 2c. The available hours field is not in a valid time format.
+
+    * 2c1. AddressBook shows a warning and saves the contact without available hours.
+
+      Use case ends.
+
+**Use case: Find contacts by group**
+
+**MSS**
+
+1.  User enters the find command with a group keyword (e.g., `find g/CS2103T`)
+2.  AddressBook searches for contacts matching the specified group
+3.  AddressBook displays a filtered list of matching contacts
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The user provides an empty or invalid group keyword.
+
+    * 1a1. AddressBook shows an error message.
+
+      Use case resumes at step 1.
+
+* 3a. No contacts match the specified group.
+
+    * 3a1. AddressBook displays "0 persons found!".
+
+      Use case ends.
+
+**Use case: Delete a contact**
 
 **MSS**
 
 1.  User requests to list persons
 2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+3.  User requests to delete a specific person in the list by index
+4.  AddressBook deletes the person and displays a success message
 
     Use case ends.
 
@@ -313,20 +392,86 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-*{More to be added}*
+**Use case: Search for a contact by name**
+
+**MSS**
+
+1.  User enters the find command with a name keyword (e.g., `find John`)
+2.  AddressBook searches for contacts whose names match the keyword (case-insensitive)
+3.  AddressBook displays a filtered list of matching contacts
+4.  User selects a contact from the list to view their full details
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The user provides an empty keyword.
+
+    * 1a1. AddressBook shows an error message.
+
+      Use case resumes at step 1.
+
+* 3a. No contacts match the keyword.
+
+    * 3a1. AddressBook displays "0 persons found!".
+
+      Use case ends.
+
+**Use case: Edit a contact's details**
+
+**MSS**
+
+1.  User searches for a contact by name or lists all contacts
+2.  AddressBook displays the contact list
+3.  User enters the edit command with the contact's index and the fields to update
+4.  AddressBook validates the input and updates the contact
+5.  AddressBook displays the updated contact details with a success message
+
+    Use case ends.
+
+**Extensions**
+
+* 3a. The given index is invalid.
+
+    * 3a1. AddressBook shows an error message.
+
+      Use case resumes at step 2.
+
+* 3b. No fields to edit are provided.
+
+    * 3b1. AddressBook shows an error message.
+
+      Use case resumes at step 2.
+
+* 4a. The updated email causes a duplicate contact.
+
+    * 4a1. AddressBook shows a duplicate contact error message.
+
+      Use case resumes at step 2.
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
-2.  Should be able to hold up to 1000 persons without a noticeable sluggishness in performance for typical usage.
+1.  Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `17` or above installed.
+2.  Should be able to hold up to 1000 contacts without a noticeable sluggishness in performance for typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+4.  The application should be usable by a novice who has never used a CLI-based contact manager, with the help of the user guide.
+5.  The data file should be stored locally in a human-editable text format (JSON), so that advanced users can directly manipulate the data if needed.
+6.  The application should not require an internet connection to function.
+7.  The application should start up within 3 seconds on a typical modern machine.
+8.  The application should be a single-user product (i.e., not a multi-user or networked system).
+9.  The product should be portable — it should work without requiring an installer, and should not depend on a remote server.
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, MacOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Mainstream OS**: Windows, Linux, Unix, macOS
+* **CLI**: Command Line Interface — a text-based interface where users type commands to interact with the application
+* **Module**: A university course or class (e.g., CS2103T) that students are enrolled in
+* **Group**: A user-defined label used to categorise contacts (e.g., a module code, project team, or social circle)
+* **Available Hours**: The time range during which a contact is available, specified in 24-hour format (e.g., 0900-1800)
+* **Tag**: A custom label that can be assigned to a contact for flexible categorisation beyond groups
+* **Position**: The role of a contact in an academic context (e.g., Student, TA, Professor)
+* **Duplicate contact**: Two contacts are considered duplicates if they share the same name (case-insensitive) and email address
+* **MVP**: Minimum Viable Product — the smallest set of features that delivers core value to the user
 
 --------------------------------------------------------------------------------------------------------------------
 
