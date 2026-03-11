@@ -1,5 +1,6 @@
 package seedu.address.ui;
 
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -20,17 +21,21 @@ public class PersonListPanel extends UiPart<Region> {
     @FXML
     private ListView<Person> personListView;
 
+    private final Consumer<Integer> onDelete;
+
     /**
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
-    public PersonListPanel(ObservableList<Person> personList) {
+    public PersonListPanel(ObservableList<Person> personList, Consumer<Integer> onDelete) {
         super(FXML);
+        this.onDelete = onDelete;
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
     }
 
     /**
-     * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
+     * Custom {@code ListCell} that displays the graphics of a {@code Person} using
+     * a {@code PersonCard}.
      */
     class PersonListViewCell extends ListCell<Person> {
         @Override
@@ -41,7 +46,8 @@ public class PersonListPanel extends UiPart<Region> {
                 setGraphic(null);
                 setText(null);
             } else {
-                setGraphic(new PersonCard(person, getIndex() + 1).getRoot());
+                int index = getIndex() + 1;
+                setGraphic(new PersonCard(person, index, () -> onDelete.accept(index)).getRoot());
             }
         }
     }
