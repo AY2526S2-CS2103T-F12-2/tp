@@ -61,7 +61,8 @@ public class AddCommandParser implements Parser<AddCommand> {
                 ParserUtil.parseAvailableHours(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS));
 
 
-        Person person = new Person(name, phone, email, address, tagList, positionList, majorList, groupList, availableHoursList);
+        Person person = new Person(name, phone, email, address, tagList,
+                positionList, majorList, groupList, availableHoursList);
 
         return new AddCommand(person);
     }

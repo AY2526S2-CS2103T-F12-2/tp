@@ -1,7 +1,5 @@
 package seedu.address.model.person;
 
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
-
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
@@ -12,11 +10,17 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 
+import seedu.address.model.person.exceptions.WrongTimeFormatException;
+
 /**
  * Represents a Person's available hours in the address book.
  * Guarantees: immutable; is valid as declared in {@link #isValidAvailableHours(String)}
  */
 public class AvailableHours {
+
+    public static final String MESSAGE_CONSTRAINTS = "Available hours must follow HHMM-HHMM (24-hour clock) format, "
+            + "and start time must be before end time.\n"
+            + "Format: e.g., 0900-1800\n";
 
     private static final DateTimeFormatter TIME_FORMATTER =
             new DateTimeFormatterBuilder()
@@ -24,10 +28,6 @@ public class AvailableHours {
                     .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
                     .toFormatter()
                     .withResolverStyle(ResolverStyle.STRICT);
-
-    public static final String MESSAGE_CONSTRAINTS = "Available hours must follow HHMM-HHMM (24-hour clock) format, "
-            + "and start time must be before end time.\n"
-            + "Format: e.g., 0900-1800\n";
 
     public final LocalTime startTime;
     public final LocalTime endTime;
@@ -51,31 +51,38 @@ public class AvailableHours {
         if (times.length != 2) {
             throw new WrongTimeFormatException();
         }
-        LocalTime startTime, endTime;
+
         try {
-            startTime = LocalTime.parse(times[0], TIME_FORMATTER);
-            endTime = LocalTime.parse(times[1], TIME_FORMATTER);
+            LocalTime startTime = LocalTime.parse(times[0], TIME_FORMATTER);
+            LocalTime endTime = LocalTime.parse(times[1], TIME_FORMATTER);
+            if (!startTime.isBefore(endTime)) {
+                throw new WrongTimeFormatException();
+            }
+            return new LocalTime[] {startTime, endTime};
         } catch (DateTimeParseException e) {
             throw new WrongTimeFormatException();
         }
-        if (!startTime.isBefore(endTime)) {
-            throw new WrongTimeFormatException();
-        }
-        return new LocalTime[] {startTime, endTime};
     }
 
     /**
      * Returns if a given string is valid available hours.
+     *
+     * @return The validity of input hours.
      */
     public static boolean isValidAvailableHours(String test) {
-       try {
-           timeParser(test);
-           return true;
-       } catch (WrongTimeFormatException e) {
-           return false;
-       }
+        try {
+            timeParser(test);
+            return true;
+        } catch (WrongTimeFormatException e) {
+            return false;
+        }
     }
 
+    /**
+     * Returns the available hours in original input format HHmm-HHmm (24-hour).
+     *
+     * @return The available hours in original input format.
+     */
     public String toOriginalString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HHmm");
         return startTime.format(formatter) + "-" + endTime.format(formatter);
