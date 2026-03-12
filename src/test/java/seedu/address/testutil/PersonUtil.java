@@ -72,7 +72,7 @@ public class PersonUtil {
         if (descriptor.getTags().isPresent()) {
             Set<Tag> tags = descriptor.getTags().get();
             if (tags.isEmpty()) {
-                sb.append(PREFIX_TAG);
+                sb.append(PREFIX_TAG).append(" ");
             } else {
                 tags.forEach(s -> sb.append(PREFIX_TAG).append(s.tagName).append(" "));
             }
@@ -80,7 +80,7 @@ public class PersonUtil {
         if (descriptor.getPositions().isPresent()) {
             Set<Position> positions = descriptor.getPositions().get();
             if (positions.isEmpty()) {
-                sb.append(PREFIX_POSITION);
+                sb.append(PREFIX_POSITION).append(" ");
             } else {
                 positions.forEach(s -> sb.append(PREFIX_POSITION).append(s.value).append(" "));
             }
@@ -88,7 +88,7 @@ public class PersonUtil {
         if (descriptor.getMajors().isPresent()) {
             Set<Major> majors = descriptor.getMajors().get();
             if (majors.isEmpty()) {
-                sb.append(PREFIX_MAJOR);
+                sb.append(PREFIX_MAJOR).append(" ");
             } else {
                 majors.forEach(s -> sb.append(PREFIX_MAJOR).append(s.value).append(" "));
             }
@@ -97,7 +97,7 @@ public class PersonUtil {
         if (descriptor.getGroups().isPresent()) {
             Set<Group> groups = descriptor.getGroups().get();
             if (groups.isEmpty()) {
-                sb.append(PREFIX_GROUP);
+                sb.append(PREFIX_GROUP).append(" ");
             } else {
                 groups.forEach(s -> sb.append(PREFIX_GROUP).append(s.value).append(" "));
             }
