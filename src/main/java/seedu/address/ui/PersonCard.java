@@ -44,6 +44,8 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private FlowPane tags;
     @FXML
+    private FlowPane groups;
+    @FXML
     private Button deleteButton;
 
     /**
@@ -61,8 +63,25 @@ public class PersonCard extends UiPart<Region> {
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+        addGroupLabels(person);
     }
 
+    /**
+     * Adds group labels to the card in a sorted order.
+     */
+    private void addGroupLabels(Person person) {
+        person.getGroups().stream()
+                .sorted(Comparator.comparing(group -> group.value))
+                .forEach(group -> {
+                    Label label = new Label(group.value);
+                    label.getStyleClass().add("group-tag");
+                    groups.getChildren().add(label);
+                });
+    }
+
+    /**
+     * Handles delete button clicks for this card.
+     */
     @FXML
     private void handleDelete() {
         onDelete.run();
