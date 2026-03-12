@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
+import java.util.Objects;
 
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
@@ -91,6 +92,11 @@ public class AvailableHours {
     @Override
     public String toString() {
         return startTime.toString() + " to " + endTime.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startTime, endTime);
     }
 
     @Override

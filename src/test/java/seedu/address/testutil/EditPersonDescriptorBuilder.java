@@ -6,10 +6,14 @@ import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.Group;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -37,6 +41,10 @@ public class EditPersonDescriptorBuilder {
         descriptor.setEmail(person.getEmail());
         descriptor.setAddress(person.getAddress());
         descriptor.setTags(person.getTags());
+        descriptor.setPositions(person.getPositions());
+        descriptor.setMajors(person.getMajors());
+        descriptor.setGroups(person.getGroups());
+        descriptor.setAvailableHours(person.getAvailableHours());
     }
 
     /**
@@ -78,6 +86,48 @@ public class EditPersonDescriptorBuilder {
     public EditPersonDescriptorBuilder withTags(String... tags) {
         Set<Tag> tagSet = Stream.of(tags).map(Tag::new).collect(Collectors.toSet());
         descriptor.setTags(tagSet);
+        return this;
+    }
+
+    /**
+     * Parses the {@code positions} into a {@code Set<Position>} and set it to the {@code EditPersonDescriptor}
+     * that we are building.
+     */
+    public EditPersonDescriptorBuilder withPositions(String... positions) {
+        Set<Position> positionSet = Stream.of(positions).map(Position::new).collect(Collectors.toSet());
+        descriptor.setPositions(positionSet);
+        return this;
+    }
+
+    /**
+     * Parses the {@code majors} into a {@code Set<Major>} and set it to the {@code EditPersonDescriptor}
+     * that we are building.
+     */
+    public EditPersonDescriptorBuilder withMajors(String... majors) {
+        Set<Major> majorSet = Stream.of(majors).map(Major::new).collect(Collectors.toSet());
+        descriptor.setMajors(majorSet);
+        return this;
+    }
+
+    /**
+     * Parses the {@code groups} into a {@code Set<Group>} and set it to the {@code EditPersonDescriptor}
+     * that we are building.
+     */
+    public EditPersonDescriptorBuilder withGroups(String... groups) {
+        Set<Group> groupSet = Stream.of(groups).map(Group::new).collect(Collectors.toSet());
+        descriptor.setGroups(groupSet);
+        return this;
+    }
+
+    /**
+     * Parses the {@code availableHours} into a {@code Set<AvailableHour>} and set it to the
+     * {@code EditPersonDescriptor} that we are building.
+     */
+    public EditPersonDescriptorBuilder withAvailableHours(String... availableHours) {
+        Set<AvailableHours> availableHourSet = Stream.of(availableHours)
+                .map(AvailableHours::new)
+                .collect(Collectors.toSet());
+        descriptor.setAvailableHours(availableHourSet);
         return this;
     }
 
