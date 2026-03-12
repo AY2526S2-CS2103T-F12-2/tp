@@ -1,16 +1,24 @@
 package seedu.address.testutil;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Set;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.person.AvailableHours;
+import seedu.address.model.person.Group;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -37,6 +45,18 @@ public class PersonUtil {
         person.getTags().stream().forEach(
             s -> sb.append(PREFIX_TAG + s.tagName + " ")
         );
+        person.getMajors().stream().forEach(
+                s -> sb.append(PREFIX_MAJOR + s.value + " ")
+        );
+        person.getGroups().stream().forEach(
+                s -> sb.append(PREFIX_GROUP + s.value + " ")
+        );
+        person.getPositions().stream().forEach(
+                s -> sb.append(PREFIX_POSITION + s.value + " ")
+        );
+        person.getAvailableHours().stream().forEach(
+                s -> sb.append(PREFIX_AVAILABLE_HOURS + s.toOriginalString() + " ")
+        );
         return sb.toString();
     }
 
@@ -55,6 +75,41 @@ public class PersonUtil {
                 sb.append(PREFIX_TAG);
             } else {
                 tags.forEach(s -> sb.append(PREFIX_TAG).append(s.tagName).append(" "));
+            }
+        }
+        if (descriptor.getPositions().isPresent()) {
+            Set<Position> positions = descriptor.getPositions().get();
+            if (positions.isEmpty()) {
+                sb.append(PREFIX_POSITION);
+            } else {
+                positions.forEach(s -> sb.append(PREFIX_POSITION).append(s.value).append(" "));
+            }
+        }
+        if (descriptor.getMajors().isPresent()) {
+            Set<Major> majors = descriptor.getMajors().get();
+            if (majors.isEmpty()) {
+                sb.append(PREFIX_MAJOR);
+            } else {
+                majors.forEach(s -> sb.append(PREFIX_MAJOR).append(s.value).append(" "));
+            }
+        }
+
+        if (descriptor.getGroups().isPresent()) {
+            Set<Group> groups = descriptor.getGroups().get();
+            if (groups.isEmpty()) {
+                sb.append(PREFIX_GROUP);
+            } else {
+                groups.forEach(s -> sb.append(PREFIX_GROUP).append(s.value).append(" "));
+            }
+        }
+
+        if (descriptor.getAvailableHours().isPresent()) {
+            Set<AvailableHours> availableHours = descriptor.getAvailableHours().get();
+            if (availableHours.isEmpty()) {
+                sb.append(PREFIX_AVAILABLE_HOURS);
+            } else {
+                availableHours.forEach(s -> sb.append(PREFIX_AVAILABLE_HOURS)
+                        .append(s.toOriginalString()).append(" "));
             }
         }
         return sb.toString();

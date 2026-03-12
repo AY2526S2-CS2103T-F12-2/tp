@@ -4,10 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.Group;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.util.SampleDataUtil;
 
@@ -26,6 +30,11 @@ public class PersonBuilder {
     private Email email;
     private Address address;
     private Set<Tag> tags;
+    private Set<Position> positions;
+    private Set<Major> majors;
+    private Set<Group> groups;
+    private Set<AvailableHours> availableHours;
+
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -36,6 +45,10 @@ public class PersonBuilder {
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
         tags = new HashSet<>();
+        majors = new HashSet<>();
+        groups = new HashSet<>();
+        positions = new HashSet<>();
+        availableHours = new HashSet<>();
     }
 
     /**
@@ -47,6 +60,10 @@ public class PersonBuilder {
         email = personToCopy.getEmail();
         address = personToCopy.getAddress();
         tags = new HashSet<>(personToCopy.getTags());
+        groups = new HashSet<>(personToCopy.getGroups());
+        positions = new HashSet<>(personToCopy.getPositions());
+        majors = new HashSet<>(personToCopy.getMajors());
+        availableHours = new HashSet<>(personToCopy.getAvailableHours());
     }
 
     /**
@@ -62,6 +79,39 @@ public class PersonBuilder {
      */
     public PersonBuilder withTags(String ... tags) {
         this.tags = SampleDataUtil.getTagSet(tags);
+        return this;
+    }
+
+    /**
+     * Parses the {@code positions} into a {@code Set<Position>} and set it to the {@code Person} that we are building.
+     */
+    public PersonBuilder withPositions(String ... positions) {
+        this.positions = SampleDataUtil.getPositionSet(positions);
+        return this;
+    }
+
+    /**
+     * Parses the {@code majors} into a {@code Set<Major>} and set it to the {@code Person} that we are building.
+     */
+    public PersonBuilder withMajors(String ... majors) {
+        this.majors = SampleDataUtil.getMajorSet(majors);
+        return this;
+    }
+
+    /**
+     * Parses the {@code groups} into a {@code Set<Group>} and set it to the {@code Person} that we are building.
+     */
+    public PersonBuilder withGroups(String ... groups) {
+        this.groups = SampleDataUtil.getGroupSet(groups);
+        return this;
+    }
+
+    /**
+     * Parses the {@code availableHours} into a {@code Set<AvailableHours>},
+     * and set it to the {@code Person} that we are building.
+     */
+    public PersonBuilder withAvailableHours(String ... availableHours) {
+        this.availableHours = SampleDataUtil.getAvailableHoursSet(availableHours);
         return this;
     }
 
@@ -90,7 +140,7 @@ public class PersonBuilder {
     }
 
     public Person build() {
-        return new Person(name, phone, email, address, tags);
+        return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours);
     }
 
 }
