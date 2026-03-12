@@ -10,9 +10,13 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.Group;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -120,5 +124,113 @@ public class ParserUtil {
             tagSet.add(parseTag(tagName));
         }
         return tagSet;
+    }
+
+    /**
+     * Parses a {@code String position} into a {@code Position}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code position} is invalid.
+     */
+    public static Position parsePosition(String position) throws ParseException {
+        requireNonNull(position);
+        String trimmedPosition = position.trim();
+        if (!Position.isValidPosition(trimmedPosition)) {
+            throw new ParseException(Position.MESSAGE_CONSTRAINTS);
+        }
+        return new Position(trimmedPosition);
+    }
+
+    /**
+     * Parses {@code Collection<String> positions} into a {@code Set<Position>}.
+     */
+    public static Set<Position> parsePositions(Collection<String> positions) throws ParseException {
+        requireNonNull(positions);
+        final Set<Position> positionSet = new HashSet<>();
+        for (String positionName : positions) {
+            positionSet.add(parsePosition(positionName));
+        }
+        return positionSet;
+    }
+
+    /**
+     * Parses a {@code String major} into a {@code Major}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code major} is invalid.
+     */
+    public static Major parseMajor(String major) throws ParseException {
+        requireNonNull(major);
+        String trimmedMajor = major.trim();
+        if (!Major.isValidMajor(trimmedMajor)) {
+            throw new ParseException(Major.MESSAGE_CONSTRAINTS);
+        }
+        return new Major(trimmedMajor);
+    }
+
+    /**
+     * Parses {@code Collection<String> majors} into a {@code Set<Major>}.
+     */
+    public static Set<Major> parseMajors(Collection<String> majors) throws ParseException {
+        requireNonNull(majors);
+        final Set<Major> majorSet = new HashSet<>();
+        for (String majorName : majors) {
+            majorSet.add(parseMajor(majorName));
+        }
+        return majorSet;
+    }
+
+    /**
+     * Parses a {@code String group} into a {@code Group}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code group} is invalid.
+     */
+    public static Group parseGroup(String group) throws ParseException {
+        requireNonNull(group);
+        String trimmedGroup = group.trim();
+        if (!Group.isValidGroup(trimmedGroup)) {
+            throw new ParseException(Group.MESSAGE_CONSTRAINTS);
+        }
+        return new Group(trimmedGroup);
+    }
+
+    /**
+     * Parses {@code Collection<String> groups} into a {@code Set<Group>}.
+     */
+    public static Set<Group> parseGroups(Collection<String> groups) throws ParseException {
+        requireNonNull(groups);
+        final Set<Group> groupSet = new HashSet<>();
+        for (String groupName : groups) {
+            groupSet.add(parseGroup(groupName));
+        }
+        return groupSet;
+    }
+
+    /**
+     * Parses a {@code String availableHour} into an {@code AvailableHour}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the given {@code availableHour} is invalid.
+     */
+    public static AvailableHours parseAvailableHours(String availableHours) throws ParseException {
+        requireNonNull(availableHours);
+        String trimmedAvailableHour = availableHours.trim();
+        if (!AvailableHours.isValidAvailableHours(trimmedAvailableHour)) {
+            throw new ParseException(AvailableHours.MESSAGE_CONSTRAINTS);
+        }
+        return new AvailableHours(trimmedAvailableHour);
+    }
+
+    /**
+     * Parses {@code Collection<String> availableHours} into a {@code Set<AvailableHour>}.
+     */
+    public static Set<AvailableHours> parseAvailableHours(Collection<String> availableHours) throws ParseException {
+        requireNonNull(availableHours);
+        final Set<AvailableHours> availableHourSet = new HashSet<>();
+        for (String availableHourName : availableHours) {
+            availableHourSet.add(parseAvailableHours(availableHourName));
+        }
+        return availableHourSet;
     }
 }

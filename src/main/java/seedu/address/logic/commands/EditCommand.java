@@ -2,9 +2,13 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
@@ -22,10 +26,14 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.Group;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -43,6 +51,10 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
+            + "[" + PREFIX_MAJOR + "MAJOR] "
+            + "[" + PREFIX_AVAILABLE_HOURS + "AVAILABLE_HOURS] "
+            + "[" + PREFIX_GROUP + "GROUP] "
+            + "[" + PREFIX_POSITION + "POSITION] "
             + "[" + PREFIX_TAG + "TAG]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
@@ -100,8 +112,15 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
+        Set<Major> updatedMajors = editPersonDescriptor.getMajors().orElse(personToEdit.getMajors());
+        Set<Group> updatedGroups = editPersonDescriptor.getGroups().orElse(personToEdit.getGroups());
+        Set<Position> updatedPositions = editPersonDescriptor.getPositions().orElse(personToEdit.getPositions());
+        Set<AvailableHours> updatedAvailableHours =
+                editPersonDescriptor.getAvailableHours().orElse(personToEdit.getAvailableHours());
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags);
+
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
+                updatedMajors, updatedGroups, updatedAvailableHours);
     }
 
     @Override
@@ -138,6 +157,10 @@ public class EditCommand extends Command {
         private Email email;
         private Address address;
         private Set<Tag> tags;
+        private Set<Major> majors;
+        private Set<Position> positions;
+        private Set<Group> groups;
+        private Set<AvailableHours> availableHours;
 
         public EditPersonDescriptor() {}
 
@@ -151,13 +174,18 @@ public class EditCommand extends Command {
             setEmail(toCopy.email);
             setAddress(toCopy.address);
             setTags(toCopy.tags);
+            setPositions(toCopy.positions);
+            setMajors(toCopy.majors);
+            setGroups(toCopy.groups);
+            setAvailableHours(toCopy.availableHours);
         }
 
         /**
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, majors,
+                    groups, positions, availableHours);
         }
 
         public void setName(Name name) {
@@ -209,6 +237,76 @@ public class EditCommand extends Command {
             return (tags != null) ? Optional.of(Collections.unmodifiableSet(tags)) : Optional.empty();
         }
 
+        /**
+         * Sets {@code positions} to this object's {@code positions}.
+         * A defensive copy of {@code positions} is used internally.
+         */
+        public void setPositions(Set<Position> positions) {
+            this.positions = (positions != null) ? new HashSet<>(positions) : null;
+        }
+
+        /**
+         * Returns an unmodifiable position set, which throws {@code UnsupportedOperationException}
+         * if modification is attempted.
+         * Returns {@code Optional#empty()} if {@code positions} is null.
+         */
+        public Optional<Set<Position>> getPositions() {
+            return (positions != null) ? Optional.of(Collections.unmodifiableSet(positions)) : Optional.empty();
+        }
+
+        /**
+         * Sets {@code majors} to this object's {@code majors}.
+         * A defensive copy of {@code majors} is used internally.
+         */
+        public void setMajors(Set<Major> majors) {
+            this.majors = (majors != null) ? new HashSet<>(majors) : null;
+        }
+
+        /**
+         * Returns an unmodifiable major set, which throws {@code UnsupportedOperationException}
+         * if modification is attempted.
+         * Returns {@code Optional#empty()} if {@code majors} is null.
+         */
+        public Optional<Set<Major>> getMajors() {
+            return (majors != null) ? Optional.of(Collections.unmodifiableSet(majors)) : Optional.empty();
+        }
+
+        /**
+         * Sets {@code groups} to this object's {@code groups}.
+         * A defensive copy of {@code groups} is used internally.
+         */
+        public void setGroups(Set<Group> groups) {
+            this.groups = (groups != null) ? new HashSet<>(groups) : null;
+        }
+
+        /**
+         * Returns an unmodifiable group set, which throws {@code UnsupportedOperationException}
+         * if modification is attempted.
+         * Returns {@code Optional#empty()} if {@code groups} is null.
+         */
+        public Optional<Set<Group>> getGroups() {
+            return (groups != null) ? Optional.of(Collections.unmodifiableSet(groups)) : Optional.empty();
+        }
+
+        /**
+         * Sets {@code availableHours} to this object's {@code availableHours}.
+         * A defensive copy of {@code availableHours} is used internally.
+         */
+        public void setAvailableHours(Set<AvailableHours> availableHours) {
+            this.availableHours = (availableHours != null) ? new HashSet<>(availableHours) : null;
+        }
+
+        /**
+         * Returns an unmodifiable available hour set, which throws {@code UnsupportedOperationException}
+         * if modification is attempted.
+         * Returns {@code Optional#empty()} if {@code availableHours} is null.
+         */
+        public Optional<Set<AvailableHours>> getAvailableHours() {
+            return (availableHours != null)
+                    ? Optional.of(Collections.unmodifiableSet(availableHours))
+                    : Optional.empty();
+        }
+
         @Override
         public boolean equals(Object other) {
             if (other == this) {
@@ -225,7 +323,11 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditPersonDescriptor.phone)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
                     && Objects.equals(address, otherEditPersonDescriptor.address)
-                    && Objects.equals(tags, otherEditPersonDescriptor.tags);
+                    && Objects.equals(tags, otherEditPersonDescriptor.tags)
+                    && Objects.equals(groups, otherEditPersonDescriptor.groups)
+                    && Objects.equals(majors, otherEditPersonDescriptor.majors)
+                    && Objects.equals(positions, otherEditPersonDescriptor.positions)
+                    && Objects.equals(availableHours, otherEditPersonDescriptor.availableHours);
         }
 
         @Override
@@ -236,6 +338,10 @@ public class EditCommand extends Command {
                     .add("email", email)
                     .add("address", address)
                     .add("tags", tags)
+                    .add("positions", positions)
+                    .add("majors", majors)
+                    .add("groups", groups)
+                    .add("available hours", availableHours)
                     .toString();
         }
     }
