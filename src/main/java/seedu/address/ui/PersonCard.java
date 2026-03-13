@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -45,6 +46,14 @@ public class PersonCard extends UiPart<Region> {
     private FlowPane tags;
     @FXML
     private Button deleteButton;
+    @FXML
+    private Label majors;
+    @FXML
+    private Label availableHours;
+    @FXML
+    private Label groups;
+    @FXML
+    private Label positions;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
@@ -58,6 +67,10 @@ public class PersonCard extends UiPart<Region> {
         phone.setText(person.getPhone().value);
         address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);
+        majors.setText(person.getMajors().stream().map(m -> m.value).collect(Collectors.joining(", ")));
+        availableHours.setText(person.getAvailableHours().stream().map(a -> a.toOriginalString()).collect(Collectors.joining(", ")));
+        groups.setText(person.getGroups().stream().map(g -> g.value).collect(Collectors.joining(", ")));
+        positions.setText(person.getPositions().stream().map(p -> p.value).collect(Collectors.joining(", ")));
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));

@@ -32,6 +32,10 @@
       <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
+      <Label fx:id="majors" styleClass="cell_small_label" text="\$majors" />
+      <Label fx:id="availableHours" styleClass="cell_small_label" text="\$availableHours" />
+      <Label fx:id="groups" styleClass="cell_small_label" text="\$groups" />
+      <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>
   <Region HBox.hgrow="ALWAYS" />
