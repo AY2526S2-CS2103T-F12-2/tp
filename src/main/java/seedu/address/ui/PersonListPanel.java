@@ -22,13 +22,15 @@ public class PersonListPanel extends UiPart<Region> {
     private ListView<Person> personListView;
 
     private final Consumer<Integer> onDelete;
+    private final Consumer<String> onEdit;
 
     /**
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
-    public PersonListPanel(ObservableList<Person> personList, Consumer<Integer> onDelete) {
+    public PersonListPanel(ObservableList<Person> personList, Consumer<Integer> onDelete, Consumer<String> onEdit) {
         super(FXML);
         this.onDelete = onDelete;
+        this.onEdit = onEdit;
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
     }
@@ -47,7 +49,7 @@ public class PersonListPanel extends UiPart<Region> {
                 setText(null);
             } else {
                 int index = getIndex() + 1;
-                setGraphic(new PersonCard(person, index, () -> onDelete.accept(index)).getRoot());
+                setGraphic(new PersonCard(person, index, () -> onDelete.accept(index), onEdit).getRoot());
             }
         }
     }
