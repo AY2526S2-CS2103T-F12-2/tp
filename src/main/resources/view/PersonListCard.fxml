@@ -29,16 +29,19 @@
         <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
       </HBox>
       <FlowPane fx:id="tags" />
-<!--      <HBox spacing="4" alignment="CENTER_LEFT">-->
-<!--        <Label text="Groups:" styleClass="cell_small_label" />-->
-<!--        <FlowPane fx:id="groups" />-->
-<!--      </HBox>-->
+      <HBox spacing="4" alignment="CENTER_LEFT">
+        <Label text="Group:" styleClass="cell_small_label">
+          <minWidth>
+            <Region fx:constant="USE_PREF_SIZE" />
+          </minWidth>
+        </Label>
+        <FlowPane fx:id="groups" hgap="6" vgap="4" />
+      </HBox>
       <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
       <Label fx:id="majors" styleClass="cell_small_label" text="\$majors" />
       <Label fx:id="availableHours" styleClass="cell_small_label" text="\$availableHours" />
-      <Label fx:id="groups" styleClass="cell_small_label" text="\$groups" />
       <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>

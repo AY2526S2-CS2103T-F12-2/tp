@@ -56,7 +56,7 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label availableHours;
     @FXML
-    private Label groups;
+    private FlowPane groups;
     @FXML
     private Label positions;
 
@@ -80,13 +80,25 @@ public class PersonCard extends UiPart<Region> {
                 .map(AvailableHours::toString).collect(Collectors.joining(", "));
         availableHours.setText("Available hours: "
                 + (availableHoursText.isEmpty() ? EMPTY_FIELD_MESSAGE : availableHoursText));
-        String groupsText = person.getGroups().stream().map(g -> g.value).collect(Collectors.joining(", "));
-        groups.setText("Group: " + (groupsText.isEmpty() ? EMPTY_FIELD_MESSAGE : groupsText));
         String positionsText = person.getPositions().stream().map(p -> p.value).collect(Collectors.joining(", "));
         positions.setText("Position: " + (positionsText.isEmpty() ? EMPTY_FIELD_MESSAGE : positionsText));
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
+        addGroupLabels(person);
+    }
+
+    /**
+     * Adds group labels to the card in a sorted order.
+     */
+    private void addGroupLabels(Person person) {
+        person.getGroups().stream()
+                .sorted(Comparator.comparing(group -> group.value))
+                .forEach(group -> {
+                    Label label = new Label(group.value);
+                    label.getStyleClass().add("group-tag");
+                    groups.getChildren().add(label);
+                });
     }
 
     /**
