@@ -29,12 +29,27 @@
         <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
       </HBox>
       <FlowPane fx:id="tags" />
+      <HBox spacing="4" alignment="CENTER_LEFT">
+        <Label text="Groups:" styleClass="cell_small_label" />
+        <FlowPane fx:id="groups" />
+      </HBox>
       <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
+      <Label fx:id="majors" styleClass="cell_small_label" text="\$majors" />
+      <Label fx:id="availableHours" styleClass="cell_small_label" text="\$availableHours" />
+      <Label fx:id="groups" styleClass="cell_small_label" text="\$groups" />
+      <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>
   <Region HBox.hgrow="ALWAYS" />
+  <Button fx:id="editButton" text="&#x270E;" onAction="#handleEdit"
+          prefWidth="24" prefHeight="24"
+          style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0;">
+    <HBox.margin>
+      <Insets top="10" right="0" bottom="10" left="10" />
+    </HBox.margin>
+  </Button>
   <Button fx:id="deleteButton" text="✕" onAction="#handleDelete"
           prefWidth="24" prefHeight="24"
           style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0;">

@@ -32,6 +32,15 @@ public class CommandBox extends UiPart<Region> {
     }
 
     /**
+     * Sets the text of the command text field and positions the caret at the end of the text.
+     * @param text the text to set the command text field to
+     */
+    public void setCommandTextField(String text) {
+        commandTextField.setText(text);
+        commandTextField.positionCaret(text.length());
+    }
+
+    /**
      * Handles the Enter button pressed event.
      */
     @FXML
