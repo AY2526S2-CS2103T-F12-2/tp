@@ -92,6 +92,12 @@ public class PersonCard extends UiPart<Region> {
      * Adds group labels to the card in a sorted order.
      */
     private void addGroupLabels(Person person) {
+        if (person.getGroups().isEmpty()) {
+            Label label = new Label("N/A");
+            label.getStyleClass().add("group-tag");
+            groups.getChildren().add(label);
+            return;
+        }
         person.getGroups().stream()
                 .sorted(Comparator.comparing(group -> group.value))
                 .forEach(group -> {
