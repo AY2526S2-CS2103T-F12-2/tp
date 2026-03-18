@@ -59,6 +59,8 @@ public class PersonCard extends UiPart<Region> {
     private FlowPane groups;
     @FXML
     private Label positions;
+    @FXML
+    private Label avatarInitial;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
@@ -71,6 +73,9 @@ public class PersonCard extends UiPart<Region> {
         this.displayedIndex = displayedIndex;
         id.setText(displayedIndex + ". ");
         name.setText(person.getName().fullName);
+        String fullName = person.getName().fullName.trim();
+        String initials = fullName.isEmpty() ? "" : fullName.substring(0, 1).toUpperCase();
+        avatarInitial.setText(initials);
         phone.setText(person.getPhone().value);
         address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);

@@ -8,27 +8,34 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" spacing="15">
+  <padding>
+    <Insets top="15" right="15" bottom="15" left="15"/>
+  </padding>
+  <StackPane styleClass="avatar-circle" prefWidth="55" prefHeight="55" minWidth="55" minHeight="55" maxWidth="55" maxHeight="55">
+    <Label fx:id="avatarInitial" styleClass="avatar-label"/>
+  </StackPane>
   <GridPane HBox.hgrow="ALWAYS">
     <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
     </columnConstraints>
-    <VBox alignment="CENTER_LEFT" minHeight="105" GridPane.columnIndex="0">
-      <padding>
-        <Insets top="5" right="5" bottom="5" left="15" />
-      </padding>
-      <HBox spacing="0.5" alignment="CENTER_LEFT">
+    <VBox alignment="TOP_LEFT" minHeight="105" GridPane.columnIndex="0">
+      <HBox spacing="5" alignment="CENTER_LEFT">
         <Label fx:id="id" styleClass="cell_big_label">
           <minWidth>
-            <!-- Ensures that the label text is never truncated -->
             <Region fx:constant="USE_PREF_SIZE" />
           </minWidth>
         </Label>
         <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
       </HBox>
-      <FlowPane fx:id="tags" />
+      <FlowPane fx:id="tags">
+        <VBox.margin>
+          <Insets top="5" bottom="5"/>
+        </VBox.margin>
+      </FlowPane>
       <HBox spacing="4" alignment="CENTER_LEFT">
         <Label text="Group:" styleClass="cell_small_label">
           <minWidth>
@@ -45,19 +52,12 @@
       <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>
-  <Region HBox.hgrow="ALWAYS" />
-  <Button fx:id="editButton" text="&#x270E;" onAction="#handleEdit"
-          prefWidth="24" prefHeight="24"
-          style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0;">
-    <HBox.margin>
-      <Insets top="10" right="0" bottom="10" left="10" />
-    </HBox.margin>
-  </Button>
-  <Button fx:id="deleteButton" text="✕" onAction="#handleDelete"
-          prefWidth="24" prefHeight="24"
-          style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0;">
-    <HBox.margin>
-      <Insets top="10" right="10" bottom="10" left="10" />
-    </HBox.margin>
-  </Button>
+  <HBox spacing="10" alignment="TOP_RIGHT">
+    <Button fx:id="editButton" text="&#x270E;" onAction="#handleEdit"
+            prefWidth="28" prefHeight="28" styleClass="icon-button"
+            style="-fx-background-color: transparent; -fx-text-fill: #aaaaaa; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 0; -fx-border-color: transparent; -fx-border-width: 0; -fx-background-insets: 0;"/>
+    <Button fx:id="deleteButton" text="✕" onAction="#handleDelete"
+            prefWidth="28" prefHeight="28" styleClass="icon-button"
+            style="-fx-background-color: transparent; -fx-text-fill: #aaaaaa; -fx-font-size: 14px; -fx-cursor: hand; -fx-padding: 0; -fx-border-color: transparent; -fx-border-width: 0; -fx-background-insets: 0;"/>
+  </HBox>
 </HBox>
