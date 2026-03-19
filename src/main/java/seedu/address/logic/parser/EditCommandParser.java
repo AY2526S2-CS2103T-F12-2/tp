@@ -77,15 +77,15 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
             editPersonDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
-        parseSetForEdit(argMultimap.getAllValues(PREFIX_TAG), ParserUtil::parseTags)
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_TAG), ParserUtil::parseTags)
                 .ifPresent(editPersonDescriptor::setTags);
-        parseSetForEdit(argMultimap.getAllValues(PREFIX_POSITION), ParserUtil::parsePositions)
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_POSITION), ParserUtil::parsePositions)
                 .ifPresent(editPersonDescriptor::setPositions);
-        parseSetForEdit(argMultimap.getAllValues(PREFIX_MAJOR), ParserUtil::parseMajors)
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_MAJOR), ParserUtil::parseMajors)
                 .ifPresent(editPersonDescriptor::setMajors);
-        parseSetForEdit(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
                 .ifPresent(editPersonDescriptor::setGroups);
-        parseSetForEdit(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS), ParserUtil::parseAvailableHours)
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS), ParserUtil::parseAvailableHours)
                 .ifPresent(editPersonDescriptor::setAvailableHours);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
