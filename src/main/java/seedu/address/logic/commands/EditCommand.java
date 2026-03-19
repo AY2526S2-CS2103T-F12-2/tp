@@ -104,6 +104,9 @@ public class EditCommand extends Command {
     /**
      * Creates and returns a {@code Person} with the details of {@code personToEdit}
      * edited with {@code editPersonDescriptor}.
+     * @param personToEdit the original {@code Person} whose details are being edited; must not be null
+     * @param editPersonDescriptor holds the new field values and the edit flag
+     * @return a new {@code Person} reflecting the applied edits
      */
     private static Person createEditedPerson(Person personToEdit, EditPersonDescriptor editPersonDescriptor) {
         assert personToEdit != null;
@@ -115,30 +118,32 @@ public class EditCommand extends Command {
         Set<AvailableHours> updatedAvailableHours =
                 editPersonDescriptor.getAvailableHours().orElse(personToEdit.getAvailableHours());
 
+        final Set<Tag> updatedTags;
+        final Set<Major> updatedMajors;
+        final Set<Group> updatedGroups;
+        final Set<Position> updatedPositions;
+
         if (editPersonDescriptor.isAppendFlag()) {
-            Set<Tag> updatedTags = new HashSet<>(personToEdit.getTags());
+            updatedTags = new HashSet<>(personToEdit.getTags());
             editPersonDescriptor.getTags().ifPresent(updatedTags::addAll);
 
-            Set<Major> updatedMajors = new HashSet<>(personToEdit.getMajors());
+            updatedMajors = new HashSet<>(personToEdit.getMajors());
             editPersonDescriptor.getMajors().ifPresent(updatedMajors::addAll);
 
-            Set<Group> updatedGroups = new HashSet<>(personToEdit.getGroups());
+            updatedGroups = new HashSet<>(personToEdit.getGroups());
             editPersonDescriptor.getGroups().ifPresent(updatedGroups::addAll);
 
-            Set<Position> updatedPositions = new HashSet<>(personToEdit.getPositions());
+            updatedPositions = new HashSet<>(personToEdit.getPositions());
             editPersonDescriptor.getPositions().ifPresent(updatedPositions::addAll);
-
-            return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
-                    updatedMajors, updatedGroups, updatedAvailableHours);
         } else {
-            Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
-            Set<Major> updatedMajors = editPersonDescriptor.getMajors().orElse(personToEdit.getMajors());
-            Set<Group> updatedGroups = editPersonDescriptor.getGroups().orElse(personToEdit.getGroups());
-            Set<Position> updatedPositions = editPersonDescriptor.getPositions().orElse(personToEdit.getPositions());
-
-            return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
-                    updatedMajors, updatedGroups, updatedAvailableHours);
+            updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
+            updatedMajors = editPersonDescriptor.getMajors().orElse(personToEdit.getMajors());
+            updatedGroups = editPersonDescriptor.getGroups().orElse(personToEdit.getGroups());
+            updatedPositions = editPersonDescriptor.getPositions().orElse(personToEdit.getPositions());
         }
+
+        return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
+                updatedMajors, updatedGroups, updatedAvailableHours);
     }
 
     @Override

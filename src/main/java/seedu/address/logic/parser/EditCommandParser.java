@@ -23,11 +23,6 @@ import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.EditFlag;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.AvailableHours;
-import seedu.address.model.person.Group;
-import seedu.address.model.person.Major;
-import seedu.address.model.person.Position;
-import seedu.address.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a new EditCommand object
@@ -82,11 +77,15 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (argMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
             editPersonDescriptor.setAddress(ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get()));
         }
-        parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
-        parsePositionsForEdit(argMultimap.getAllValues(PREFIX_POSITION)).ifPresent(editPersonDescriptor::setPositions);
-        parseMajorsForEdit(argMultimap.getAllValues(PREFIX_MAJOR)).ifPresent(editPersonDescriptor::setMajors);
-        parseGroupsForEdit(argMultimap.getAllValues(PREFIX_GROUP)).ifPresent(editPersonDescriptor::setGroups);
-        parseAvailableHoursForEdit(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS))
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_TAG), ParserUtil::parseTags)
+                .ifPresent(editPersonDescriptor::setTags);
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_POSITION), ParserUtil::parsePositions)
+                .ifPresent(editPersonDescriptor::setPositions);
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_MAJOR), ParserUtil::parseMajors)
+                .ifPresent(editPersonDescriptor::setMajors);
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
+                .ifPresent(editPersonDescriptor::setGroups);
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS), ParserUtil::parseAvailableHours)
                 .ifPresent(editPersonDescriptor::setAvailableHours);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
@@ -108,83 +107,35 @@ public class EditCommandParser implements Parser<EditCommand> {
     }
 
     /**
-     * Parses {@code Collection<String> tags} into a {@code Set<Tag>} if {@code tags} is non-empty.
-     * If {@code tags} contain only one element which is an empty string, it will be parsed into a
-     * {@code Set<Tag>} containing zero tags.
+     * A functional interface for a parser that converts a {@code Collection<String>} into a {@code Set<T>},
+     * allowing checked {@link ParseException} to be thrown.
+     *
+     * @param <T> the type of elements in the resulting set
      */
-    private Optional<Set<Tag>> parseTagsForEdit(Collection<String> tags) throws ParseException {
-        assert tags != null;
-
-        if (tags.isEmpty()) {
-            return Optional.empty();
-        }
-        Collection<String> tagSet = tags.size() == 1 && tags.contains("") ? Collections.emptySet() : tags;
-        return Optional.of(ParserUtil.parseTags(tagSet));
+    @FunctionalInterface
+    private interface PrefixParser<T> {
+        Set<T> parse(Collection<String> values) throws ParseException;
     }
 
     /**
-     * Parses {@code Collection<String> positions} into a {@code Set<Position>} if {@code positions} is non-empty.
-     * If {@code positions} contain only one element which is an empty string, it will be parsed into a
-     * {@code Set<Position>} containing zero positions.
+     * Parses {@code Collection<String> values} into a {@code Set<T>} if {@code values} is non-empty,
+     * using the provided {@code parser} function.
+     *
+     * @param <T>    the type of elements in the resulting set
+     * @param values the raw string values from the argument multimap; must not be null
+     * @param parser a function that converts a collection of strings into a {@code Set<T>}
+     * @return an {@code Optional} containing the parsed set, or {@code Optional.empty()} if {@code values} is empty
+     * @throws ParseException if any value in {@code values} fails to parse
      */
-    private Optional<Set<Position>> parsePositionsForEdit(Collection<String> positions) throws ParseException {
-        assert positions != null;
+    private <T> Optional<Set<T>> parsePrefixForEdit(
+            Collection<String> values, PrefixParser<T> parser) throws ParseException {
+        assert values != null;
 
-        if (positions.isEmpty()) {
+        if (values.isEmpty()) {
             return Optional.empty();
         }
-        Collection<String> positionSet = positions.size() == 1 && positions.contains("")
-                ? Collections.emptySet() : positions;
-        return Optional.of(ParserUtil.parsePositions(positionSet));
-    }
-
-    /**
-     * Parses {@code Collection<String> majors} into a {@code Set<Major>} if {@code majors} is non-empty.
-     * If {@code majors} contain only one element which is an empty string, it will be parsed into a
-     * {@code Set<Major>} containing zero majors.
-     */
-    private Optional<Set<Major>> parseMajorsForEdit(Collection<String> majors) throws ParseException {
-        assert majors != null;
-
-        if (majors.isEmpty()) {
-            return Optional.empty();
-        }
-        Collection<String> majorSet = majors.size() == 1 && majors.contains("")
-                ? Collections.emptySet() : majors;
-        return Optional.of(ParserUtil.parseMajors(majorSet));
-    }
-
-    /**
-     * Parses {@code Collection<String> groups} into a {@code Set<Group>} if {@code groups} is non-empty.
-     * If {@code groups} contain only one element which is an empty string, it will be parsed into a
-     * {@code Set<Group>} containing zero groups.
-     */
-    private Optional<Set<Group>> parseGroupsForEdit(Collection<String> groups) throws ParseException {
-        assert groups != null;
-
-        if (groups.isEmpty()) {
-            return Optional.empty();
-        }
-        Collection<String> groupSet = groups.size() == 1 && groups.contains("")
-                ? Collections.emptySet() : groups;
-        return Optional.of(ParserUtil.parseGroups(groupSet));
-    }
-
-    /**
-     * Parses {@code Collection<String> availableHours} into a {@code Set<AvailableHour>} if
-     * {@code availableHours} is non-empty.
-     * If {@code availableHours} contain only one element which is an empty string, it will be parsed into a
-     * {@code Set<AvailableHour>} containing zero available hours.
-     */
-    private Optional<Set<AvailableHours>> parseAvailableHoursForEdit(Collection<String> availableHours)
-            throws ParseException {
-        assert availableHours != null;
-
-        if (availableHours.isEmpty()) {
-            return Optional.empty();
-        }
-        Collection<String> availableHourSet = availableHours.size() == 1 && availableHours.contains("")
-                ? Collections.emptySet() : availableHours;
-        return Optional.of(ParserUtil.parseAvailableHours(availableHourSet));
+        Collection<String> formatted = values.size() == 1 && values.contains("")
+                ? Collections.emptySet() : values;
+        return Optional.of(parser.parse(formatted));
     }
 }
