@@ -2,7 +2,6 @@ package seedu.address.model.person;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.StringUtil;
@@ -19,14 +18,17 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     private final List<String> emailKeywords;
     private final List<String> tagKeywords;
     private final List<String> positionKeywords;
-    private final Optional<String> groupKeyword;
+    private final List<String> groupKeywords;
+    private final List<String> availableHoursKeywords;
 
     /**
-     * Creates a predicate that matches on name, address, phone, major, email, tag, position, or group keywords.
+     * Creates a predicate that matches on name, address, phone, major, email, tag, position, group or available
+     * hours keywords.
      */
     public PersonMatchesKeywordsPredicate(List<String> nameKeywords, List<String> addressKeywords,
             List<String> phoneKeywords, List<String> majorKeywords, List<String> emailKeywords,
-            List<String> tagKeywords, List<String> positionKeywords, Optional<String> groupKeyword) {
+            List<String> tagKeywords, List<String> positionKeywords, List<String> groupKeywords,
+            List<String> availableHoursKeywords) {
         this.nameKeywords = nameKeywords;
         this.addressKeywords = addressKeywords;
         this.phoneKeywords = phoneKeywords;
@@ -34,7 +36,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         this.emailKeywords = emailKeywords;
         this.tagKeywords = tagKeywords;
         this.positionKeywords = positionKeywords;
-        this.groupKeyword = groupKeyword;
+        this.groupKeywords = groupKeywords;
+        this.availableHoursKeywords = availableHoursKeywords;
     }
 
     /**
@@ -49,7 +52,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 || matchesEmail(person)
                 || matchesTags(person)
                 || matchesPositions(person)
-                || matchesGroup(person);
+                || matchesGroups(person)
+                || matchesAvailableHours(person);
     }
 
     /**
@@ -119,12 +123,28 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     /**
-     * Returns true if the group keyword matches any group with prefix matching.
+     * Returns true if any group keyword matches the person's groups.
      */
-    private boolean matchesGroup(Person person) {
-        return groupKeyword
-                .map(keyword -> hasGroupWithPrefixIgnoreCase(person, keyword))
-                .orElse(false);
+    private boolean matchesGroups(Person person) {
+        return !groupKeywords.isEmpty()
+                && person.getGroups().stream()
+                .anyMatch(group -> groupKeywords.stream()
+                        .anyMatch(keyword -> containsIgnoreCase(group.value, keyword)));
+    }
+
+    /**
+     * Returns true if any time/slot keyword matches the person's available hours.
+     */
+    private boolean matchesAvailableHours(Person person) {
+        if (availableHoursKeywords.isEmpty() || person.getAvailableHours().isEmpty()) {
+            return false;
+        }
+
+        return person.getAvailableHours().stream()
+                .anyMatch(duration -> availableHoursKeywords.stream()
+                        .anyMatch(keyword -> AvailableHours.isValidAvailableHours(keyword)
+                                ? AvailableHours.isSlotWithinDuration(new AvailableHours(keyword), duration)
+                                : AvailableHours.isTimeWithinDuration(AvailableHours.stringToTime(keyword), duration)));
     }
 
     /**
@@ -132,15 +152,6 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean containsIgnoreCase(String sentence, String keyword) {
         return sentence.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
-    }
-
-    /**
-     * Returns true if the person has at least one group value that starts with the keyword (case-insensitive).
-     */
-    private boolean hasGroupWithPrefixIgnoreCase(Person person, String keyword) {
-        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        return person.getGroups().stream()
-                .anyMatch(group -> group.value.toLowerCase(Locale.ROOT).startsWith(normalizedKeyword));
     }
 
     /**
@@ -164,7 +175,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && emailKeywords.equals(otherPredicate.emailKeywords)
                 && tagKeywords.equals(otherPredicate.tagKeywords)
                 && positionKeywords.equals(otherPredicate.positionKeywords)
-                && groupKeyword.equals(otherPredicate.groupKeyword);
+                && groupKeywords.equals(otherPredicate.groupKeywords)
+                && availableHoursKeywords.equals(otherPredicate.availableHoursKeywords);
     }
 
     /**
@@ -180,7 +192,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 .add("emailKeywords", emailKeywords)
                 .add("tagKeywords", tagKeywords)
                 .add("positionKeywords", positionKeywords)
-                .add("groupKeyword", groupKeyword)
+                .add("groupKeywords", groupKeywords)
+                .add("availableHoursKeywords", availableHoursKeywords)
                 .toString();
     }
 }

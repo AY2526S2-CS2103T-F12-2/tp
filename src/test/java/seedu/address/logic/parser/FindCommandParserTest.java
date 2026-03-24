@@ -5,7 +5,7 @@ import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailur
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,12 +32,12 @@ public class FindCommandParserTest {
         // no leading and trailing whitespaces
         FindCommand expectedFindCommand =
                 new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList("Alice", "Bob"),
-                        Arrays.asList(), Arrays.asList(), Arrays.asList(), Arrays.asList(), Arrays.asList(),
-                        Arrays.asList(), Optional.empty()));
-        assertParseSuccess(parser, "Alice Bob", expectedFindCommand);
+                        List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of()));
+        assertParseSuccess(parser, " n/Alice n/Bob", expectedFindCommand);
 
         // multiple whitespaces between keywords
-        assertParseSuccess(parser, " \n Alice \n \t Bob  \t", expectedFindCommand);
+        assertParseSuccess(parser, " \n n/Alice \n \t n/Bob  \t", expectedFindCommand);
     }
 
     /**
@@ -46,8 +46,8 @@ public class FindCommandParserTest {
     @Test
     public void parse_groupOnly_returnsFindCommand() {
         FindCommand expectedFindCommand =
-                new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList(), Arrays.asList(), Arrays.asList(),
-                        Arrays.asList(), Arrays.asList(), Arrays.asList(), Arrays.asList(), Optional.of("CS2103T")));
+                new FindCommand(new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of("CS2103T"), List.of()));
         assertParseSuccess(parser, " g/CS2103T", expectedFindCommand);
     }
 
@@ -57,10 +57,9 @@ public class FindCommandParserTest {
     @Test
     public void parse_keywordAndGroup_returnsFindCommand() {
         FindCommand expectedFindCommand =
-                new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList("Alice"), Arrays.asList(),
-                        Arrays.asList(), Arrays.asList(), Arrays.asList(), Arrays.asList(), Arrays.asList(),
-                        Optional.of("CS2103T")));
-        assertParseSuccess(parser, "Alice g/CS2103T", expectedFindCommand);
+                new FindCommand(new PersonMatchesKeywordsPredicate(List.of("Alice"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of("CS2103T"), List.of()));
+        assertParseSuccess(parser, " n/Alice g/CS2103T", expectedFindCommand);
     }
 
     /**
@@ -69,9 +68,8 @@ public class FindCommandParserTest {
     @Test
     public void parse_addressAndPhone_returnsFindCommand() {
         FindCommand expectedFindCommand =
-                new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList(), Arrays.asList("Jurong"),
-                        Arrays.asList("94351253"), Arrays.asList(), Arrays.asList(), Arrays.asList(),
-                        Arrays.asList(), Optional.empty()));
+                new FindCommand(new PersonMatchesKeywordsPredicate(List.of(), List.of("Jurong"),
+                        List.of("94351253"), List.of(), List.of(), List.of(), List.of(), List.of(), List.of()));
         assertParseSuccess(parser, " a/Jurong p/94351253", expectedFindCommand);
     }
 
@@ -81,26 +79,20 @@ public class FindCommandParserTest {
     @Test
     public void parse_majorAndEmail_returnsFindCommand() {
         FindCommand expectedFindCommand =
-                new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList(), Arrays.asList(), Arrays.asList(),
-                        Arrays.asList("CS"), Arrays.asList("alice"), Arrays.asList(), Arrays.asList(),
-                        Optional.empty()));
+                new FindCommand(new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(),
+                        List.of("CS"), List.of("alice"), List.of(), List.of(), List.of(), List.of()));
         assertParseSuccess(parser, " m/CS e/alice", expectedFindCommand);
-    }
-
-    /**
-     * Ensures invalid group keywords fail parsing.
-     */
-    @Test
-    public void parse_invalidGroup_throwsParseException() {
-        assertParseFailure(parser, " g/CS2103T!", FindCommand.MESSAGE_INVALID_GROUP_KEYWORD);
     }
 
     /**
      * Ensures invalid name keywords fail parsing.
      */
     @Test
-    public void parse_invalidKeyword_throwsParseException() {
-        assertParseFailure(parser, "Al!ce", FindCommand.MESSAGE_INVALID_NAME_KEYWORD);
+    public void parse_nonAlphanumericKeyword_noExceptionThrown() {
+        FindCommand expectedFindCommand =
+                new FindCommand(new PersonMatchesKeywordsPredicate(List.of("Al!ce"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of()));
+        assertParseSuccess(parser, " n/Al!ce", expectedFindCommand);
     }
 
     /**
@@ -108,7 +100,7 @@ public class FindCommandParserTest {
      */
     @Test
     public void parse_invalidAddressKeyword_throwsParseException() {
-        assertParseFailure(parser, " a/", FindCommand.MESSAGE_INVALID_NAME_KEYWORD);
+        assertParseFailure(parser, " a/", FindCommand.MESSAGE_INVALID_KEYWORD);
     }
 
     /**
@@ -119,15 +111,8 @@ public class FindCommandParserTest {
         FindCommand expectedFindCommand =
                 new FindCommand(new PersonMatchesKeywordsPredicate(Arrays.asList(), Arrays.asList(), Arrays.asList(),
                         Arrays.asList(), Arrays.asList(), Arrays.asList("friends"), Arrays.asList("Teaching Assistant"),
-                        Optional.empty()));
+                        List.of(), List.of()));
         assertParseSuccess(parser, " t/friends po/Teaching Assistant", expectedFindCommand);
     }
 
-    /**
-     * Ensures invalid tag keywords fail parsing.
-     */
-    @Test
-    public void parse_invalidTagKeyword_throwsParseException() {
-        assertParseFailure(parser, " t/friends!", FindCommand.MESSAGE_INVALID_NAME_KEYWORD);
-    }
 }

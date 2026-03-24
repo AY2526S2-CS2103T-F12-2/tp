@@ -43,7 +43,7 @@ public class AddCommand extends Command {
             + PREFIX_MAJOR + "Math "
             + PREFIX_AVAILABLE_HOURS + "1200-1400 "
             + PREFIX_GROUP + "prof "
-            + PREFIX_POSITION + "A/P "
+            + PREFIX_POSITION + "AP "
             + PREFIX_TAG + "niceGuy "
             + PREFIX_TAG + "owesMoney";
 

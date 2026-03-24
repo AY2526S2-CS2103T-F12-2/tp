@@ -22,8 +22,7 @@ public class FindCommand extends Command {
             + "Example: " + COMMAND_WORD + " alice bob charlie\n"
             + "Example: " + COMMAND_WORD + " a/Jurong p/94351253\n"
             + "Example: " + COMMAND_WORD + " g/CS2103T";
-    public static final String MESSAGE_INVALID_GROUP_KEYWORD = "Group search term must be alphanumeric.";
-    public static final String MESSAGE_INVALID_NAME_KEYWORD = "Keywords should be alphanumeric.";
+    public static final String MESSAGE_INVALID_KEYWORD = "Keywords should be nonempty.";
 
     private final PersonMatchesKeywordsPredicate predicate;
 
