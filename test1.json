@@ -1,0 +1,63 @@
+{
+  "persons" : [ {
+    "name" : "Alex Yeoh",
+    "phone" : "87438807",
+    "email" : "alexyeoh@example.com",
+    "address" : "Blk 30 Geylang Street 30, #06-40",
+    "tags" : [ "friends" ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "availableHours" : [ ]
+  }, {
+    "name" : "Bernice Yu",
+    "phone" : "12345678",
+    "email" : "berniceyu@example.com",
+    "address" : "Blk 30 Lorong 3 Serangoon Gardens, #07-18",
+    "tags" : [ "colleagues", "friends" ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "availableHours" : [ ]
+  }, {
+    "name" : "Charlotte Oliveiro",
+    "phone" : "93210283",
+    "email" : "charlotte@example.com",
+    "address" : "Blk 11 Ang Mo Kio Street 74, #11-04",
+    "tags" : [ "neighbours" ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "availableHours" : [ ]
+  }, {
+    "name" : "David Li",
+    "phone" : "91031282",
+    "email" : "lidavid@example.com",
+    "address" : "Blk 436 Serangoon Gardens Street 26, #16-43",
+    "tags" : [ "family" ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "availableHours" : [ ]
+  }, {
+    "name" : "Irfan Ibrahim",
+    "phone" : "92492021",
+    "email" : "irfan@example.com",
+    "address" : "Blk 47 Tampines Street 20, #17-35",
+    "tags" : [ "classmates" ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "availableHours" : [ ]
+  }, {
+    "name" : "John Doe",
+    "phone" : "98765432",
+    "email" : "johnd@example.com",
+    "address" : "311 Clementi Ave",
+    "tags" : [ "friend" ],
+    "positions" : [ "President" ],
+    "majors" : [ "CS" ],
+    "groups" : [ "CS2103T" ],
+    "availableHours" : [ "0900-1700" ]
+  } ]
+}

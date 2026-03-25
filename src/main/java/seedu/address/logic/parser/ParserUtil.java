@@ -2,6 +2,9 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +28,8 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
+
+    public static final String MESSAGE_INVALID_FILE_PATH = "File path is invalid.";
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -232,5 +237,24 @@ public class ParserUtil {
             availableHourSet.add(parseAvailableHours(availableHourName));
         }
         return availableHourSet;
+    }
+
+    /**
+     * Parses a {@code String filePath} into a {@code Path}.
+     * Leading and trailing whitespaces will be trimmed.
+     *
+     * @throws ParseException if the path string is blank or not a valid path.
+     */
+    public static Path parseFilePath(String filePath) throws ParseException {
+        requireNonNull(filePath);
+        String trimmed = filePath.trim();
+        if (trimmed.isEmpty()) {
+            throw new ParseException(MESSAGE_INVALID_FILE_PATH);
+        }
+        try {
+            return Paths.get(trimmed).normalize();
+        } catch (InvalidPathException e) {
+            throw new ParseException(MESSAGE_INVALID_FILE_PATH);
+        }
     }
 }

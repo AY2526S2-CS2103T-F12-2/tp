@@ -10,6 +10,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.CommandWithStorage;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -47,15 +48,24 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         CommandResult commandResult;
+        boolean shouldAutoSave = true;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        if (command instanceof CommandWithStorage) {
+            CommandWithStorage commandWithStorage = (CommandWithStorage) command;
+            commandResult = commandWithStorage.execute(model, storage);
+            shouldAutoSave = commandWithStorage.shouldAutoSaveAddressBook();
+        } else {
+            commandResult = command.execute(model);
+        }
 
-        try {
-            storage.saveAddressBook(model.getAddressBook());
-        } catch (AccessDeniedException e) {
-            throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
-        } catch (IOException ioe) {
-            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
+        if (shouldAutoSave) {
+            try {
+                storage.saveAddressBook(model.getAddressBook());
+            } catch (AccessDeniedException e) {
+                throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
+            } catch (IOException ioe) {
+                throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
+            }
         }
 
         return commandResult;
