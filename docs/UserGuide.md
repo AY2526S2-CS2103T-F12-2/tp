@@ -151,6 +151,31 @@ Clears all entries from the address book.
 
 Format: `clear`
 
+### Setting a password : `setpassword`
+
+Sets a password to protect the address book. You will be prompted to enter this password every time you start CampusLink.
+
+Format: `setpassword pw/PASSWORD`
+
+* `PASSWORD` must not be empty or consist solely of spaces.
+* If a password is already set, this command replaces it with the new password.
+* The password is stored as a SHA-256 hash — your plaintext password is never saved.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+After setting a password, if you enter the wrong password 3 times on startup, **all contacts will be permanently erased** and password protection will be removed. There is no way to recover this data.
+</div>
+
+Examples:
+* `setpassword pw/mySecret123`
+
+### Removing password protection : `removepassword`
+
+Removes the password from the address book. The app will no longer prompt for a password on startup.
+
+Format: `removepassword`
+
+* If no password is currently set, a message is shown and no changes are made.
+
 ### Exiting the program : `exit`
 
 Exits the program.
@@ -183,6 +208,7 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
 2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+3. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -197,3 +223,5 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Help** | `help`
+**Set Password** | `setpassword pw/PASSWORD`<br> e.g., `setpassword pw/mySecret123`
+**Remove Password** | `removepassword`
