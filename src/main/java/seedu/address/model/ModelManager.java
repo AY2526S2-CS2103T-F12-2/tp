@@ -75,6 +75,16 @@ public class ModelManager implements Model {
         userPrefs.setAddressBookFilePath(addressBookFilePath);
     }
 
+    @Override
+    public String getPasswordHash() {
+        return userPrefs.getPasswordHash();
+    }
+
+    @Override
+    public void setPasswordHash(String passwordHash) {
+        userPrefs.setPasswordHash(passwordHash);
+    }
+
     //=========== AddressBook ================================================================================
 
     @Override
