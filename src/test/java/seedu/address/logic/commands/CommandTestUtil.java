@@ -114,9 +114,9 @@ public class CommandTestUtil {
     }
 
     /**
-     * Executes the given {@link CommandWithStorage}, confirms success message and model state.
+     * Executes the given {@link StorageCommand}, confirms success message and model state.
      */
-    public static void assertStorageCommandSuccess(CommandWithStorage command, Model actualModel, Storage storage,
+    public static void assertStorageCommandSuccess(StorageCommand command, Model actualModel, Storage storage,
             String expectedMessage, Model expectedModel) {
         try {
             CommandResult result = command.execute(actualModel, storage);
@@ -128,9 +128,9 @@ public class CommandTestUtil {
     }
 
     /**
-     * Executes the given {@link CommandWithStorage}, confirms {@link CommandException} and unchanged address book.
+     * Executes the given {@link StorageCommand}, confirms {@link CommandException} and unchanged address book.
      */
-    public static void assertStorageCommandFailure(CommandWithStorage command, Model actualModel, Storage storage,
+    public static void assertStorageCommandFailure(StorageCommand command, Model actualModel, Storage storage,
             String expectedMessage) {
         AddressBook expectedAddressBook = new AddressBook(actualModel.getAddressBook());
         List<Person> expectedFilteredList = new ArrayList<>(actualModel.getFilteredPersonList());

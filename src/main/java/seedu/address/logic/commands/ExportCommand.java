@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -14,7 +15,7 @@ import seedu.address.storage.Storage;
 /**
  * Exports all persons in the address book to a JSON file.
  */
-public class ExportCommand extends CommandWithStorage {
+public class ExportCommand extends StorageCommand {
 
     public static final String COMMAND_WORD = "export";
 
@@ -25,6 +26,8 @@ public class ExportCommand extends CommandWithStorage {
     public static final String MESSAGE_SUCCESS = "Exported %1$d contact(s) to: %2$s";
 
     public static final String MESSAGE_EXPORT_IO_ERROR = "Could not write to file: %1$s";
+    public static final String MESSAGE_EXPORT_PATH_NOT_WRITABLE =
+            "Export path is not writable or parent directory does not exist: %1$s";
 
     private final Path targetFilePath;
 
@@ -41,6 +44,7 @@ public class ExportCommand extends CommandWithStorage {
         requireNonNull(model);
         requireNonNull(storage);
 
+        validateFileIsWritable();
         int count = model.getAddressBook().getPersonList().size();
         try {
             storage.saveAddressBook(model.getAddressBook(), targetFilePath);
@@ -48,6 +52,28 @@ public class ExportCommand extends CommandWithStorage {
             throw new CommandException(String.format(MESSAGE_EXPORT_IO_ERROR, e.getMessage()), e);
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, count, targetFilePath.toString()));
+    }
+
+    /**
+     * Validates that the target path can be written to.
+     *
+     * @throws CommandException if the parent directory does not exist or the path is not writable.
+     */
+    private void validateFileIsWritable() throws CommandException {
+        try {
+            Path parent = targetFilePath.toAbsolutePath().getParent();
+            if (parent == null || !Files.isDirectory(parent)) {
+                throw new CommandException(
+                        String.format(MESSAGE_EXPORT_PATH_NOT_WRITABLE, targetFilePath));
+            }
+            if (Files.exists(targetFilePath) && !Files.isWritable(targetFilePath)) {
+                throw new CommandException(
+                        String.format(MESSAGE_EXPORT_PATH_NOT_WRITABLE, targetFilePath));
+            }
+        } catch (SecurityException se) {
+            throw new CommandException(
+                    String.format(MESSAGE_EXPORT_PATH_NOT_WRITABLE, targetFilePath), se);
+        }
     }
 
     @Override

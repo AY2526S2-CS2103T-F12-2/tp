@@ -19,7 +19,7 @@ import seedu.address.storage.Storage;
  * Imports persons from a JSON file into the current address book without removing existing contacts.
  * Persons with the same name as an existing contact are skipped.
  */
-public class ImportCommand extends CommandWithStorage {
+public class ImportCommand extends StorageCommand {
 
     public static final String COMMAND_WORD = "import";
 

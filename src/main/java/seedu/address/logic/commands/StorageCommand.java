@@ -9,7 +9,7 @@ import seedu.address.storage.Storage;
  * These commands must be executed via {@link seedu.address.logic.LogicManager},
  * which calls {@link #execute(Model, Storage)} instead of {@link #execute(Model)}.
  */
-public abstract class CommandWithStorage extends Command {
+public abstract class StorageCommand extends Command {
 
     @Override
     public final CommandResult execute(Model model) throws CommandException {

@@ -247,19 +247,19 @@ The import/export feature allows users to save all contacts to a JSON file (`exp
 
 #### Design
 
-Both `ExportCommand` and `ImportCommand` need access to the `Storage` component to read/write JSON files, but the standard `Command#execute(Model)` signature only provides a `Model`. To solve this without breaking the existing architecture, we introduce a `CommandWithStorage` abstract class:
+Both `ExportCommand` and `ImportCommand` need access to the `Storage` component to read/write JSON files, but the standard `Command#execute(Model)` signature only provides a `Model`. To solve this without breaking the existing architecture, we introduce a `StorageCommand` abstract class:
 
-* `CommandWithStorage` extends `Command` and declares an abstract `execute(Model, Storage)` method.
+* `StorageCommand` extends `Command` and declares an abstract `execute(Model, Storage)` method.
 * It overrides `execute(Model)` to throw a `CommandException`, preventing accidental invocation through the wrong dispatch path.
 * It provides a `shouldAutoSaveAddressBook()` hook (default `true`) that `LogicManager` checks after execution. `ExportCommand` overrides this to return `false` because exporting does not mutate the model and should not trigger a redundant save of the main data file.
 
-`LogicManager#execute(String)` is updated to detect `CommandWithStorage` instances and call the two-argument `execute(Model, Storage)` instead of the standard `execute(Model)`.
+`LogicManager#execute(String)` is updated to detect `StorageCommand` instances and call the two-argument `execute(Model, Storage)` instead of the standard `execute(Model)`.
 
 #### Import flow
 
 1. `AddressBookParser` recognises the `import` keyword and delegates to `ImportCommandParser`.
 2. `ImportCommandParser` extracts the `fp/` prefix and creates an `ImportCommand` with the parsed `Path`.
-3. `LogicManager` detects `ImportCommand` is a `CommandWithStorage` and calls `execute(model, storage)`.
+3. `LogicManager` detects `ImportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
 4. `ImportCommand.execute` proceeds in three steps (following the Single Level of Abstraction Principle):
    * **`validateFileIsReadable()`** — checks the file exists, is a regular file, and is readable.
    * **`loadAddressBook(storage)`** — delegates to `storage.readAddressBook(path)` to deserialize the JSON.
@@ -270,7 +270,7 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 
 1. `AddressBookParser` recognises the `export` keyword and delegates to `ExportCommandParser`.
 2. `ExportCommandParser` extracts the `fp/` prefix and creates an `ExportCommand` with the parsed `Path`.
-3. `LogicManager` detects `ExportCommand` is a `CommandWithStorage` and calls `execute(model, storage)`.
+3. `LogicManager` detects `ExportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
 4. `ExportCommand.execute` calls `storage.saveAddressBook(model.getAddressBook(), targetFilePath)`.
 5. Because `shouldAutoSaveAddressBook()` returns `false`, `LogicManager` skips the default auto-save.
 
@@ -278,7 +278,7 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 
 **Aspect: How commands access Storage**
 
-* **Alternative 1 (current choice):** Introduce `CommandWithStorage` abstract class with `LogicManager` dispatch.
+* **Alternative 1 (current choice):** Introduce `StorageCommand` abstract class with `LogicManager` dispatch.
   * Pros: Minimal changes to existing code; only commands that genuinely need `Storage` extend it.
   * Cons: Adds a second dispatch path in `LogicManager`.
 

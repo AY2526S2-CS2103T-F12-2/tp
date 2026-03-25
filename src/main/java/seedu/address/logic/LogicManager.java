@@ -10,7 +10,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
-import seedu.address.logic.commands.CommandWithStorage;
+import seedu.address.logic.commands.StorageCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -50,10 +50,10 @@ public class LogicManager implements Logic {
         CommandResult commandResult;
         boolean shouldAutoSave = true;
         Command command = addressBookParser.parseCommand(commandText);
-        if (command instanceof CommandWithStorage) {
-            CommandWithStorage commandWithStorage = (CommandWithStorage) command;
-            commandResult = commandWithStorage.execute(model, storage);
-            shouldAutoSave = commandWithStorage.shouldAutoSaveAddressBook();
+        if (command instanceof StorageCommand) {
+            StorageCommand storageCommand = (StorageCommand) command;
+            commandResult = storageCommand.execute(model, storage);
+            shouldAutoSave = storageCommand.shouldAutoSaveAddressBook();
         } else {
             commandResult = command.execute(model);
         }
