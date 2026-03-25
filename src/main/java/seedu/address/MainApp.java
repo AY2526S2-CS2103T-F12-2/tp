@@ -204,7 +204,8 @@ public class MainApp extends Application {
             Optional<String> result = showPasswordDialog(attempt);
 
             if (result.isEmpty()) {
-                logger.info("Password dialog cancelled on attempt " + attempt);
+                logger.info("Password dialog cancelled. Exiting application.");
+                Platform.exit();
                 return false;
             }
 
@@ -215,6 +216,7 @@ public class MainApp extends Application {
 
             logger.info("Wrong password attempt " + attempt + " of " + MAX_PASSWORD_ATTEMPTS);
         }
+        // Only reaches here after exactly MAX_PASSWORD_ATTEMPTS wrong entries
         return false;
     }
 
