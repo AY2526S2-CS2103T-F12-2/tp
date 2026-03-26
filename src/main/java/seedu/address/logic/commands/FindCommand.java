@@ -9,7 +9,7 @@ import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
  * Finds and lists all persons in address book whose fields contain any of the argument keywords.
- * Keyword matching is case insensitive and group matching supports prefix matches.
+ * Keyword matching is case insensitive and available hours match if time slot fits.
  */
 public class FindCommand extends Command {
 
@@ -17,13 +17,16 @@ public class FindCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all persons whose names contain any of "
             + "the specified keywords (case-insensitive), or whose groups match the provided group keyword.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
+            + "Flags: -c to show the following fields are compulsory, -o to show following fields are optional, "
+            + "by default all fields are optional (and contacts found should match at least 1 field).\n"
+            + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
             + "[t/TAG]... [po/POSITION]... [g/GROUP]\n"
-            + "Example: " + COMMAND_WORD + " alice bob charlie\n"
-            + "Example: " + COMMAND_WORD + " a/Jurong p/94351253\n"
-            + "Example: " + COMMAND_WORD + " g/CS2103T";
-    public static final String MESSAGE_INVALID_GROUP_KEYWORD = "Group search term must be alphanumeric.";
-    public static final String MESSAGE_INVALID_NAME_KEYWORD = "Keywords should be alphanumeric.";
+            + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
+            + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
+            + "Example: " + COMMAND_WORD + " g/CS2103T\n"
+            + "Note that [ -c/o ] pattern will be recognized to flags first, even if it is intended to be used"
+            + " as a search field.";
+    public static final String MESSAGE_INVALID_KEYWORD = "Keywords should be nonempty.";
 
     private final PersonMatchesKeywordsPredicate predicate;
 

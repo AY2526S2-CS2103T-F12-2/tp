@@ -19,13 +19,31 @@ public class CommandResult {
     /** The application should exit. */
     private final boolean exit;
 
+    /** The color mode should be toggled. */
+    private final boolean toggleColorMode;
+
+    /** A picture picker should be shown for the given index. */
+    private final boolean showPicPicker;
+    private final int picPickerIndex;
+
     /**
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
+        this(feedbackToUser, showHelp, exit, false, false, -1);
+    }
+
+    /**
+     * Constructs a {@code CommandResult} with all fields.
+     */
+    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit,
+                         boolean toggleColorMode, boolean showPicPicker, int picPickerIndex) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
+        this.toggleColorMode = toggleColorMode;
+        this.showPicPicker = showPicPicker;
+        this.picPickerIndex = picPickerIndex;
     }
 
     /**
@@ -33,7 +51,7 @@ public class CommandResult {
      * and other fields set to their default value.
      */
     public CommandResult(String feedbackToUser) {
-        this(feedbackToUser, false, false);
+        this(feedbackToUser, false, false, false, false, -1);
     }
 
     public String getFeedbackToUser() {
@@ -46,6 +64,18 @@ public class CommandResult {
 
     public boolean isExit() {
         return exit;
+    }
+
+    public boolean isToggleColorMode() {
+        return toggleColorMode;
+    }
+
+    public boolean isShowPicPicker() {
+        return showPicPicker;
+    }
+
+    public int getPicPickerIndex() {
+        return picPickerIndex;
     }
 
     @Override
@@ -62,12 +92,15 @@ public class CommandResult {
         CommandResult otherCommandResult = (CommandResult) other;
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
-                && exit == otherCommandResult.exit;
+                && exit == otherCommandResult.exit
+                && toggleColorMode == otherCommandResult.toggleColorMode
+                && showPicPicker == otherCommandResult.showPicPicker
+                && picPickerIndex == otherCommandResult.picPickerIndex;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit);
+        return Objects.hash(feedbackToUser, showHelp, exit, toggleColorMode, showPicPicker, picPickerIndex);
     }
 
     @Override
@@ -76,6 +109,9 @@ public class CommandResult {
                 .add("feedbackToUser", feedbackToUser)
                 .add("showHelp", showHelp)
                 .add("exit", exit)
+                .add("toggleColorMode", toggleColorMode)
+                .add("showPicPicker", showPicPicker)
+                .add("picPickerIndex", picPickerIndex)
                 .toString();
     }
 
