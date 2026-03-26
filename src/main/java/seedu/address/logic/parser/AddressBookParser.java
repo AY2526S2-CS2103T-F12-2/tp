@@ -86,7 +86,7 @@ public class AddressBookParser {
 
         case ImportCommand.COMMAND_WORD:
             return new ImportCommandParser().parse(arguments);
-            
+
         case PicCommand.COMMAND_WORD:
             return new PicCommandParser().parse(arguments);
 
