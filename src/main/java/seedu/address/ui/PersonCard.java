@@ -72,6 +72,8 @@ public class PersonCard extends UiPart<Region> {
     private Button uploadPicButton;
     @FXML
     private StackPane profilePicPane;
+    @FXML
+    private Label pinIcon;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
@@ -105,6 +107,7 @@ public class PersonCard extends UiPart<Region> {
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
         addGroupLabels(person);
         updateProfilePicture(person.getProfilePicturePath());
+        pinIcon.setVisible(person.isPinned());
     }
 
     private void updateProfilePicture(String picPath) {

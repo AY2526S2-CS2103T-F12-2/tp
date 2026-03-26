@@ -18,6 +18,8 @@
   </padding>
   <StackPane styleClass="avatar-circle" prefWidth="55" prefHeight="55" minWidth="55" minHeight="55" maxWidth="55" maxHeight="55">
     <Label fx:id="avatarInitial" styleClass="avatar-label"/>
+    <Label fx:id="pinIcon" text="📌" visible="false" StackPane.alignment="TOP_LEFT"
+           style="-fx-font-size: 14px; -fx-translate-x: -8; -fx-translate-y: -8;"/>
   </StackPane>
   <GridPane HBox.hgrow="ALWAYS">
     <columnConstraints>
