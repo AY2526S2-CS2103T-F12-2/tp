@@ -117,6 +117,7 @@ public class PinCommandTest {
                 person.getName(), person.getPhone(), person.getEmail(), person.getAddress(),
                 new HashSet<>(person.getTags()), new HashSet<>(person.getPositions()),
                 new HashSet<>(person.getMajors()), new HashSet<>(person.getGroups()),
-                new HashSet<>(person.getAvailableHours()), person.getProfilePicturePath(), true);
+                new HashSet<>(person.getAvailableHours()), person.getFollowUp(),
+                person.getProfilePicturePath(), true);
     }
 }

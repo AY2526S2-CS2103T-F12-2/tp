@@ -1,8 +1,10 @@
 package seedu.address.ui;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -21,6 +23,7 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.Person;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -141,6 +144,23 @@ public class MainWindow extends UiPart<Stage> {
 
         commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+
+        Platform.runLater(this::showFollowUpReminders);
+    }
+
+    /**
+     * Shows follow-up reminders in the result display on startup.
+     */
+    private void showFollowUpReminders() {
+        List<Person> followUps = logic.getPersonsWithFollowUp();
+        if (followUps.isEmpty()) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Follow-up reminders:\n");
+        for (Person p : followUps) {
+            sb.append("  - ").append(p.getName()).append(": ").append(p.getFollowUp()).append("\n");
+        }
+        resultDisplay.setFeedbackToUser(sb.toString().trim());
     }
 
     /**

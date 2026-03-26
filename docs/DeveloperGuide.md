@@ -273,29 +273,6 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 3. `LogicManager` detects `ExportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
 4. `ExportCommand.execute` calls `storage.saveAddressBook(model.getAddressBook(), targetFilePath)`.
 5. Because `shouldAutoSaveAddressBook()` returns `false`, `LogicManager` skips the default auto-save.
-
-#### Design considerations
-
-**Aspect: How commands access Storage**
-
-* **Alternative 1 (current choice):** Introduce `StorageCommand` abstract class with `LogicManager` dispatch.
-  * Pros: Minimal changes to existing code; only commands that genuinely need `Storage` extend it.
-  * Cons: Adds a second dispatch path in `LogicManager`.
-
-* **Alternative 2:** Pass `Storage` to every `Command#execute` call.
-  * Pros: Uniform signature.
-  * Cons: Violates the principle of least privilege — most commands do not need `Storage`. Requires changing every existing command.
-
-**Aspect: Import merge semantics**
-
-* **Alternative 1 (current choice):** Additive merge — existing contacts are kept; duplicates (same name) are skipped.
-  * Pros: Non-destructive; user never loses data.
-  * Cons: Cannot update stale contacts automatically.
-
-* **Alternative 2:** Full overwrite — replace the entire address book with the imported data.
-  * Pros: Simple to implement.
-  * Cons: Dangerous if the user has unsaved changes or the import file is incomplete.
-
 ### \[Proposed\] Data archiving
 
 _{Explain here how the data archiving feature will be implemented}_
@@ -336,6 +313,56 @@ Outcome matrix:
 | Cancel dialog | `Platform.exit()` — app closes, no data wiped |
 | 3 wrong entries | `eraseAllData()` — contacts cleared, hash set to null, both files saved |
 
+### Follow-up reminder feature
+
+#### Overview
+
+The follow-up reminder feature lets users attach a short note to a contact indicating what they need to do next. Every time the app opens, any contacts that have a non-empty follow-up note are listed in the result display automatically, so the user sees their outstanding reminders before typing any command.
+
+Two commands are provided:
+
+| Command | Syntax | Effect |
+|---|---|---|
+| `followup` | `followup INDEX f/NOTE` | Sets (or replaces) the follow-up note on the contact at `INDEX` |
+| `clearfollowup` | `clearfollowup INDEX` | Removes the follow-up note from the contact at `INDEX` |
+
+#### Implementation
+
+**Model layer**
+
+A `FollowUp` value class is added to `seedu.address.model.person`, following the same pattern as `Address` and `Email`:
+
+* `FollowUp#value` — the note text (empty string represents "no reminder").
+* `FollowUp.EMPTY` — shared sentinel for the no-reminder state, avoiding repeated `new FollowUp("")` calls.
+* `FollowUp#isValidFollowUp(String)` — accepts either empty (no reminder) or any string not starting with whitespace.
+* `Person` gains a `followUp` field in all three constructors (existing two-arg and five-arg constructors delegate to the new full constructor, defaulting to `FollowUp.EMPTY`).
+* `Person#equals`, `hashCode`, and `toString` are updated to include the `followUp` field.
+
+**Storage layer**
+
+`JsonAdaptedPerson` adds a `followUp` JSON property.
+In `JsonAdaptedPerson(Person source)` it is written from `source.getFollowUp().value`.
+In `toModelType()`, a null or missing `followUp` field defaults to `FollowUp.EMPTY` (backward-compatible with existing data files that predate this feature).
+
+**Logic layer — commands and parsers**
+
+`FollowUpCommandParser` tokenizes the input using `ArgumentTokenizer` with `PREFIX_FOLLOW_UP` (`f/`), validates that both the preamble (index) and the `f/` value are present, then constructs a `FollowUpCommand`.
+
+`FollowUpCommand#execute` looks up the person by index, rebuilds a `Person` with the new `FollowUp`, and calls `model.setPerson(original, edited)`. The address book is auto-saved by `LogicManager` as usual.
+
+`ClearFollowUpCommandParser` and `ClearFollowUpCommand` mirror the `DeleteCommandParser` / `DeleteCommand` pattern. `ClearFollowUpCommand#execute` rejects a clear attempt when the contact already has no follow-up, to give meaningful feedback to the user.
+
+Both command words are registered in `AddressBookParser` alongside the existing commands.
+
+**UI layer — startup reminder**
+
+At the end of `MainWindow#fillInnerParts()`, a `Platform.runLater` call is scheduled to invoke `showFollowUpReminders()` after the JavaFX scene has finished rendering. This method:
+
+1. Calls `logic.getPersonsWithFollowUp()`, which queries the **full** address book (not the filtered list) to ensure no reminders are missed when a filter is active.
+2. If the list is non-empty, formats it as `"Follow-up reminders:\n  - <name>: <note>\n  - ..."` and passes it to `resultDisplay.setFeedbackToUser(...)`.
+3. If the list is empty, does nothing (leaves the result display blank).
+
+Because this runs after `ui.start(primaryStage)` in `MainApp`, which is itself called only after a successful password unlock, reminders are never shown before authentication.
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, configuration, dev-ops**

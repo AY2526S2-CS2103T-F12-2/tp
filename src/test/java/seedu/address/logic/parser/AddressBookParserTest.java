@@ -18,18 +18,21 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.ClearFollowUpCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.FollowUpCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -134,6 +137,21 @@ public class AddressBookParserTest {
         ImportCommand command = (ImportCommand) parser.parseCommand(
                 ImportCommand.COMMAND_WORD + " " + PREFIX_FILE_PATH + p);
         assertEquals(new ImportCommand(p), command);
+    }
+
+    @Test
+    public void parseCommand_followUp() throws Exception {
+        FollowUpCommand command = (FollowUpCommand) parser.parseCommand(
+                FollowUpCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased()
+                + " " + CliSyntax.PREFIX_FOLLOW_UP + "Email about internship");
+        assertEquals(new FollowUpCommand(INDEX_FIRST_PERSON, new FollowUp("Email about internship")), command);
+    }
+
+    @Test
+    public void parseCommand_clearFollowUp() throws Exception {
+        ClearFollowUpCommand command = (ClearFollowUpCommand) parser.parseCommand(
+                ClearFollowUpCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
+        assertEquals(new ClearFollowUpCommand(INDEX_FIRST_PERSON), command);
     }
 
     @Test
