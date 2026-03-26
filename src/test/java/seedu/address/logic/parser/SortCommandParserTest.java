@@ -31,6 +31,10 @@ public class SortCommandParserTest {
         assertParseSuccess(parser, "FiRstName asc", new SortCommand(SortField.FIRSTNAME, true));
         assertParseSuccess(parser, "LASTNAME Desc", new SortCommand(SortField.LASTNAME, false));
 
+        // Alias parsing
+        assertParseSuccess(parser, "firstname a", new SortCommand(SortField.FIRSTNAME, true));
+        assertParseSuccess(parser, "lastname d", new SortCommand(SortField.LASTNAME, false));
+
         // extra spaces
         assertParseSuccess(parser, "  firstname   ASC  ", new SortCommand(SortField.FIRSTNAME, true));
     }

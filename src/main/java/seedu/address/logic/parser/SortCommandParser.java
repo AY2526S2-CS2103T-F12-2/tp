@@ -39,9 +39,11 @@ public class SortCommandParser implements Parser<SortCommand> {
         boolean isAscending;
         switch (orderStr) {
         case "ASC":
+        case "A":
             isAscending = true;
             break;
         case "DESC":
+        case "D":
             isAscending = false;
             break;
         default:

@@ -727,7 +727,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User enters `sort CONDITION ORDER` (e.g., `sort firstname ASC`)
+1. User enters `sort CONDITION ORDER` (e.g., `sort firstname ASC` or `sort firstname a`)
 2. AddressBook sorts the displayed list accordingly, keeping pinned contacts at the top
 3. AddressBook displays a success message
 

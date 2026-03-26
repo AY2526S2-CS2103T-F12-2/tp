@@ -20,7 +20,7 @@ public class SortCommand extends Command {
             + ": Sorts the person list by the specified field and order.\n"
             + "Parameters: CONDITION ORDER\n"
             + "CONDITION: firstname | lastname\n"
-            + "ORDER: ASC | DESC\n"
+            + "ORDER: ASC | DESC | a | d\n"
             + "Example: " + COMMAND_WORD + " firstname ASC";
 
     public static final String MESSAGE_SORT_SUCCESS = "Sorted by %1$s in %2$s order";
