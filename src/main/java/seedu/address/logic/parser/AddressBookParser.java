@@ -23,6 +23,7 @@ import seedu.address.logic.commands.PicCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
+import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ToggleColorModeCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -95,6 +96,9 @@ public class AddressBookParser {
 
         case PinCommand.COMMAND_WORD:
             return new PinCommandParser().parse(arguments);
+
+        case SortCommand.COMMAND_WORD:
+            return new SortCommandParser().parse(arguments);
 
         case SetPasswordCommand.COMMAND_WORD:
             return new SetPasswordCommandParser().parse(arguments);
