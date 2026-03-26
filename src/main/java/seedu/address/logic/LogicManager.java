@@ -5,6 +5,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
@@ -78,8 +79,8 @@ public class LogicManager implements Logic {
     }
 
     @Override
-    public ObservableList<Person> getFilteredPersonList() {
-        return model.getFilteredPersonList();
+    public ObservableList<Person> getDisplayedPersonList() {
+        return model.getDisplayedPersonList();
     }
 
     @Override
@@ -99,19 +100,27 @@ public class LogicManager implements Logic {
 
     @Override
     public void setPicture(Index index, String picturePath) throws CommandException {
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getDisplayedPersonList();
         if (index.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
         Person original = lastShownList.get(index.getZeroBased());
         Person updated = new Person(original.getName(), original.getPhone(), original.getEmail(),
                 original.getAddress(), original.getTags(), original.getPositions(),
-                original.getMajors(), original.getGroups(), original.getAvailableHours(), picturePath);
+                original.getMajors(), original.getGroups(), original.getAvailableHours(),
+                original.getFollowUp(), picturePath);
         model.setPerson(original, updated);
         try {
             storage.saveAddressBook(model.getAddressBook());
         } catch (IOException e) {
             throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
         }
+    }
+
+    @Override
+    public List<Person> getPersonsWithFollowUp() {
+        return model.getAddressBook().getPersonList().stream()
+                .filter(p -> !p.getFollowUp().isEmpty())
+                .collect(Collectors.toList());
     }
 }

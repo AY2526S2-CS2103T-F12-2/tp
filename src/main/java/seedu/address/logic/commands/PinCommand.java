@@ -41,7 +41,7 @@ public class PinCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getDisplayedPersonList();
 
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -72,7 +72,8 @@ public class PinCommand extends Command {
                 person.getName(), person.getPhone(), person.getEmail(), person.getAddress(),
                 new HashSet<>(person.getTags()), new HashSet<>(person.getPositions()),
                 new HashSet<>(person.getMajors()), new HashSet<>(person.getGroups()),
-                new HashSet<>(person.getAvailableHours()), person.getProfilePicturePath(), pinned);
+                new HashSet<>(person.getAvailableHours()), person.getFollowUp(),
+                person.getProfilePicturePath(), pinned);
     }
 
     @Override

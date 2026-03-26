@@ -35,34 +35,46 @@ public class Person {
     // Optional profile picture (file path), empty string if not set
     private String profilePicturePath;
 
-    // Whether this person is pinned to the top of the list
-    private boolean pinned;
+    private final FollowUp followUp;
 
+    // Whether this person is pinned to the top of the list
+    private final boolean pinned;
 
     /**
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours) {
-        this(name, phone, email, address, tags, positions, majors, groups, availableHours, "", false);
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY, "", false);
     }
 
     /**
-     * Constructor with optional profile picture path.
+     * Constructor with optional profile picture path (no follow-up).
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
                   String profilePicturePath) {
-        this(name, phone, email, address, tags, positions, majors, groups, availableHours, profilePicturePath, false);
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY,
+                profilePicturePath, false);
     }
 
     /**
-     * Constructor with optional profile picture path and pinned status.
+     * Constructor including follow-up note and profile picture path.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
+                  String profilePicturePath) {
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, followUp,
+                profilePicturePath, false);
+    }
+
+    /**
+     * Full constructor including follow-up note, profile picture path, and pinned status.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
                   String profilePicturePath, boolean pinned) {
-        requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours);
+        requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours, followUp);
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -72,6 +84,7 @@ public class Person {
         this.tags.addAll(tags);
         this.groups.addAll(groups);
         this.availableHours.addAll(availableHours);
+        this.followUp = followUp;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
         this.pinned = pinned;
     }
@@ -136,6 +149,10 @@ public class Person {
         return profilePicturePath;
     }
 
+    public FollowUp getFollowUp() {
+        return followUp;
+    }
+
     public boolean isPinned() {
         return pinned;
     }
@@ -196,13 +213,14 @@ public class Person {
                 && positions.equals(otherPerson.positions)
                 && majors.equals(otherPerson.majors)
                 && groups.equals(otherPerson.groups)
-                && availableHours.equals(otherPerson.availableHours);
+                && availableHours.equals(otherPerson.availableHours)
+                && followUp.equals(otherPerson.followUp);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours);
+        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours, followUp);
     }
 
     @Override
@@ -217,6 +235,7 @@ public class Person {
                 .add("majors", majors)
                 .add("groups", groups)
                 .add("available hours", availableHours)
+                .add("followUp", followUp)
                 .toString();
     }
 

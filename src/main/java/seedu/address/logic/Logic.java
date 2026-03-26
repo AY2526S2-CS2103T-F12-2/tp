@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
@@ -32,7 +33,7 @@ public interface Logic {
     ReadOnlyAddressBook getAddressBook();
 
     /** Returns an unmodifiable view of the filtered list of persons */
-    ObservableList<Person> getFilteredPersonList();
+    ObservableList<Person> getDisplayedPersonList();
 
     /**
      * Returns the user prefs' address book file path.
@@ -53,4 +54,9 @@ public interface Logic {
      * Sets the profile picture path for the person at the given index.
      */
     void setPicture(Index index, String picturePath) throws CommandException;
+
+    /**
+     * Returns all persons in the address book that have a non-empty follow-up note.
+     */
+    List<Person> getPersonsWithFollowUp();
 }

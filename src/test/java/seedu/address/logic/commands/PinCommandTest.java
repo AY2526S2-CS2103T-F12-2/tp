@@ -26,7 +26,7 @@ public class PinCommandTest {
 
     @Test
     public void execute_validIndexUnpinned_success() {
-        Person personToPin = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personToPin = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         PinCommand pinCommand = new PinCommand(INDEX_FIRST_PERSON);
 
         Person pinnedPerson = createPinnedPerson(personToPin);
@@ -42,7 +42,7 @@ public class PinCommandTest {
 
     @Test
     public void execute_validIndexPinned_success() {
-        Person personToPin = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personToPin = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         Person pinnedPerson = createPinnedPerson(personToPin);
         model.setPerson(personToPin, pinnedPerson);
 
@@ -60,7 +60,7 @@ public class PinCommandTest {
 
     @Test
     public void execute_invalidIndexUnfilteredList_throwsCommandException() {
-        Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
+        Index outOfBoundIndex = Index.fromOneBased(model.getDisplayedPersonList().size() + 1);
         PinCommand pinCommand = new PinCommand(outOfBoundIndex);
 
         assertCommandFailure(pinCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
@@ -68,9 +68,9 @@ public class PinCommandTest {
 
     @Test
     public void execute_maxPinsReached_throwsCommandException() {
-        Person p1 = model.getFilteredPersonList().get(0);
-        Person p2 = model.getFilteredPersonList().get(1);
-        Person p3 = model.getFilteredPersonList().get(2);
+        Person p1 = model.getDisplayedPersonList().get(0);
+        Person p2 = model.getDisplayedPersonList().get(1);
+        Person p3 = model.getDisplayedPersonList().get(2);
 
         model.setPerson(p1, createPinnedPerson(p1));
         model.setPerson(p2, createPinnedPerson(p2));
@@ -117,6 +117,7 @@ public class PinCommandTest {
                 person.getName(), person.getPhone(), person.getEmail(), person.getAddress(),
                 new HashSet<>(person.getTags()), new HashSet<>(person.getPositions()),
                 new HashSet<>(person.getMajors()), new HashSet<>(person.getGroups()),
-                new HashSet<>(person.getAvailableHours()), person.getProfilePicturePath(), true);
+                new HashSet<>(person.getAvailableHours()), person.getFollowUp(),
+                person.getProfilePicturePath(), true);
     }
 }
