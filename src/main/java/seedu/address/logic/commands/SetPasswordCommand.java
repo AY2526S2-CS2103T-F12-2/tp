@@ -8,7 +8,8 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.Model;
 
 /**
- * Sets a password to protect the address book.
+ * This command sets a password to protect the address book.
+ * On subsequent launches, the user will be prompted to enter this password before access is granted.
  */
 public class SetPasswordCommand extends Command {
 

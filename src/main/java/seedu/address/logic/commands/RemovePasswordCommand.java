@@ -5,7 +5,8 @@ import static java.util.Objects.requireNonNull;
 import seedu.address.model.Model;
 
 /**
- * Removes password protection from the address book.
+ * This command removes password protection from the address book,
+ * allowing the application to start without requiring a password.
  */
 public class RemovePasswordCommand extends Command {
 
