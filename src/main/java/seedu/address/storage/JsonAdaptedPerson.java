@@ -13,6 +13,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
@@ -33,6 +34,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     private final String profilePicturePath;
+    private final String followUp;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<JsonAdaptedPosition> positions = new ArrayList<>();
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
@@ -46,6 +48,7 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
                              @JsonProperty("email") String email, @JsonProperty("address") String address,
                              @JsonProperty("profilePicturePath") String profilePicturePath,
+                             @JsonProperty("followUp") String followUp,
                              @JsonProperty("tags") List<JsonAdaptedTag> tags,
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
@@ -56,6 +59,7 @@ class JsonAdaptedPerson {
         this.email = email;
         this.address = address;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
+        this.followUp = followUp != null ? followUp : "";
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -74,13 +78,13 @@ class JsonAdaptedPerson {
     }
 
     /**
-     * Backward-compatible constructor without profilePicturePath (used by tests).
+     * Backward-compatible constructor without profilePicturePath or followUp (used by tests).
      */
     public JsonAdaptedPerson(String name, String phone, String email, String address,
                              List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
                              List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
                              List<JsonAdaptedAvailableHours> availableHours) {
-        this(name, phone, email, address, "", tags, positions, majors, groups, availableHours);
+        this(name, phone, email, address, "", "", tags, positions, majors, groups, availableHours);
     }
 
     /**
@@ -92,6 +96,7 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         address = source.getAddress().value;
         profilePicturePath = source.getProfilePicturePath();
+        followUp = source.getFollowUp().value;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -178,8 +183,19 @@ class JsonAdaptedPerson {
         final Set<Group> modelGroups = new HashSet<>(personGroups);
         final Set<AvailableHours> modelAvailableHours = new HashSet<>(personAvailableHours);
 
+        final FollowUp modelFollowUp;
+        if (followUp != null && !followUp.isEmpty()) {
+            if (!FollowUp.isValidFollowUp(followUp)) {
+                throw new IllegalValueException(FollowUp.MESSAGE_CONSTRAINTS);
+            }
+            modelFollowUp = new FollowUp(followUp);
+        } else {
+            modelFollowUp = FollowUp.EMPTY;
+        }
+
         return new Person(modelName, modelPhone, modelEmail, modelAddress,
-                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours, profilePicturePath);
+                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours,
+                modelFollowUp, profilePicturePath);
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
@@ -34,7 +35,7 @@ public class PersonBuilder {
     private Set<Major> majors;
     private Set<Group> groups;
     private Set<AvailableHours> availableHours;
-
+    private FollowUp followUp;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -49,6 +50,7 @@ public class PersonBuilder {
         groups = new HashSet<>();
         positions = new HashSet<>();
         availableHours = new HashSet<>();
+        followUp = FollowUp.EMPTY;
     }
 
     /**
@@ -64,6 +66,7 @@ public class PersonBuilder {
         positions = new HashSet<>(personToCopy.getPositions());
         majors = new HashSet<>(personToCopy.getMajors());
         availableHours = new HashSet<>(personToCopy.getAvailableHours());
+        followUp = personToCopy.getFollowUp();
     }
 
     /**
@@ -139,8 +142,20 @@ public class PersonBuilder {
         return this;
     }
 
+    /**
+     * Sets the {@code FollowUp} of the {@code Person} that we are building.
+     */
+    public PersonBuilder withFollowUp(String followUp) {
+        this.followUp = new FollowUp(followUp);
+        return this;
+    }
+
+    /**
+     * Builds and returns the {@code Person}.
+     */
     public Person build() {
-        return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours);
+        return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours,
+                followUp, "");
     }
 
 }
