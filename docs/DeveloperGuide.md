@@ -239,6 +239,63 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 _{more aspects and alternatives to be added}_
 
+### Import and Export feature
+
+#### Overview
+
+The import/export feature allows users to save all contacts to a JSON file (`export`) and load contacts from a JSON file into the current address book (`import`). This enables data transfer between machines and simple backup/restore workflows.
+
+#### Design
+
+Both `ExportCommand` and `ImportCommand` need access to the `Storage` component to read/write JSON files, but the standard `Command#execute(Model)` signature only provides a `Model`. To solve this without breaking the existing architecture, we introduce a `StorageCommand` abstract class:
+
+* `StorageCommand` extends `Command` and declares an abstract `execute(Model, Storage)` method.
+* It overrides `execute(Model)` to throw a `CommandException`, preventing accidental invocation through the wrong dispatch path.
+* It provides a `shouldAutoSaveAddressBook()` hook (default `true`) that `LogicManager` checks after execution. `ExportCommand` overrides this to return `false` because exporting does not mutate the model and should not trigger a redundant save of the main data file.
+
+`LogicManager#execute(String)` is updated to detect `StorageCommand` instances and call the two-argument `execute(Model, Storage)` instead of the standard `execute(Model)`.
+
+#### Import flow
+
+1. `AddressBookParser` recognises the `import` keyword and delegates to `ImportCommandParser`.
+2. `ImportCommandParser` extracts the `fp/` prefix and creates an `ImportCommand` with the parsed `Path`.
+3. `LogicManager` detects `ImportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
+4. `ImportCommand.execute` proceeds in three steps (following the Single Level of Abstraction Principle):
+   * **`validateFileIsReadable()`** — checks the file exists, is a regular file, and is readable.
+   * **`loadAddressBook(storage)`** — delegates to `storage.readAddressBook(path)` to deserialize the JSON.
+   * **`mergeIntoModel(model, imported)`** — iterates over imported persons, adding those that do not already exist (checked via `model.hasPerson()`) and counting skipped duplicates.
+5. `LogicManager` auto-saves the updated address book to the default path.
+
+#### Export flow
+
+1. `AddressBookParser` recognises the `export` keyword and delegates to `ExportCommandParser`.
+2. `ExportCommandParser` extracts the `fp/` prefix and creates an `ExportCommand` with the parsed `Path`.
+3. `LogicManager` detects `ExportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
+4. `ExportCommand.execute` calls `storage.saveAddressBook(model.getAddressBook(), targetFilePath)`.
+5. Because `shouldAutoSaveAddressBook()` returns `false`, `LogicManager` skips the default auto-save.
+
+#### Design considerations
+
+**Aspect: How commands access Storage**
+
+* **Alternative 1 (current choice):** Introduce `StorageCommand` abstract class with `LogicManager` dispatch.
+  * Pros: Minimal changes to existing code; only commands that genuinely need `Storage` extend it.
+  * Cons: Adds a second dispatch path in `LogicManager`.
+
+* **Alternative 2:** Pass `Storage` to every `Command#execute` call.
+  * Pros: Uniform signature.
+  * Cons: Violates the principle of least privilege — most commands do not need `Storage`. Requires changing every existing command.
+
+**Aspect: Import merge semantics**
+
+* **Alternative 1 (current choice):** Additive merge — existing contacts are kept; duplicates (same name) are skipped.
+  * Pros: Non-destructive; user never loses data.
+  * Cons: Cannot update stale contacts automatically.
+
+* **Alternative 2:** Full overwrite — replace the entire address book with the imported data.
+  * Pros: Simple to implement.
+  * Cons: Dangerous if the user has unsaved changes or the import file is incomplete.
+
 ### \[Proposed\] Data archiving
 
 _{Explain here how the data archiving feature will be implemented}_
@@ -534,6 +591,72 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
+**Use case: Export contacts**
+
+**MSS**
+
+1.  User enters the export command with a file path (e.g., `export fp/backup.json`)
+2.  AddressBook writes all contacts to the specified file in JSON format
+3.  AddressBook displays a success message showing the number of contacts exported
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The file path is missing or blank.
+
+    * 1a1. AddressBook shows an error message with the correct usage format.
+
+      Use case resumes at step 1.
+
+* 2a. The file cannot be written (e.g., read-only directory, invalid path).
+
+    * 2a1. AddressBook shows an I/O error message.
+
+      Use case resumes at step 1.
+
+**Use case: Import contacts**
+
+**MSS**
+
+1.  User enters the import command with a file path (e.g., `import fp/backup.json`)
+2.  AddressBook reads the JSON file and merges the contacts into the current address book
+3.  AddressBook displays a success message showing the number of contacts added and the number of duplicates skipped
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The file path is missing or blank.
+
+    * 1a1. AddressBook shows an error message with the correct usage format.
+
+      Use case resumes at step 1.
+
+* 2a. The specified file does not exist.
+
+    * 2a1. AddressBook shows a "file not found" error message.
+
+      Use case resumes at step 1.
+
+* 2b. The file exists but is not readable or not a regular file.
+
+    * 2b1. AddressBook shows a "file not readable" error message.
+
+      Use case resumes at step 1.
+
+* 2c. The file contains invalid JSON or does not match the expected format.
+
+    * 2c1. AddressBook shows a data format error message.
+
+      Use case resumes at step 1.
+
+* 2d. All contacts in the import file are duplicates of existing contacts.
+
+    * 2d1. AddressBook displays a success message showing 0 added and N skipped.
+
+      Use case ends.
+
 ### Non-Functional Requirements
 
 1.  Should work on any _mainstream OS_ (Windows, Linux, macOS) as long as it has Java `17` or above installed.
@@ -648,6 +771,60 @@ testers are expected to do more *exploratory* testing.
 
    1. Click the **Cancel** button on the password dialog.<br>
       Expected: App closes. No data is erased. On next relaunch, the password dialog appears again.
+### Exporting contacts
+
+1. Exporting with contacts in the address book
+
+   1. Prerequisites: At least one contact in the list.
+
+   1. Test case: `export fp/test_export.json`<br>
+      Expected: File `test_export.json` is created. Success message shows the number of contacts exported. The file contains valid JSON matching the app's data format.
+
+   1. Test case: `export fp/test_export.json` (run again)<br>
+      Expected: The file is overwritten with the current contacts. Success message displayed.
+
+   1. Test case: `export`<br>
+      Expected: No file is created. Error message showing correct usage format.
+
+1. Exporting with an empty address book
+
+   1. Prerequisites: Run `clear` to empty the address book.
+
+   1. Test case: `export fp/empty_export.json`<br>
+      Expected: File `empty_export.json` is created with an empty persons list. Success message shows 0 contacts exported.
+
+### Importing contacts
+
+1. Importing from a valid file
+
+   1. Prerequisites: Have a valid exported JSON file (e.g., created by running `export fp/test_export.json` with some contacts).
+
+   1. Test case: `import fp/test_export.json`<br>
+      Expected: New contacts from the file are added to the address book. Duplicates (same name) are skipped. Success message shows counts of added and skipped contacts.
+
+1. Importing from a non-existent file
+
+   1. Test case: `import fp/does_not_exist.json`<br>
+      Expected: Error message indicating the file was not found. Address book unchanged.
+
+1. Importing from an invalid JSON file
+
+   1. Prerequisites: Create a file `bad.json` containing the text `not valid json`.
+
+   1. Test case: `import fp/bad.json`<br>
+      Expected: Error message indicating the data could not be read. Address book unchanged.
+
+1. Importing with all duplicates
+
+   1. Prerequisites: Export the current address book with `export fp/dup_test.json`. Do not add or remove any contacts.
+
+   1. Test case: `import fp/dup_test.json`<br>
+      Expected: Success message shows 0 added and N skipped (where N is the number of contacts in the file). Address book unchanged.
+
+1. Missing file path
+
+   1. Test case: `import`<br>
+      Expected: Error message showing correct usage format.
 
 ### Saving data
 

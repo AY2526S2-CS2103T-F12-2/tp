@@ -14,13 +14,15 @@ import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ExitCommand;
+import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PicCommand;
-import seedu.address.logic.commands.ToggleColorModeCommand;
 import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
+import seedu.address.logic.commands.ToggleColorModeCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -80,6 +82,28 @@ public class AddressBookParser {
 
         case HelpCommand.COMMAND_WORD:
             return new HelpCommand();
+
+        case ExportCommand.COMMAND_WORD:
+            return new ExportCommandParser().parse(arguments);
+
+        case ImportCommand.COMMAND_WORD:
+            return new ImportCommandParser().parse(arguments);
+
+        case PicCommand.COMMAND_WORD:
+            return new PicCommandParser().parse(arguments);
+
+        case SetPasswordCommand.COMMAND_WORD:
+            return new SetPasswordCommandParser().parse(arguments);
+
+        case RemovePasswordCommand.COMMAND_WORD:
+            return new RemovePasswordCommand();
+
+        case ToggleColorModeCommand.COMMAND_WORD:
+            if (arguments.trim().equals(ToggleColorModeCommand.COMMAND_ARGS)) {
+                return new ToggleColorModeCommand();
+            }
+            logger.finer("This user input caused a ParseException: " + userInput);
+            throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
 
         default:
             logger.finer("This user input caused a ParseException: " + userInput);

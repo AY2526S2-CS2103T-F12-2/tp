@@ -16,4 +16,5 @@ public class CliSyntax {
     public static final Prefix PREFIX_POSITION = new Prefix("po/");
     public static final Prefix PREFIX_AVAILABLE_HOURS = new Prefix("h/");
     public static final Prefix PREFIX_PASSWORD = new Prefix("pw/");
+    public static final Prefix PREFIX_FILE_PATH = new Prefix("fp/");
 }
