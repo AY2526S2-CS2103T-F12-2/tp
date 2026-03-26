@@ -155,6 +155,23 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
+### Pinning a person : `pin`
+
+Toggles the pin status of the specified person. Pinned persons are moved to the top of the list and display a 📌 icon.
+
+Format: `pin INDEX`
+
+* Pins the person at the specified `INDEX` if they are not already pinned.
+* If the person is already pinned, running `pin INDEX` again will **unpin** them.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+* A maximum of **3** persons can be pinned at a time. Attempting to pin a 4th person will show an error.
+* Pin status is saved and persists across sessions.
+
+Examples:
+* `pin 1` pins the 1st person in the list.
+* `pin 1` again unpins that person.
+
 ### Adding or replacing a profile picture : `pic`
 
 Opens a file picker to set or replace the profile picture for the specified contact.
@@ -293,6 +310,7 @@ Action | Format, Examples
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
 **Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
 **List** | `list`
+**Pin** | `pin INDEX`<br> e.g., `pin 1`
 **Help** | `help`
 **Set Password** | `setpassword pw/PASSWORD`<br> e.g., `setpassword pw/mySecret123`
 **Remove Password** | `removepassword`
