@@ -3,11 +3,13 @@ package seedu.address.logic;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -84,5 +86,23 @@ public class LogicManager implements Logic {
     @Override
     public void setGuiSettings(GuiSettings guiSettings) {
         model.setGuiSettings(guiSettings);
+    }
+
+    @Override
+    public void setPicture(Index index, String picturePath) throws CommandException {
+        List<Person> lastShownList = model.getFilteredPersonList();
+        if (index.getZeroBased() >= lastShownList.size()) {
+            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        }
+        Person original = lastShownList.get(index.getZeroBased());
+        Person updated = new Person(original.getName(), original.getPhone(), original.getEmail(),
+                original.getAddress(), original.getTags(), original.getPositions(),
+                original.getMajors(), original.getGroups(), original.getAvailableHours(), picturePath);
+        model.setPerson(original, updated);
+        try {
+            storage.saveAddressBook(model.getAddressBook());
+        } catch (IOException e) {
+            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
+        }
     }
 }

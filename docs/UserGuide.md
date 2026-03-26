@@ -36,6 +36,10 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
    * `clear` : Deletes all contacts.
 
+   * `pic 1` : Opens a file picker to set a profile picture for the 1st contact.
+
+   * `toggle color mode` : Switches between dark and light mode.
+
    * `exit` : Exits the app.
 
 1. Refer to the [Features](#features) below for details of each command.
@@ -83,6 +87,10 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, groups, majors and positions (including 0)
+</div>
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
+CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
 </div>
 
 Examples:
@@ -145,6 +153,31 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
+### Adding or replacing a profile picture : `pic`
+
+Opens a file picker to set or replace the profile picture for the specified contact.
+The picture is displayed on the right side of the contact card.
+
+* If **no picture** has been set, a 📷 button appears — clicking it opens the file picker.
+* If a **picture already exists**, clicking on it also opens the file picker to replace it.
+
+Format: `pic INDEX`
+
+* `INDEX` must be a positive integer referring to a contact in the current list.
+* Supported formats: PNG, JPG, JPEG, GIF, BMP.
+* The picture is saved persistently and will appear on next launch.
+
+Examples:
+* `pic 1` — opens a file picker to set or replace the picture for the 1st contact.
+* `pic 3` — opens a file picker to set or replace the picture for the 3rd contact.
+
+### Toggling dark / light mode : `toggle color mode`
+
+Switches the application between dark mode and light mode.
+A ☀ / 🌙 button at the top-right corner of the window does the same thing.
+
+Format: `toggle color mode`
+
 ### Clearing all entries : `clear`
 
 Clears all entries from the address book.
@@ -197,3 +230,5 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Help** | `help`
+**Profile Picture** | `pic INDEX`<br> e.g., `pic 2`
+**Toggle Color Mode** | `toggle color mode`

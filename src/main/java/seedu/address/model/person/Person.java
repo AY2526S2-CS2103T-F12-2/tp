@@ -2,8 +2,10 @@ package seedu.address.model.person;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,12 +32,24 @@ public class Person {
     // We ensure availableHours only ever contains 0 or 1 object.
     private final Set<AvailableHours> availableHours = new HashSet<>();
 
+    // Optional profile picture (file path), empty string if not set
+    private String profilePicturePath;
+
 
     /**
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours) {
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, "");
+    }
+
+    /**
+     * Constructor with optional profile picture path.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
+                  String profilePicturePath) {
         requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours);
         this.name = name;
         this.phone = phone;
@@ -46,6 +60,7 @@ public class Person {
         this.tags.addAll(tags);
         this.groups.addAll(groups);
         this.availableHours.addAll(availableHours);
+        this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
     }
 
     public Name getName() {
@@ -104,9 +119,12 @@ public class Person {
         return Collections.unmodifiableSet(availableHours);
     }
 
+    public String getProfilePicturePath() {
+        return profilePicturePath;
+    }
 
     /**
-     * Returns true if both persons have the same name.
+     * Returns true if both persons share the same name, phone, or email.
      * This defines a weaker notion of equality between two persons.
      */
     public boolean isSamePerson(Person otherPerson) {
@@ -114,8 +132,27 @@ public class Person {
             return true;
         }
 
-        return otherPerson != null
-                && otherPerson.getName().equals(getName());
+        return otherPerson != null && (
+                otherPerson.getName().equals(getName())
+                || otherPerson.getPhone().equals(getPhone())
+                || otherPerson.getEmail().equals(getEmail()));
+    }
+
+    /**
+     * Returns the list of field names (name, phone, email) that are duplicated with {@code other}.
+     */
+    public List<String> getDuplicateFields(Person other) {
+        List<String> fields = new ArrayList<>();
+        if (other.getName().equals(getName())) {
+            fields.add("name");
+        }
+        if (other.getPhone().equals(getPhone())) {
+            fields.add("phone");
+        }
+        if (other.getEmail().equals(getEmail())) {
+            fields.add("email");
+        }
+        return fields;
     }
 
     /**
