@@ -38,6 +38,10 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
    * `pic 1` : Opens a file picker to set a profile picture for the 1st contact.
 
+   * `followup 1 f/Send project files` : Sets a follow-up reminder on the 1st contact.
+
+   * `clearfollowup 1` : Removes the follow-up reminder from the 1st contact.
+
    * `toggle color mode` : Switches between dark and light mode.
 
    * `exit` : Exits the app.
@@ -245,6 +249,35 @@ Examples:
 Use `export` on one computer and `import` on another to transfer your contacts easily.
 </div>
 
+### Setting a follow-up reminder : `followup`
+
+Attaches a short reminder note to a contact so you know what to follow up on with them.
+The note is shown automatically in the result display every time the app starts.
+
+Format: `followup INDEX f/NOTE`
+
+* Sets the follow-up note for the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* `NOTE` must not be blank and must not start with whitespace.
+* If a follow-up note already exists on that contact, it is **replaced** by the new note.
+
+Examples:
+* `followup 1 f/Email about internship by Friday` — sets a reminder on the 1st person.
+* `followup 3 f/Discuss project deadline next week` — sets a reminder on the 3rd person.
+
+### Clearing a follow-up reminder : `clearfollowup`
+
+Removes the follow-up note from a contact once you are done with it.
+
+Format: `clearfollowup INDEX`
+
+* Clears the follow-up note for the person at the specified `INDEX`.
+* The index **must be a positive integer** 1, 2, 3, …​
+* If the contact has no follow-up note, an error is shown.
+
+Examples:
+* `clearfollowup 1` — removes the follow-up reminder from the 1st person.
+
 ### Exiting the program : `exit`
 
 Exits the program.
@@ -291,6 +324,8 @@ Action | Format, Examples
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
 **Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
+**Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
+**Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`
 **Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
 **List** | `list`
 **Help** | `help`
