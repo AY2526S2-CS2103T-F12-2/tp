@@ -110,7 +110,14 @@ public class ImportCommandTest {
 
         Model model = new ModelManager();
         model.addPerson(ALICE);
-        Model expectedModel = new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.BENSON);
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.CARL);
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.DANIEL);
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.ELLE);
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.FIONA);
+        expectedModel.addPerson(seedu.address.testutil.TypicalPersons.GEORGE);
+        expectedModel.addPerson(ALICE);
 
         ImportCommand command = new ImportCommand(importPath);
         assertStorageCommandSuccess(command, model, newStorage(),

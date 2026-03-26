@@ -3,6 +3,9 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.Model;
@@ -19,7 +22,7 @@ public class SortCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Sorts the person list by the specified field and order.\n"
             + "Parameters: CONDITION ORDER\n"
-            + "CONDITION: firstname | lastname\n"
+            + "CONDITION: firstname | lastname | recent\n"
             + "ORDER: ASC | DESC | a | d\n"
             + "Example: " + COMMAND_WORD + " firstname ASC";
 
@@ -29,7 +32,7 @@ public class SortCommand extends Command {
      * Enum representing the field to sort by.
      */
     public enum SortField {
-        FIRSTNAME, LASTNAME
+        FIRSTNAME, LASTNAME, RECENT
     }
 
     private final SortField sortField;
@@ -59,6 +62,15 @@ public class SortCommand extends Command {
                 String[] parts = p.getName().fullName.split("\\s+");
                 return parts[parts.length - 1].toLowerCase();
             });
+            break;
+        case RECENT:
+            List<Person> unmodifiableList = model.getAddressBook().getPersonList();
+            Map<Person, Integer> indexMap = new HashMap<>();
+            int idx = 0;
+            for (Person p : unmodifiableList) {
+                indexMap.put(p, idx++);
+            }
+            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, Integer.MAX_VALUE));
             break;
         default:
             fieldComparator = Comparator.comparing(

@@ -104,11 +104,13 @@ public class ImportCommand extends StorageCommand {
     private int[] mergeIntoModel(Model model, ReadOnlyAddressBook imported) {
         int added = 0;
         int skipped = 0;
+        int insertIndex = 0;
         for (Person person : imported.getPersonList()) {
             if (model.hasPerson(person)) {
                 skipped++;
             } else {
-                model.addPerson(person);
+                model.addPerson(insertIndex, person);
+                insertIndex++;
                 added++;
             }
         }
