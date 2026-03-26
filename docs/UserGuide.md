@@ -182,16 +182,19 @@ Sorts the displayed contact list by a specified field and order. Pinned contacts
 
 Format: `sort CONDITION ORDER` (ORDER can be `ASC`, `DESC`, `a`, or `d`)
 
-* `CONDITION`: `firstname` or `lastname`
+* `CONDITION`: `firstname`, `lastname`, or `recent`
   * `firstname` sorts by the first word of the person's name.
   * `lastname` sorts by the last word of the person's name.
+  * `recent` sorts contacts by their underlying storage/import order (newly imported contacts appear at the top).
 * `ORDER`: `ASC` (ascending, A→Z) or `DESC` (descending, Z→A)
+  * Note: For `recent`, `ASC` and `DESC` determine the ordering direction of the underlying list structure.
 * The sort is case-insensitive.
 * Pinned contacts always appear at the top of the list, with the sort applied within pinned and unpinned groups.
 
 Examples:
 * `sort firstname ASC` (or `sort firstname a`) sorts all contacts by first name, A to Z.
 * `sort lastname DESC` (or `sort lastname d`) sorts all contacts by last name, Z to A.
+* `sort recent a` restores the list to its original insertion order, displaying recently imported contacts at the top.
 
 ### Adding or replacing a profile picture : `pic`
 
@@ -272,6 +275,7 @@ Format: `import fp/FILE_PATH`
 
 * `FILE_PATH` is the path to a valid JSON file previously exported from CampusLink (or any file in the same format).
 * The import is **additive** — your current contacts are never removed or overwritten.
+* Newly imported contacts will be stacked **on top** of all current contacts, preserving their relative order from the imported file.
 * Contacts with the same name as an existing contact are considered duplicates and are skipped.
 * After import, the result message shows how many contacts were added and how many were skipped.
 
