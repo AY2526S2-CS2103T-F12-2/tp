@@ -84,4 +84,14 @@ public interface Model {
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
+
+    /**
+     * Returns the password hash stored in user prefs, or null if no password is set.
+     */
+    String getPasswordHash();
+
+    /**
+     * Sets the password hash in user prefs. Pass null to remove password protection.
+     */
+    void setPasswordHash(String passwordHash);
 }

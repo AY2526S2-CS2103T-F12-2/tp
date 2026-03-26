@@ -300,6 +300,41 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 
 _{Explain here how the data archiving feature will be implemented}_
 
+### Password protection feature
+
+#### Implementation
+
+Password protection is implemented across four layers: `Model`/`UserPrefs` (storage), `Logic` (persistence), `Logic` commands (set/remove), and `MainApp` (startup enforcement).
+
+**Password storage**
+
+The password hash is stored as a new `passwordHash` field in `UserPrefs`, which is already serialized to `preferences.json` by Jackson. No separate file is needed.
+`ReadOnlyUserPrefs` exposes `getPasswordHash()` read-only. `Model` and `ModelManager` expose `getPasswordHash()` / `setPasswordHash(String)` so commands can update it.
+
+**Hashing**
+
+`SecurityUtil` (in `commons.util`) provides two static methods:
+* `hashPassword(String) → String` — SHA-256 hash of the password, returned as a 64-character lowercase hex string.
+* `verifyPassword(String, String) → boolean` — hashes the candidate and compares to the stored hash.
+
+The plaintext password is never stored anywhere.
+
+**Commands**
+
+| Command | Class | Behaviour |
+|---|---|---|
+| `setpassword pw/PASSWORD` | `SetPasswordCommand` | Hashes the password via `SecurityUtil` and calls `model.setPasswordHash(hash)` |
+| `removepassword` | `RemovePasswordCommand` | Calls `model.setPasswordHash(null)`; returns a distinct message if no password was set |
+
+`SetPasswordCommandParser` extracts the `pw/` prefix, trims whitespace, and rejects empty values.
+
+Outcome matrix:
+
+| User action | Result |
+|---|---|
+| Correct password | App opens normally |
+| Cancel dialog | `Platform.exit()` — app closes, no data wiped |
+| 3 wrong entries | `eraseAllData()` — contacts cleared, hash set to null, both files saved |
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -474,6 +509,56 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
+**Use case: Set password protection**
+
+**MSS**
+
+1. User enters `setpassword pw/PASSWORD`
+2. AddressBook hashes the password and saves it to user preferences
+3. AddressBook displays a success message
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The `pw/` prefix is missing or the password value is empty.
+
+    * 1a1. AddressBook shows an error message with the correct format.
+
+      Use case resumes at step 1.
+
+**Use case: Unlock password-protected address book on startup**
+
+**MSS**
+
+1. User launches the app
+2. AddressBook detects a stored password hash and shows a password dialog
+3. User enters the correct password
+4. AddressBook opens normally
+
+   Use case ends.
+
+**Extensions**
+
+* 3a. User enters an incorrect password (attempt 1 or 2).
+
+    * 3a1. AddressBook shows how many attempts remain and re-prompts.
+
+      Use case resumes at step 3.
+
+* 3b. User enters an incorrect password for the 3rd time.
+
+    * 3b1. AddressBook erases all contacts and removes the password.
+    * 3b2. AddressBook opens with an empty address book.
+
+      Use case ends.
+
+* 3c. User cancels the dialog.
+
+    * 3c1. AddressBook closes without wiping any data.
+
+      Use case ends.
+
 **Use case: Edit a contact's details**
 
 **MSS**
@@ -641,6 +726,51 @@ testers are expected to do more *exploratory* testing.
 
 1. _{ more test cases …​ }_
 
+### Password protection
+
+1. Setting a password
+
+   1. Prerequisites: App is running with no password set.
+
+   1. Test case: `setpassword pw/mySecret123`<br>
+      Expected: Success message displayed. `preferences.json` now contains a `passwordHash` field.
+
+   1. Test case: `setpassword pw/`<br>
+      Expected: Error message shown. No password is set.
+
+   1. Test case: `setpassword mySecret123` (missing `pw/` prefix)<br>
+      Expected: Error message with correct format shown.
+
+1. Removing a password
+
+   1. Prerequisites: Password is set (run `setpassword pw/test` first).
+
+   1. Test case: `removepassword`<br>
+      Expected: Success message. `passwordHash` field removed from `preferences.json`.
+
+   1. Test case: `removepassword` when no password is set<br>
+      Expected: Message indicating no password is currently set. No changes made.
+
+1. Correct password on startup
+
+   1. Prerequisites: Set a password with `setpassword pw/test123`, then exit and relaunch.
+
+   1. Enter `test123` in the password dialog.<br>
+      Expected: App opens normally with all contacts intact.
+
+1. Wrong password — data erasure after 3 attempts
+
+   1. Prerequisites: Set a password with `setpassword pw/correctPass`, add at least one contact, then exit and relaunch.
+
+   1. Enter `wrong1`, then `wrong2`, then `wrong3` in the password dialog.<br>
+      Expected: After the 3rd wrong entry, the app opens with an empty contact list. `preferences.json` no longer contains a `passwordHash`.
+
+1. Cancelling the password dialog
+
+   1. Prerequisites: Password is set. Relaunch the app.
+
+   1. Click the **Cancel** button on the password dialog.<br>
+      Expected: App closes. No data is erased. On next relaunch, the password dialog appears again.
 ### Exporting contacts
 
 1. Exporting with contacts in the address book

@@ -27,6 +27,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.RemovePasswordCommand;
+import seedu.address.logic.commands.SetPasswordCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
@@ -104,6 +106,18 @@ public class AddressBookParserTest {
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_setPassword() throws Exception {
+        SetPasswordCommand command = (SetPasswordCommand) parser.parseCommand(
+                SetPasswordCommand.COMMAND_WORD + " " + CliSyntax.PREFIX_PASSWORD + "myPass");
+        assertEquals(new SetPasswordCommand("myPass"), command);
+    }
+
+    @Test
+    public void parseCommand_removePassword() throws Exception {
+        assertTrue(parser.parseCommand(RemovePasswordCommand.COMMAND_WORD) instanceof RemovePasswordCommand);
     }
 
     @Test

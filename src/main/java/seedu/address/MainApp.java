@@ -6,12 +6,23 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import seedu.address.commons.core.Config;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.Version;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.util.ConfigUtil;
+import seedu.address.commons.util.SecurityUtil;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.Logic;
 import seedu.address.logic.LogicManager;
@@ -37,6 +48,7 @@ import seedu.address.ui.UiManager;
 public class MainApp extends Application {
 
     public static final Version VERSION = new Version(0, 2, 2, true);
+    private static final int MAX_PASSWORD_ATTEMPTS = 3;
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
 
@@ -171,7 +183,94 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         logger.info("Starting AddressBook " + MainApp.VERSION);
+
+        String passwordHash = model.getPasswordHash();
+        if (passwordHash != null) {
+            boolean authenticated = promptForPassword(passwordHash);
+            if (!authenticated) {
+                eraseAllData();
+            }
+        }
+
         ui.start(primaryStage);
+    }
+
+    /**
+     * Shows a password dialog up to {@code MAX_PASSWORD_ATTEMPTS} times.
+     * Returns true if the user enters the correct password, false otherwise.
+     */
+    private boolean promptForPassword(String storedHash) {
+        for (int attempt = 1; attempt <= MAX_PASSWORD_ATTEMPTS; attempt++) {
+            Optional<String> result = showPasswordDialog(attempt);
+
+            if (result.isEmpty()) {
+                logger.info("Password dialog cancelled. Exiting application.");
+                Platform.exit();
+                return false;
+            }
+
+            if (SecurityUtil.verifyPassword(result.get(), storedHash)) {
+                logger.info("Password authentication successful.");
+                return true;
+            }
+
+            logger.info("Wrong password attempt " + attempt + " of " + MAX_PASSWORD_ATTEMPTS);
+        }
+        // Only reaches here after exactly MAX_PASSWORD_ATTEMPTS wrong entries
+        return false;
+    }
+
+    /**
+     * Displays a password input dialog and returns the entered password.
+     */
+    private Optional<String> showPasswordDialog(int attempt) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Password Required");
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initStyle(StageStyle.UTILITY);
+
+        ButtonType unlockButtonType = new ButtonType("Unlock", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(unlockButtonType, ButtonType.CANCEL);
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Enter password");
+
+        VBox content = new VBox(10);
+        content.setPadding(new Insets(20, 20, 10, 20));
+
+        String message = (attempt == 1)
+                ? "This address book is password protected."
+                : String.format("Incorrect password. %d attempt(s) remaining.",
+                        MAX_PASSWORD_ATTEMPTS - attempt + 1);
+
+        content.getChildren().addAll(new Label(message), passwordField);
+        dialog.getDialogPane().setContent(content);
+
+        Platform.runLater(passwordField::requestFocus);
+
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == unlockButtonType) {
+                return passwordField.getText();
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
+    }
+
+    /**
+     * Erases all address book data and removes password protection.
+     */
+    private void eraseAllData() {
+        logger.warning("Maximum password attempts exceeded. Erasing all data.");
+        model.setAddressBook(new AddressBook());
+        model.setPasswordHash(null);
+        try {
+            storage.saveAddressBook(model.getAddressBook());
+            storage.saveUserPrefs(model.getUserPrefs());
+        } catch (IOException e) {
+            logger.severe("Failed to save after data erasure: " + StringUtil.getDetails(e));
+        }
     }
 
     @Override

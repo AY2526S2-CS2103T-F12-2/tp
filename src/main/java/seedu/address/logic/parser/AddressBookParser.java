@@ -20,6 +20,8 @@ import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PicCommand;
+import seedu.address.logic.commands.RemovePasswordCommand;
+import seedu.address.logic.commands.SetPasswordCommand;
 import seedu.address.logic.commands.ToggleColorModeCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -89,6 +91,12 @@ public class AddressBookParser {
 
         case PicCommand.COMMAND_WORD:
             return new PicCommandParser().parse(arguments);
+
+        case SetPasswordCommand.COMMAND_WORD:
+            return new SetPasswordCommandParser().parse(arguments);
+
+        case RemovePasswordCommand.COMMAND_WORD:
+            return new RemovePasswordCommand();
 
         case ToggleColorModeCommand.COMMAND_WORD:
             if (arguments.trim().equals(ToggleColorModeCommand.COMMAND_ARGS)) {
