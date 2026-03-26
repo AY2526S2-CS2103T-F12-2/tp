@@ -6,7 +6,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
@@ -27,6 +29,8 @@ public class SortCommand extends Command {
             + "Example: " + COMMAND_WORD + " firstname ASC";
 
     public static final String MESSAGE_SORT_SUCCESS = "Sorted by %1$s in %2$s order";
+
+    private static final Logger logger = LogsCenter.getLogger(SortCommand.class);
 
     /**
      * Enum representing the field to sort by.
@@ -49,6 +53,7 @@ public class SortCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
+        logger.info("Executing sort by " + sortField + " in " + (isAscending ? "ascending" : "descending") + " order");
 
         Comparator<Person> fieldComparator;
 
