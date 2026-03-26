@@ -125,7 +125,7 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList(), index -> {
+        personListPanel = new PersonListPanel(logic.getDisplayedPersonList(), index -> {
             try {
                 executeCommand("delete " + index);
             } catch (Exception e) {

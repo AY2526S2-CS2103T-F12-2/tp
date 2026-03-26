@@ -37,12 +37,15 @@ public class Person {
 
     private final FollowUp followUp;
 
+    // Whether this person is pinned to the top of the list
+    private final boolean pinned;
+
     /**
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours) {
-        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY, "");
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY, "", false);
     }
 
     /**
@@ -52,15 +55,25 @@ public class Person {
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
                   String profilePicturePath) {
         this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY,
-                profilePicturePath);
+                profilePicturePath, false);
     }
 
     /**
-     * Full constructor including follow-up note and profile picture path.
+     * Constructor including follow-up note and profile picture path.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
                   String profilePicturePath) {
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, followUp,
+                profilePicturePath, false);
+    }
+
+    /**
+     * Full constructor including follow-up note, profile picture path, and pinned status.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
+                  String profilePicturePath, boolean pinned) {
         requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours, followUp);
         this.name = name;
         this.phone = phone;
@@ -73,6 +86,7 @@ public class Person {
         this.availableHours.addAll(availableHours);
         this.followUp = followUp;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
+        this.pinned = pinned;
     }
 
     public Name getName() {
@@ -137,6 +151,10 @@ public class Person {
 
     public FollowUp getFollowUp() {
         return followUp;
+    }
+
+    public boolean isPinned() {
+        return pinned;
     }
 
     /**

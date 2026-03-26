@@ -79,8 +79,8 @@ public class LogicManager implements Logic {
     }
 
     @Override
-    public ObservableList<Person> getFilteredPersonList() {
-        return model.getFilteredPersonList();
+    public ObservableList<Person> getDisplayedPersonList() {
+        return model.getDisplayedPersonList();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class LogicManager implements Logic {
 
     @Override
     public void setPicture(Index index, String picturePath) throws CommandException {
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Person> lastShownList = model.getDisplayedPersonList();
         if (index.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
