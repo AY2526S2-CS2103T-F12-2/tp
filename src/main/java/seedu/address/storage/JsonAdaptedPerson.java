@@ -32,7 +32,6 @@ class JsonAdaptedPerson {
     private final String phone;
     private final String email;
     private final String address;
-    private final String profilePicturePath;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<JsonAdaptedPosition> positions = new ArrayList<>();
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
@@ -45,7 +44,6 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
                              @JsonProperty("email") String email, @JsonProperty("address") String address,
-                             @JsonProperty("profilePicturePath") String profilePicturePath,
                              @JsonProperty("tags") List<JsonAdaptedTag> tags,
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
@@ -55,7 +53,6 @@ class JsonAdaptedPerson {
         this.phone = phone;
         this.email = email;
         this.address = address;
-        this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -74,16 +71,6 @@ class JsonAdaptedPerson {
     }
 
     /**
-     * Backward-compatible constructor without profilePicturePath (used by tests).
-     */
-    public JsonAdaptedPerson(String name, String phone, String email, String address,
-                             List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
-                             List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
-                             List<JsonAdaptedAvailableHours> availableHours) {
-        this(name, phone, email, address, "", tags, positions, majors, groups, availableHours);
-    }
-
-    /**
      * Converts a given {@code Person} into this class for Jackson use.
      */
     public JsonAdaptedPerson(Person source) {
@@ -91,7 +78,6 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
-        profilePicturePath = source.getProfilePicturePath();
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -179,7 +165,7 @@ class JsonAdaptedPerson {
         final Set<AvailableHours> modelAvailableHours = new HashSet<>(personAvailableHours);
 
         return new Person(modelName, modelPhone, modelEmail, modelAddress,
-                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours, profilePicturePath);
+                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours);
     }
 
 }

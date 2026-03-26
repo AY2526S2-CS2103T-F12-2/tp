@@ -37,19 +37,18 @@ public class PersonTest {
                 .withAddress(VALID_ADDRESS_BOB).withTags(VALID_TAG_HUSBAND).build();
         assertTrue(ALICE.isSamePerson(editedAlice));
 
-        // different name only (same phone and email) -> returns true (phone/email match)
+        // different name, all other attributes same -> returns false
         editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).build();
-        assertTrue(ALICE.isSamePerson(editedAlice));
-
-        // different name AND phone AND email -> returns false
-        editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB)
-                .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
         assertFalse(ALICE.isSamePerson(editedAlice));
 
-        // same phone different name and email -> returns true (phone match)
-        Person editedBob = new PersonBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase())
-                .withEmail(VALID_EMAIL_BOB + ".au").build();
-        assertTrue(BOB.isSamePerson(editedBob));
+        // name differs in case, all other attributes same -> returns false
+        Person editedBob = new PersonBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase()).build();
+        assertFalse(BOB.isSamePerson(editedBob));
+
+        // name has trailing spaces, all other attributes same -> returns false
+        String nameWithTrailingSpaces = VALID_NAME_BOB + " ";
+        editedBob = new PersonBuilder(BOB).withName(nameWithTrailingSpaces).build();
+        assertFalse(BOB.isSamePerson(editedBob));
     }
 
     @Test

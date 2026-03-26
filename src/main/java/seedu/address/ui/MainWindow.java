@@ -1,22 +1,17 @@
 package seedu.address.ui;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
-import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -29,14 +24,11 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-    private static final String DARK_THEME_CSS = "/view/DarkTheme.css";
-    private static final String LIGHT_THEME_CSS = "/view/LightTheme.css";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
     private Stage primaryStage;
     private Logic logic;
-    private boolean isDarkMode = true;
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
@@ -58,9 +50,6 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane statusbarPlaceholder;
-
-    @FXML
-    private Button colorModeButton;
 
     /**
      * Creates a {@code MainWindow} with the given {@code Stage} and {@code Logic}.
@@ -128,8 +117,7 @@ public class MainWindow extends UiPart<Stage> {
             } catch (Exception e) {
                 // error shown in resultDisplay
             }
-        }, text -> commandBox.setCommandTextField(text),
-                index -> handlePicUpload(Index.fromOneBased(index)));
+        }, text -> commandBox.setCommandTextField(text));
 
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
@@ -172,44 +160,6 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Handles picture upload for a person.
-     */
-    void handlePicUpload(Index index) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Profile Picture");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"));
-        File file = fileChooser.showOpenDialog(primaryStage);
-        if (file != null) {
-            try {
-                logic.setPicture(index, file.getAbsolutePath());
-                resultDisplay.setFeedbackToUser("Profile picture updated for person " + index.getOneBased() + ".");
-            } catch (CommandException e) {
-                resultDisplay.setFeedbackToUser("Failed to update picture: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Toggles between dark and light color mode.
-     */
-    @FXML
-    void handleToggleColorMode() {
-        Scene scene = primaryStage.getScene();
-        scene.getStylesheets().clear();
-        if (isDarkMode) {
-            scene.getStylesheets().add(getClass().getResource(LIGHT_THEME_CSS).toExternalForm());
-            colorModeButton.setText("🌙");
-            isDarkMode = false;
-        } else {
-            scene.getStylesheets().add(getClass().getResource(DARK_THEME_CSS).toExternalForm());
-            colorModeButton.setText("☀");
-            isDarkMode = true;
-        }
-        scene.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
-    }
-
-    /**
      * Closes the application.
      */
     @FXML
@@ -242,14 +192,6 @@ public class MainWindow extends UiPart<Stage> {
 
             if (commandResult.isExit()) {
                 handleExit();
-            }
-
-            if (commandResult.isToggleColorMode()) {
-                handleToggleColorMode();
-            }
-
-            if (commandResult.isShowPicPicker()) {
-                handlePicUpload(Index.fromZeroBased(commandResult.getPicPickerIndex()));
             }
 
             return commandResult;
