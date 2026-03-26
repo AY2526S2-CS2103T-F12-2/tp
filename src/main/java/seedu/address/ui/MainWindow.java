@@ -29,11 +29,10 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-
-    private final Logger logger = LogsCenter.getLogger(getClass());
-
     private static final String DARK_THEME_CSS = "/view/DarkTheme.css";
     private static final String LIGHT_THEME_CSS = "/view/LightTheme.css";
+
+    private final Logger logger = LogsCenter.getLogger(getClass());
 
     private Stage primaryStage;
     private Logic logic;
@@ -130,7 +129,7 @@ public class MainWindow extends UiPart<Stage> {
                 // error shown in resultDisplay
             }
         }, text -> commandBox.setCommandTextField(text),
-        index -> handlePicUpload(Index.fromOneBased(index)));
+                index -> handlePicUpload(Index.fromOneBased(index)));
 
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 

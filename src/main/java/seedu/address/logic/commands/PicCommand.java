@@ -26,6 +26,9 @@ public class PicCommand extends Command {
 
     private final Index index;
 
+    /**
+     * Creates a {@code PicCommand} for the given {@code Index}.
+     */
     public PicCommand(Index index) {
         requireNonNull(index);
         this.index = index;

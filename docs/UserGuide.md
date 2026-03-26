@@ -153,11 +153,13 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
-### Adding a profile picture : `pic`
+### Adding or replacing a profile picture : `pic`
 
-Opens a file picker to set a profile picture for the specified contact.
+Opens a file picker to set or replace the profile picture for the specified contact.
 The picture is displayed on the right side of the contact card.
-If no picture has been set, a 📷 button appears in its place — clicking it opens the same file picker.
+
+* If **no picture** has been set, a 📷 button appears — clicking it opens the file picker.
+* If a **picture already exists**, clicking on it also opens the file picker to replace it.
 
 Format: `pic INDEX`
 
@@ -166,8 +168,8 @@ Format: `pic INDEX`
 * The picture is saved persistently and will appear on next launch.
 
 Examples:
-* `pic 1` — opens a file picker for the 1st contact.
-* `pic 3` — opens a file picker for the 3rd contact.
+* `pic 1` — opens a file picker to set or replace the picture for the 1st contact.
+* `pic 3` — opens a file picker to set or replace the picture for the 3rd contact.
 
 ### Toggling dark / light mode : `toggle color mode`
 

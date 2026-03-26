@@ -113,11 +113,14 @@ public class PersonCard extends UiPart<Region> {
             if (f.exists()) {
                 profilePicView.setImage(new Image(f.toURI().toString()));
                 profilePicView.setVisible(true);
+                profilePicView.setStyle("-fx-cursor: hand;");
+                profilePicView.setOnMouseClicked(e -> onPicUpload.run());
                 uploadPicButton.setVisible(false);
                 return;
             }
         }
         profilePicView.setVisible(false);
+        profilePicView.setOnMouseClicked(null);
         uploadPicButton.setVisible(true);
     }
 

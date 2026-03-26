@@ -52,9 +52,8 @@ public class PersonListPanel extends UiPart<Region> {
                 setText(null);
             } else {
                 int index = getIndex() + 1;
-                setGraphic(new PersonCard(person, index,
-                        () -> onDelete.accept(index), onEdit,
-                        () -> onPicUpload.accept(index)).getRoot());
+                setGraphic(new PersonCard(person, index, () -> onDelete.accept(index), onEdit, ()
+                        -> onPicUpload.accept(index)).getRoot());
             }
         }
     }
