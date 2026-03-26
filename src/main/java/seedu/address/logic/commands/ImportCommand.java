@@ -102,13 +102,15 @@ public class ImportCommand extends StorageCommand {
      * @return an array of two ints: [added, skipped].
      */
     private int[] mergeIntoModel(Model model, ReadOnlyAddressBook imported) {
-        int added = 0;
-        int skipped = 0;
+        int added = 0; // Tracks the number of persons successfully added
+        int skipped = 0; // Tracks the number of persons skipped due to being duplicates
+        int insertIndex = 0; // Tracks the index at which to add the next person
         for (Person person : imported.getPersonList()) {
             if (model.hasPerson(person)) {
                 skipped++;
             } else {
-                model.addPerson(person);
+                model.addPerson(insertIndex, person);
+                insertIndex++;
                 added++;
             }
         }

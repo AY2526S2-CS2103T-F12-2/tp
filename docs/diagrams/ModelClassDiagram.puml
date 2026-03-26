@@ -9,7 +9,9 @@ Class "<<interface>>\nReadOnlyAddressBook" as ReadOnlyAddressBook
 Class "<<interface>>\nReadOnlyUserPrefs" as ReadOnlyUserPrefs
 Class "<<interface>>\nModel" as Model
 Class AddressBook
-Class ModelManager
+Class ModelManager {
+    + addPerson(index: int, person: Person)
+}
 Class UserPrefs
 
 Class UniquePersonList

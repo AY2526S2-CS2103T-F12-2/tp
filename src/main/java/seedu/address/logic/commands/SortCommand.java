@@ -3,7 +3,12 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
@@ -19,17 +24,19 @@ public class SortCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Sorts the person list by the specified field and order.\n"
             + "Parameters: CONDITION ORDER\n"
-            + "CONDITION: firstname | lastname\n"
+            + "CONDITION: firstname | lastname | recent\n"
             + "ORDER: ASC | DESC | a | d\n"
             + "Example: " + COMMAND_WORD + " firstname ASC";
 
     public static final String MESSAGE_SORT_SUCCESS = "Sorted by %1$s in %2$s order";
 
+    private static final Logger logger = LogsCenter.getLogger(SortCommand.class);
+
     /**
      * Enum representing the field to sort by.
      */
     public enum SortField {
-        FIRSTNAME, LASTNAME
+        FIRSTNAME, LASTNAME, RECENT
     }
 
     private final SortField sortField;
@@ -46,6 +53,7 @@ public class SortCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
+        logger.info("Executing sort by " + sortField + " in " + (isAscending ? "ascending" : "descending") + " order");
 
         Comparator<Person> fieldComparator;
 
@@ -59,6 +67,15 @@ public class SortCommand extends Command {
                 String[] parts = p.getName().fullName.split("\\s+");
                 return parts[parts.length - 1].toLowerCase();
             });
+            break;
+        case RECENT:
+            List<Person> unmodifiableList = model.getAddressBook().getPersonList();
+            Map<Person, Integer> indexMap = new HashMap<>();
+            int idx = 0;
+            for (Person p : unmodifiableList) {
+                indexMap.put(p, idx++);
+            }
+            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, Integer.MAX_VALUE));
             break;
         default:
             fieldComparator = Comparator.comparing(
