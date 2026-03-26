@@ -218,7 +218,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalNameKeyword_caseInsensitive_multiplePersonsFound() {
+    public void execute_optionalNameKeyword_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("kUrZ eLlE kUnZ");
         FindCommand command = new FindCommand(predicate);
@@ -285,7 +285,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_compulsoryAndOptional_bothSatisfied_noPersonFound() {
+    public void execute_compulsoryAndOptionalKeywords_noPersonFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(Collections.singletonList("Kunz"), Collections.singletonList("Elle"),
@@ -361,7 +361,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalGroupKeyword_caseInsensitive_singlePersonFound() {
+    public void execute_optionalGroupKeyword_singlePersonFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(Collections.emptyList(), Collections.emptyList(),
@@ -380,7 +380,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalEmailKeyword_partialMatch_singlePersonFound() {
+    public void execute_optionalEmailKeyword_singlePersonFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(Collections.emptyList(), Collections.emptyList(),
