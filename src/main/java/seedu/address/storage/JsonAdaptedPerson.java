@@ -38,6 +38,7 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
     private final List<JsonAdaptedGroup> groups = new ArrayList<>();
     private final List<JsonAdaptedAvailableHours> availableHours = new ArrayList<>();
+    private final boolean pinned;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -50,12 +51,14 @@ class JsonAdaptedPerson {
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
                              @JsonProperty("groups") List<JsonAdaptedGroup> groups,
-                             @JsonProperty("availableHours") List<JsonAdaptedAvailableHours> availableHours) {
+                             @JsonProperty("availableHours") List<JsonAdaptedAvailableHours> availableHours,
+                             @JsonProperty("pinned") Boolean pinned) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
+        this.pinned = pinned != null ? pinned : false;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -80,7 +83,7 @@ class JsonAdaptedPerson {
                              List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
                              List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
                              List<JsonAdaptedAvailableHours> availableHours) {
-        this(name, phone, email, address, "", tags, positions, majors, groups, availableHours);
+        this(name, phone, email, address, "", tags, positions, majors, groups, availableHours, false);
     }
 
     /**
@@ -92,6 +95,7 @@ class JsonAdaptedPerson {
         email = source.getEmail().value;
         address = source.getAddress().value;
         profilePicturePath = source.getProfilePicturePath();
+        pinned = source.isPinned();
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -179,7 +183,8 @@ class JsonAdaptedPerson {
         final Set<AvailableHours> modelAvailableHours = new HashSet<>(personAvailableHours);
 
         return new Person(modelName, modelPhone, modelEmail, modelAddress,
-                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours, profilePicturePath);
+                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours,
+                profilePicturePath, pinned);
     }
 
 }

@@ -35,13 +35,16 @@ public class Person {
     // Optional profile picture (file path), empty string if not set
     private String profilePicturePath;
 
+    // Whether this person is pinned to the top of the list
+    private boolean pinned;
+
 
     /**
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours) {
-        this(name, phone, email, address, tags, positions, majors, groups, availableHours, "");
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, "", false);
     }
 
     /**
@@ -50,6 +53,15 @@ public class Person {
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
                   String profilePicturePath) {
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, profilePicturePath, false);
+    }
+
+    /**
+     * Constructor with optional profile picture path and pinned status.
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
+                  String profilePicturePath, boolean pinned) {
         requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours);
         this.name = name;
         this.phone = phone;
@@ -61,6 +73,7 @@ public class Person {
         this.groups.addAll(groups);
         this.availableHours.addAll(availableHours);
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
+        this.pinned = pinned;
     }
 
     public Name getName() {
@@ -121,6 +134,10 @@ public class Person {
 
     public String getProfilePicturePath() {
         return profilePicturePath;
+    }
+
+    public boolean isPinned() {
+        return pinned;
     }
 
     /**

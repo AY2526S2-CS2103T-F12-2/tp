@@ -108,7 +108,7 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getFilteredPersonList());
+        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
     }
 
     /**
@@ -130,7 +130,7 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Collections.singletonList(ALICE), model.getFilteredPersonList());
+        assertEquals(Collections.singletonList(ALICE), model.getDisplayedPersonList());
     }
 
     /**
@@ -152,7 +152,7 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Collections.singletonList(CARL), model.getFilteredPersonList());
+        assertEquals(Collections.singletonList(CARL), model.getDisplayedPersonList());
     }
 
     /**
@@ -174,7 +174,7 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Collections.singletonList(BENSON), model.getFilteredPersonList());
+        assertEquals(Collections.singletonList(BENSON), model.getDisplayedPersonList());
     }
 
     /**
