@@ -1,5 +1,6 @@
 package seedu.address.ui;
 
+import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -8,9 +9,12 @@ import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Person;
 
@@ -33,6 +37,7 @@ public class PersonCard extends UiPart<Region> {
 
     private final Runnable onDelete;
     private final Consumer<String> onEdit;
+    private final Runnable onPicUpload;
     private final int displayedIndex;
 
     @FXML
@@ -61,15 +66,23 @@ public class PersonCard extends UiPart<Region> {
     private Label positions;
     @FXML
     private Label avatarInitial;
+    @FXML
+    private ImageView profilePicView;
+    @FXML
+    private Button uploadPicButton;
+    @FXML
+    private StackPane profilePicPane;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
      */
-    public PersonCard(Person person, int displayedIndex, Runnable onDelete, Consumer<String> onEdit) {
+    public PersonCard(Person person, int displayedIndex, Runnable onDelete, Consumer<String> onEdit,
+                      Runnable onPicUpload) {
         super(FXML);
         this.person = person;
         this.onDelete = onDelete;
         this.onEdit = onEdit;
+        this.onPicUpload = onPicUpload;
         this.displayedIndex = displayedIndex;
         id.setText(displayedIndex + ". ");
         name.setText(person.getName().fullName);
@@ -91,6 +104,21 @@ public class PersonCard extends UiPart<Region> {
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
         addGroupLabels(person);
+        updateProfilePicture(person.getProfilePicturePath());
+    }
+
+    private void updateProfilePicture(String picPath) {
+        if (picPath != null && !picPath.isEmpty()) {
+            File f = new File(picPath);
+            if (f.exists()) {
+                profilePicView.setImage(new Image(f.toURI().toString()));
+                profilePicView.setVisible(true);
+                uploadPicButton.setVisible(false);
+                return;
+            }
+        }
+        profilePicView.setVisible(false);
+        uploadPicButton.setVisible(true);
     }
 
     /**
@@ -118,6 +146,11 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private void handleDelete() {
         onDelete.run();
+    }
+
+    @FXML
+    private void handleUploadPic() {
+        onPicUpload.run();
     }
 
     @FXML

@@ -143,7 +143,7 @@ public class EditCommand extends Command {
         }
 
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
-                updatedMajors, updatedGroups, updatedAvailableHours);
+                updatedMajors, updatedGroups, updatedAvailableHours, personToEdit.getProfilePicturePath());
     }
 
     @Override
