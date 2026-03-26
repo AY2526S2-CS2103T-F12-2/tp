@@ -14,7 +14,7 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,19 +30,53 @@ public class FindCommandTest {
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
     private Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
+    private PersonMatchesKeywordsPredicate createPredicate(
+            List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
+            List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
+            List<String> compulsoryPhoneKeywords, List<String> optionalPhoneKeywords,
+            List<String> compulsoryMajorKeywords, List<String> optionalMajorKeywords,
+            List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
+            List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
+            List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
+            List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
+        return new PersonMatchesKeywordsPredicate(
+                compulsoryNameKeywords, optionalNameKeywords,
+                compulsoryAddressKeywords, optionalAddressKeywords,
+                compulsoryPhoneKeywords, optionalPhoneKeywords,
+                compulsoryMajorKeywords, optionalMajorKeywords,
+                compulsoryEmailKeywords, optionalEmailKeywords,
+                compulsoryTagKeywords, optionalTagKeywords,
+                compulsoryPositionKeywords, optionalPositionKeywords,
+                compulsoryGroupKeywords, optionalGroupKeywords,
+                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
+    }
+
     /**
      * Ensures find command equality uses predicate equality.
      */
     @Test
     public void equals() {
         PersonMatchesKeywordsPredicate firstPredicate =
-                new PersonMatchesKeywordsPredicate(Collections.singletonList("first"), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Optional.empty());
+                createPredicate(Collections.emptyList(), Collections.singletonList("first"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
         PersonMatchesKeywordsPredicate secondPredicate =
-                new PersonMatchesKeywordsPredicate(Collections.singletonList("second"), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Optional.empty());
+                createPredicate(Collections.emptyList(), Collections.singletonList("second"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
 
         FindCommand findFirstCommand = new FindCommand(firstPredicate);
         FindCommand findSecondCommand = new FindCommand(secondPredicate);
@@ -65,19 +99,6 @@ public class FindCommandTest {
     }
 
     /**
-     * Ensures no keywords produces an empty list.
-     */
-    @Test
-    public void execute_zeroKeywords_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate(" ");
-        FindCommand command = new FindCommand(predicate);
-        expectedModel.updateFilteredPersonList(predicate);
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Collections.emptyList(), model.getFilteredPersonList());
-    }
-
-    /**
      * Ensures multiple keywords return the matching persons.
      */
     @Test
@@ -97,9 +118,15 @@ public class FindCommandTest {
     public void execute_groupKeyword_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Optional.of("best"));
+                createPredicate(Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.singletonList("best"),
+                        Collections.emptyList(), Collections.emptyList());
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
@@ -113,9 +140,15 @@ public class FindCommandTest {
     public void execute_addressKeyword_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(Collections.emptyList(), Collections.singletonList("wall"),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Optional.empty());
+                createPredicate(Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.singletonList("wall"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
@@ -129,10 +162,15 @@ public class FindCommandTest {
     public void execute_majorKeyword_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(Collections.emptyList(), Collections.emptyList(),
+                createPredicate(Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
                         Collections.emptyList(), Collections.singletonList("Biology"),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Optional.empty());
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
@@ -145,9 +183,15 @@ public class FindCommandTest {
     @Test
     public void toStringMethod() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(Arrays.asList("keyword"), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(), Optional.empty());
+                createPredicate(Collections.emptyList(), Arrays.asList("keyword"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
         FindCommand findCommand = new FindCommand(predicate);
         String expected = FindCommand.class.getCanonicalName() + "{predicate=" + predicate + "}";
         assertEquals(expected, findCommand.toString());
@@ -157,9 +201,14 @@ public class FindCommandTest {
      * Parses {@code userInput} into a {@code PersonMatchesKeywordsPredicate}.
      */
     private PersonMatchesKeywordsPredicate preparePredicate(String userInput) {
-        return new PersonMatchesKeywordsPredicate(Arrays.asList(userInput.split("\\s+")), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(),
-                Optional.empty());
+        return createPredicate(Collections.emptyList(), Arrays.asList(userInput.split("\\s+")),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList());
     }
 }

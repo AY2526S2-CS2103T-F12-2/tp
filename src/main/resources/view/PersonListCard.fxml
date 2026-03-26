@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
@@ -52,6 +53,14 @@
       <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>
+  <StackPane fx:id="profilePicPane" prefWidth="120" prefHeight="120" minWidth="55" minHeight="55"
+             maxWidth="120" maxHeight="120" alignment="CENTER">
+    <ImageView fx:id="profilePicView" fitWidth="120" fitHeight="120" preserveRatio="true"
+               visible="false" styleClass="profile-pic-view"/>
+    <Button fx:id="uploadPicButton" text="📷" onAction="#handleUploadPic"
+            prefWidth="55" prefHeight="55"
+            style="-fx-background-color: #3a3a3a; -fx-text-fill: #aaaaaa; -fx-font-size: 20px; -fx-cursor: hand; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #555555; -fx-border-width: 1; -fx-padding: 0; -fx-background-insets: 0;" visible="true"/>
+  </StackPane>
   <HBox spacing="10" alignment="TOP_RIGHT">
     <Button fx:id="editButton" text="&#x270E;" onAction="#handleEdit"
             prefWidth="28" prefHeight="28" styleClass="icon-button"

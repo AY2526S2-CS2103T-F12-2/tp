@@ -36,6 +36,10 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
    * `clear` : Deletes all contacts.
 
+   * `pic 1` : Opens a file picker to set a profile picture for the 1st contact.
+
+   * `toggle color mode` : Switches between dark and light mode.
+
    * `exit` : Exits the app.
 
 1. Refer to the [Features](#features) below for details of each command.
@@ -85,6 +89,10 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 A person can have any number of tags, groups, majors and positions (including 0)
 </div>
 
+<div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
+CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
+</div>
+
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 m/Biology`
 * `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
@@ -117,18 +125,20 @@ Examples:
 
 Finds persons whose names contain any of the given keywords.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `find [[FLAG] [PREFIX/KEYWORDS]]`.
 
-* The search is case-insensitive. e.g `hans` will match `Hans`
-* The order of the keywords does not matter. e.g. `Hans Bo` will match `Bo Hans`
-* Only the name is searched.
-* Only full words will be matched e.g. `Han` will not match `Hans`
-* Persons matching at least one keyword will be returned (i.e. `OR` search).
-  e.g. `Hans Bo` will return `Hans Gruber`, `Bo Yang`
+* The search is case-insensitive. e.g `hans` will match `Hans`. Keywords themselves have no restriction, but they must be nonempty when leading and trailing spaces are trimmed (i.e., "n/Al?ce" is allowed but "n/[SPACE]" is not).
+* The order of the keywords does not matter. e.g. `n/Hans n/Bo` will match `Bo Hans`
+* User supplies at least one of search keywords, all of which should be preceded by corresponding prefix (e.g., n/).
+* For names, only full words will be matched e.g. `Han` will not match `Hans`
+* User can use flags: "-o" for optional fields, "-c" for compulsory fields. All keywords following a certain flag will be processed according to that flag. By default (no flag) fields are all optional.
+* Flags should be preceded and followed by one space each. Where a part of input can be interpreted as both flag and keyword, it will be treated as a flag.
+* When more than two flags exist, keywords will be processed according to the last flag before it. E.g., for "-c -o n/James -c po/Principal", parse result will be an optional name "James" and a compulsory position "Principal".
+* Persons matching all compulsory fields (if any) AND, when optional keywords exist, at least one optional keyword, will be returned (i.e., for "-c n/James -o po/Principal", find result will contain everyone who is both named "James" and has position "Principal").
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
+* `find n/John` returns `john` and `John Doe`
+* `find n/alex n/david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
 ### Deleting a person : `delete`
@@ -144,6 +154,31 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+
+### Adding or replacing a profile picture : `pic`
+
+Opens a file picker to set or replace the profile picture for the specified contact.
+The picture is displayed on the right side of the contact card.
+
+* If **no picture** has been set, a 📷 button appears — clicking it opens the file picker.
+* If a **picture already exists**, clicking on it also opens the file picker to replace it.
+
+Format: `pic INDEX`
+
+* `INDEX` must be a positive integer referring to a contact in the current list.
+* Supported formats: PNG, JPG, JPEG, GIF, BMP.
+* The picture is saved persistently and will appear on next launch.
+
+Examples:
+* `pic 1` — opens a file picker to set or replace the picture for the 1st contact.
+* `pic 3` — opens a file picker to set or replace the picture for the 3rd contact.
+
+### Toggling dark / light mode : `toggle color mode`
+
+Switches the application between dark mode and light mode.
+A ☀ / 🌙 button at the top-right corner of the window does the same thing.
+
+Format: `toggle color mode`
 
 ### Clearing all entries : `clear`
 
@@ -220,8 +255,10 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
 **List** | `list`
 **Help** | `help`
 **Set Password** | `setpassword pw/PASSWORD`<br> e.g., `setpassword pw/mySecret123`
 **Remove Password** | `removepassword`
+**Profile Picture** | `pic INDEX`<br> e.g., `pic 2`
+**Toggle Color Mode** | `toggle color mode`

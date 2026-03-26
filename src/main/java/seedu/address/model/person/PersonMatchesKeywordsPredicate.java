@@ -2,7 +2,6 @@ package seedu.address.model.person;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.StringUtil;
@@ -12,119 +11,225 @@ import seedu.address.commons.util.ToStringBuilder;
  * Tests that a {@code Person}'s fields match any of the provided keywords.
  */
 public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
-    private final List<String> nameKeywords;
-    private final List<String> addressKeywords;
-    private final List<String> phoneKeywords;
-    private final List<String> majorKeywords;
-    private final List<String> emailKeywords;
-    private final List<String> tagKeywords;
-    private final List<String> positionKeywords;
-    private final Optional<String> groupKeyword;
+    private final List<String> compulsoryNameKeywords;
+    private final List<String> optionalNameKeywords;
+    private final List<String> compulsoryAddressKeywords;
+    private final List<String> optionalAddressKeywords;
+    private final List<String> compulsoryPhoneKeywords;
+    private final List<String> optionalPhoneKeywords;
+    private final List<String> compulsoryMajorKeywords;
+    private final List<String> optionalMajorKeywords;
+    private final List<String> compulsoryEmailKeywords;
+    private final List<String> optionalEmailKeywords;
+    private final List<String> compulsoryTagKeywords;
+    private final List<String> optionalTagKeywords;
+    private final List<String> compulsoryPositionKeywords;
+    private final List<String> optionalPositionKeywords;
+    private final List<String> compulsoryGroupKeywords;
+    private final List<String> optionalGroupKeywords;
+    private final List<String> compulsoryAvailableHoursKeywords;
+    private final List<String> optionalAvailableHoursKeywords;
+    private final boolean areAllOptionalKeywordsEmpty;
 
     /**
-     * Creates a predicate that matches on name, address, phone, major, email, tag, position, or group keywords.
+     * Creates a predicate that matches on compulsory and optional name, address, phone, major, email,
+     * tag, position, group, or available hours keywords.
+     *
+     * @param compulsoryNameKeywords The compulsory name keywords.
+     * @param optionalNameKeywords The optional name keywords.
+     * @param compulsoryAddressKeywords The compulsory address keywords.
+     * @param optionalAddressKeywords The optional address keywords.
+     * @param compulsoryPhoneKeywords The compulsory phone keywords.
+     * @param optionalPhoneKeywords The optional phone keywords.
+     * @param compulsoryMajorKeywords The compulsory major keywords.
+     * @param optionalMajorKeywords The optional major keywords.
+     * @param compulsoryEmailKeywords The compulsory email keywords.
+     * @param optionalEmailKeywords The optional email keywords.
+     * @param compulsoryTagKeywords The compulsory tag keywords.
+     * @param optionalTagKeywords The optional tag keywords.
+     * @param compulsoryPositionKeywords The compulsory position keywords.
+     * @param optionalPositionKeywords The optional position keywords.
+     * @param compulsoryGroupKeywords The compulsory group keywords.
+     * @param optionalGroupKeywords The optional group keywords.
+     * @param compulsoryAvailableHoursKeywords The compulsory available hours keywords.
+     * @param optionalAvailableHoursKeywords The optional available hours keywords.
      */
-    public PersonMatchesKeywordsPredicate(List<String> nameKeywords, List<String> addressKeywords,
-            List<String> phoneKeywords, List<String> majorKeywords, List<String> emailKeywords,
-            List<String> tagKeywords, List<String> positionKeywords, Optional<String> groupKeyword) {
-        this.nameKeywords = nameKeywords;
-        this.addressKeywords = addressKeywords;
-        this.phoneKeywords = phoneKeywords;
-        this.majorKeywords = majorKeywords;
-        this.emailKeywords = emailKeywords;
-        this.tagKeywords = tagKeywords;
-        this.positionKeywords = positionKeywords;
-        this.groupKeyword = groupKeyword;
+    public PersonMatchesKeywordsPredicate(
+            List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
+            List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
+            List<String> compulsoryPhoneKeywords, List<String> optionalPhoneKeywords,
+            List<String> compulsoryMajorKeywords, List<String> optionalMajorKeywords,
+            List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
+            List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
+            List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
+            List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
+        this.compulsoryNameKeywords = compulsoryNameKeywords;
+        this.optionalNameKeywords = optionalNameKeywords;
+        this.compulsoryAddressKeywords = compulsoryAddressKeywords;
+        this.optionalAddressKeywords = optionalAddressKeywords;
+        this.compulsoryPhoneKeywords = compulsoryPhoneKeywords;
+        this.optionalPhoneKeywords = optionalPhoneKeywords;
+        this.compulsoryMajorKeywords = compulsoryMajorKeywords;
+        this.optionalMajorKeywords = optionalMajorKeywords;
+        this.compulsoryEmailKeywords = compulsoryEmailKeywords;
+        this.optionalEmailKeywords = optionalEmailKeywords;
+        this.compulsoryTagKeywords = compulsoryTagKeywords;
+        this.optionalTagKeywords = optionalTagKeywords;
+        this.compulsoryPositionKeywords = compulsoryPositionKeywords;
+        this.optionalPositionKeywords = optionalPositionKeywords;
+        this.compulsoryGroupKeywords = compulsoryGroupKeywords;
+        this.optionalGroupKeywords = optionalGroupKeywords;
+        this.compulsoryAvailableHoursKeywords = compulsoryAvailableHoursKeywords;
+        this.optionalAvailableHoursKeywords = optionalAvailableHoursKeywords;
+        this.areAllOptionalKeywordsEmpty = areAllOptionalKeywordsEmpty();
     }
 
     /**
-     * Returns true if any of the provided keywords match the person.
+     * Returns true if all compulsory fields are matched, and at least some optional fields are matched.
      */
     @Override
     public boolean test(Person person) {
-        return matchesName(person)
-                || matchesAddress(person)
-                || matchesPhone(person)
-                || matchesMajor(person)
-                || matchesEmail(person)
-                || matchesTags(person)
-                || matchesPositions(person)
-                || matchesGroup(person);
+        return testCompulsory(person) && testOptional(person);
+    }
+
+    private boolean testCompulsory(Person person) {
+        return matchesName(person, true)
+                && matchesAddress(person, true)
+                && matchesPhone(person, true)
+                && matchesMajor(person, true)
+                && matchesEmail(person, true)
+                && matchesTags(person, true)
+                && matchesPositions(person, true)
+                && matchesGroups(person, true)
+                && matchesAvailableHours(person, true);
+    }
+
+    private boolean testOptional(Person person) {
+        if (this.areAllOptionalKeywordsEmpty) {
+            return true;
+        }
+
+        return matchesName(person, false)
+                || matchesAddress(person, false)
+                || matchesPhone(person, false)
+                || matchesMajor(person, false)
+                || matchesEmail(person, false)
+                || matchesTags(person, false)
+                || matchesPositions(person, false)
+                || matchesGroups(person, false)
+                || matchesAvailableHours(person, false);
     }
 
     /**
      * Returns true if any name keyword matches the person's name.
      */
-    private boolean matchesName(Person person) {
-        return !nameKeywords.isEmpty()
-                && nameKeywords.stream()
+    private boolean matchesName(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryNameKeywords : optionalNameKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory // For empty compulsory fields they are matched by default.
+                : keywords.stream()
                 .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword));
     }
 
     /**
      * Returns true if any address keyword matches the person's address.
      */
-    private boolean matchesAddress(Person person) {
-        return !addressKeywords.isEmpty()
-                && addressKeywords.stream()
+    private boolean matchesAddress(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryAddressKeywords : optionalAddressKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : keywords.stream()
                 .anyMatch(keyword -> containsIgnoreCase(person.getAddress().value, keyword));
     }
 
     /**
      * Returns true if any phone keyword matches the person's phone.
      */
-    private boolean matchesPhone(Person person) {
-        return !phoneKeywords.isEmpty()
-                && phoneKeywords.stream()
+    private boolean matchesPhone(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryPhoneKeywords : optionalPhoneKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : keywords.stream()
                 .anyMatch(keyword -> containsIgnoreCase(person.getPhone().value, keyword));
     }
 
     /**
      * Returns true if any major keyword matches the person's majors.
      */
-    private boolean matchesMajor(Person person) {
-        return !majorKeywords.isEmpty()
-                && person.getMajors().stream()
-                .anyMatch(major -> majorKeywords.stream()
+    private boolean matchesMajor(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryMajorKeywords : optionalMajorKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : person.getMajors().stream()
+                .anyMatch(major -> keywords.stream()
                         .anyMatch(keyword -> containsIgnoreCase(major.value, keyword)));
     }
 
     /**
      * Returns true if any email keyword matches the person's email.
      */
-    private boolean matchesEmail(Person person) {
-        return !emailKeywords.isEmpty()
-                && emailKeywords.stream()
+    private boolean matchesEmail(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryEmailKeywords : optionalEmailKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : keywords.stream()
                 .anyMatch(keyword -> containsIgnoreCase(person.getEmail().value, keyword));
     }
 
     /**
      * Returns true if any tag keyword matches the person's tags.
      */
-    private boolean matchesTags(Person person) {
-        return !tagKeywords.isEmpty()
-                && person.getTags().stream()
-                .anyMatch(tag -> tagKeywords.stream()
+    private boolean matchesTags(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryTagKeywords : optionalTagKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : person.getTags().stream()
+                .anyMatch(tag -> keywords.stream()
                         .anyMatch(keyword -> containsIgnoreCase(tag.tagName, keyword)));
     }
 
     /**
      * Returns true if any position keyword matches the person's positions.
      */
-    private boolean matchesPositions(Person person) {
-        return !positionKeywords.isEmpty()
-                && person.getPositions().stream()
-                .anyMatch(position -> positionKeywords.stream()
+    private boolean matchesPositions(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryPositionKeywords : optionalPositionKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : person.getPositions().stream()
+                .anyMatch(position -> keywords.stream()
                         .anyMatch(keyword -> containsIgnoreCase(position.value, keyword)));
     }
 
     /**
-     * Returns true if the group keyword matches any group with prefix matching.
+     * Returns true if any group keyword matches the person's groups.
      */
-    private boolean matchesGroup(Person person) {
-        return groupKeyword
-                .map(keyword -> hasGroupWithPrefixIgnoreCase(person, keyword))
-                .orElse(false);
+    private boolean matchesGroups(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryGroupKeywords : optionalGroupKeywords;
+        return keywords.isEmpty()
+                ? isCompulsory
+                : person.getGroups().stream()
+                .anyMatch(group -> keywords.stream()
+                        .anyMatch(keyword -> containsIgnoreCase(group.value, keyword)));
+    }
+
+    /**
+     * Returns true if any time/slot keyword matches the person's available hours.
+     */
+    private boolean matchesAvailableHours(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryAvailableHoursKeywords : optionalAvailableHoursKeywords;
+        if (keywords.isEmpty()) {
+            return isCompulsory;
+        }
+        if (person.getAvailableHours().isEmpty()) {
+            return false;
+        }
+
+        return person.getAvailableHours().stream()
+                .anyMatch(duration -> keywords.stream()
+                        .anyMatch(keyword -> AvailableHours.isValidAvailableHours(keyword)
+                                ? AvailableHours.isSlotWithinDuration(new AvailableHours(keyword), duration)
+                                : AvailableHours.isTimeWithinDuration(AvailableHours.stringToTime(keyword), duration)));
     }
 
     /**
@@ -134,13 +239,16 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         return sentence.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 
-    /**
-     * Returns true if the person has at least one group value that starts with the keyword (case-insensitive).
-     */
-    private boolean hasGroupWithPrefixIgnoreCase(Person person, String keyword) {
-        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        return person.getGroups().stream()
-                .anyMatch(group -> group.value.toLowerCase(Locale.ROOT).startsWith(normalizedKeyword));
+    private boolean areAllOptionalKeywordsEmpty() {
+        return optionalNameKeywords.isEmpty()
+                && optionalAddressKeywords.isEmpty()
+                && optionalPhoneKeywords.isEmpty()
+                && optionalMajorKeywords.isEmpty()
+                && optionalEmailKeywords.isEmpty()
+                && optionalTagKeywords.isEmpty()
+                && optionalPositionKeywords.isEmpty()
+                && optionalGroupKeywords.isEmpty()
+                && optionalAvailableHoursKeywords.isEmpty();
     }
 
     /**
@@ -157,14 +265,24 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         }
 
         PersonMatchesKeywordsPredicate otherPredicate = (PersonMatchesKeywordsPredicate) other;
-        return nameKeywords.equals(otherPredicate.nameKeywords)
-                && addressKeywords.equals(otherPredicate.addressKeywords)
-                && phoneKeywords.equals(otherPredicate.phoneKeywords)
-                && majorKeywords.equals(otherPredicate.majorKeywords)
-                && emailKeywords.equals(otherPredicate.emailKeywords)
-                && tagKeywords.equals(otherPredicate.tagKeywords)
-                && positionKeywords.equals(otherPredicate.positionKeywords)
-                && groupKeyword.equals(otherPredicate.groupKeyword);
+        return compulsoryNameKeywords.equals(otherPredicate.compulsoryNameKeywords)
+                && optionalNameKeywords.equals(otherPredicate.optionalNameKeywords)
+                && compulsoryAddressKeywords.equals(otherPredicate.compulsoryAddressKeywords)
+                && optionalAddressKeywords.equals(otherPredicate.optionalAddressKeywords)
+                && compulsoryPhoneKeywords.equals(otherPredicate.compulsoryPhoneKeywords)
+                && optionalPhoneKeywords.equals(otherPredicate.optionalPhoneKeywords)
+                && compulsoryMajorKeywords.equals(otherPredicate.compulsoryMajorKeywords)
+                && optionalMajorKeywords.equals(otherPredicate.optionalMajorKeywords)
+                && compulsoryEmailKeywords.equals(otherPredicate.compulsoryEmailKeywords)
+                && optionalEmailKeywords.equals(otherPredicate.optionalEmailKeywords)
+                && compulsoryTagKeywords.equals(otherPredicate.compulsoryTagKeywords)
+                && optionalTagKeywords.equals(otherPredicate.optionalTagKeywords)
+                && compulsoryPositionKeywords.equals(otherPredicate.compulsoryPositionKeywords)
+                && optionalPositionKeywords.equals(otherPredicate.optionalPositionKeywords)
+                && compulsoryGroupKeywords.equals(otherPredicate.compulsoryGroupKeywords)
+                && optionalGroupKeywords.equals(otherPredicate.optionalGroupKeywords)
+                && compulsoryAvailableHoursKeywords.equals(otherPredicate.compulsoryAvailableHoursKeywords)
+                && optionalAvailableHoursKeywords.equals(otherPredicate.optionalAvailableHoursKeywords);
     }
 
     /**
@@ -173,14 +291,24 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .add("nameKeywords", nameKeywords)
-                .add("addressKeywords", addressKeywords)
-                .add("phoneKeywords", phoneKeywords)
-                .add("majorKeywords", majorKeywords)
-                .add("emailKeywords", emailKeywords)
-                .add("tagKeywords", tagKeywords)
-                .add("positionKeywords", positionKeywords)
-                .add("groupKeyword", groupKeyword)
+                .add("compulsoryNameKeywords", compulsoryNameKeywords)
+                .add("optionalNameKeywords", optionalNameKeywords)
+                .add("compulsoryAddressKeywords", compulsoryAddressKeywords)
+                .add("optionalAddressKeywords", optionalAddressKeywords)
+                .add("compulsoryPhoneKeywords", compulsoryPhoneKeywords)
+                .add("optionalPhoneKeywords", optionalPhoneKeywords)
+                .add("compulsoryMajorKeywords", compulsoryMajorKeywords)
+                .add("optionalMajorKeywords", optionalMajorKeywords)
+                .add("compulsoryEmailKeywords", compulsoryEmailKeywords)
+                .add("optionalEmailKeywords", optionalEmailKeywords)
+                .add("compulsoryTagKeywords", compulsoryTagKeywords)
+                .add("optionalTagKeywords", optionalTagKeywords)
+                .add("compulsoryPositionKeywords", compulsoryPositionKeywords)
+                .add("optionalPositionKeywords", optionalPositionKeywords)
+                .add("compulsoryGroupKeywords", compulsoryGroupKeywords)
+                .add("optionalGroupKeywords", optionalGroupKeywords)
+                .add("compulsoryAvailableHoursKeywords", compulsoryAvailableHoursKeywords)
+                .add("optionalAvailableHoursKeywords", optionalAvailableHoursKeywords)
                 .toString();
     }
 }

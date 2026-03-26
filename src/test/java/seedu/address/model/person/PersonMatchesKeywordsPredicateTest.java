@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,23 +17,48 @@ import seedu.address.testutil.PersonBuilder;
  */
 public class PersonMatchesKeywordsPredicateTest {
 
+    private PersonMatchesKeywordsPredicate createPredicate(
+            List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
+            List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
+            List<String> compulsoryPhoneKeywords, List<String> optionalPhoneKeywords,
+            List<String> compulsoryMajorKeywords, List<String> optionalMajorKeywords,
+            List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
+            List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
+            List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
+            List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
+        return new PersonMatchesKeywordsPredicate(
+                compulsoryNameKeywords, optionalNameKeywords,
+                compulsoryAddressKeywords, optionalAddressKeywords,
+                compulsoryPhoneKeywords, optionalPhoneKeywords,
+                compulsoryMajorKeywords, optionalMajorKeywords,
+                compulsoryEmailKeywords, optionalEmailKeywords,
+                compulsoryTagKeywords, optionalTagKeywords,
+                compulsoryPositionKeywords, optionalPositionKeywords,
+                compulsoryGroupKeywords, optionalGroupKeywords,
+                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
+    }
+
     /**
      * Ensures predicate equality follows the configured keywords.
      */
     @Test
     public void equals() {
         PersonMatchesKeywordsPredicate firstPredicate =
-                new PersonMatchesKeywordsPredicate(List.of("first"), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of("first"), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
         PersonMatchesKeywordsPredicate secondPredicate =
-                new PersonMatchesKeywordsPredicate(List.of("second"), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.of("CS"));
+                createPredicate(List.of("second"), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of("CS"), List.of(), List.of());
 
         assertTrue(firstPredicate.equals(firstPredicate));
 
         PersonMatchesKeywordsPredicate firstPredicateCopy =
-                new PersonMatchesKeywordsPredicate(List.of("first"), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of("first"), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
         assertTrue(firstPredicate.equals(firstPredicateCopy));
 
         assertFalse(firstPredicate.equals(1));
@@ -48,8 +72,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_nameContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(Collections.singletonList("Alice"), List.of(), List.of(),
-                        List.of(), List.of(), List.of(), List.of(), Optional.empty());
+                createPredicate(List.of(), Collections.singletonList("Alice"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
     }
 
@@ -59,8 +84,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_addressContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of("Jurong"), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of("Jurong"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withAddress("123 Jurong Ave").build()));
     }
 
@@ -70,8 +96,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_phoneContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of("94351253"), List.of(), List.of(),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of("94351253"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withPhone("94351253").build()));
     }
 
@@ -81,8 +108,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_majorContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(), List.of("CS"), List.of(),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of("CS"), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withMajors("CS").build()));
     }
 
@@ -92,8 +120,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_emailContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(), List.of(), List.of("alice"),
-                        List.of(), List.of(), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of("alice"), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withEmail("alice@example.com").build()));
     }
 
@@ -101,10 +130,11 @@ public class PersonMatchesKeywordsPredicateTest {
      * Ensures group prefix matching returns true when a group matches.
      */
     @Test
-    public void test_groupPrefixMatches_returnsTrue() {
+    public void test_groupContainsKeyword_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.of("CS"));
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of("CS"), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withGroups("CS2103T").build()));
     }
 
@@ -114,8 +144,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_tagContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(), List.of(), List.of(),
-                        List.of("friends"), List.of(), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of("friends"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withTags("friends").build()));
     }
 
@@ -125,8 +156,9 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_positionContainsKeywords_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of(), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of("Teaching Assistant"), Optional.empty());
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of("Teaching Assistant"), List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withPositions("Teaching Assistant").build()));
     }
 
@@ -136,8 +168,10 @@ public class PersonMatchesKeywordsPredicateTest {
     @Test
     public void test_noMatch_returnsFalse() {
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(List.of("Alice"), List.of("Jurong"), List.of("9435"),
-                        List.of("CS"), List.of("alice"), List.of("friend"), List.of("TA"), Optional.of("CS"));
+                createPredicate(List.of(), List.of("Alice"), List.of(), List.of("Jurong"),
+                        List.of(), List.of("9435"), List.of(), List.of("CS"), List.of(), List.of("alice"),
+                        List.of(), List.of("friend"), List.of(), List.of("TA"), List.of(), List.of("CS"),
+                        List.of(), List.of());
         assertFalse(predicate.test(new PersonBuilder().withName("Bob").withAddress("Main Street")
                 .withPhone("123456").withEmail("bob@example.com").withMajors("Math").withGroups("MA1521").build()));
     }
@@ -149,12 +183,29 @@ public class PersonMatchesKeywordsPredicateTest {
     public void toStringMethod() {
         List<String> keywords = Arrays.asList("keyword1", "keyword2");
         PersonMatchesKeywordsPredicate predicate =
-                new PersonMatchesKeywordsPredicate(keywords, List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), Optional.of("CS"));
+                createPredicate(keywords, List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of("CS"), List.of(), List.of());
 
         String expected = PersonMatchesKeywordsPredicate.class.getCanonicalName()
-                + "{nameKeywords=" + keywords + ", addressKeywords=[], phoneKeywords=[], majorKeywords=[]"
-                + ", emailKeywords=[], tagKeywords=[], positionKeywords=[], groupKeyword=" + Optional.of("CS") + "}";
+                + "{compulsoryNameKeywords=" + keywords
+                + ", optionalNameKeywords=[]"
+                + ", compulsoryAddressKeywords=[]"
+                + ", optionalAddressKeywords=[]"
+                + ", compulsoryPhoneKeywords=[]"
+                + ", optionalPhoneKeywords=[]"
+                + ", compulsoryMajorKeywords=[]"
+                + ", optionalMajorKeywords=[]"
+                + ", compulsoryEmailKeywords=[]"
+                + ", optionalEmailKeywords=[]"
+                + ", compulsoryTagKeywords=[]"
+                + ", optionalTagKeywords=[]"
+                + ", compulsoryPositionKeywords=[]"
+                + ", optionalPositionKeywords=[]"
+                + ", compulsoryGroupKeywords=[]"
+                + ", optionalGroupKeywords=" + List.of("CS")
+                + ", compulsoryAvailableHoursKeywords=[]"
+                + ", optionalAvailableHoursKeywords=[]}";
         assertEquals(expected, predicate.toString());
     }
 }
