@@ -30,6 +30,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     private final List<String> compulsoryAvailableHoursKeywords;
     private final List<String> optionalAvailableHoursKeywords;
     private final boolean areAllOptionalKeywordsEmpty;
+    private final boolean areAllCompulsoryKeywordsEmpty;
 
     /**
      * Creates a predicate that matches on compulsory and optional name, address, phone, major, email,
@@ -83,6 +84,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         this.compulsoryAvailableHoursKeywords = compulsoryAvailableHoursKeywords;
         this.optionalAvailableHoursKeywords = optionalAvailableHoursKeywords;
         this.areAllOptionalKeywordsEmpty = areAllOptionalKeywordsEmpty();
+        this.areAllCompulsoryKeywordsEmpty = areAllCompulsoryKeywordsEmpty();
     }
 
     /**
@@ -90,6 +92,9 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     @Override
     public boolean test(Person person) {
+        if (areAllCompulsoryKeywordsEmpty && areAllOptionalKeywordsEmpty) {
+            return false;
+        }
         return testCompulsory(person) && testOptional(person);
     }
 
@@ -249,6 +254,18 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && optionalPositionKeywords.isEmpty()
                 && optionalGroupKeywords.isEmpty()
                 && optionalAvailableHoursKeywords.isEmpty();
+    }
+
+    private boolean areAllCompulsoryKeywordsEmpty() {
+        return compulsoryNameKeywords.isEmpty()
+                && compulsoryAddressKeywords.isEmpty()
+                && compulsoryPhoneKeywords.isEmpty()
+                && compulsoryMajorKeywords.isEmpty()
+                && compulsoryEmailKeywords.isEmpty()
+                && compulsoryTagKeywords.isEmpty()
+                && compulsoryPositionKeywords.isEmpty()
+                && compulsoryGroupKeywords.isEmpty()
+                && compulsoryAvailableHoursKeywords.isEmpty();
     }
 
     /**
