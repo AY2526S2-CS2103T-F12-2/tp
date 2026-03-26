@@ -1,17 +1,20 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +23,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.ExportCommand;
+import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -83,8 +89,43 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
+    public void execute_exportCommandMainAutosaveFails_success() throws Exception {
+        Path exportPath = temporaryFolder.resolve("exported.json");
+        Path prefPath = temporaryFolder.resolve("ExportCaseAddressBook.json");
+
+        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(prefPath) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                throw DUMMY_IO_EXCEPTION;
+            }
+        };
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("ExportCaseUserPrefs.json"));
+        logic = new LogicManager(model, new StorageManager(addressBookStorage, userPrefsStorage));
+
+        CommandResult result = logic.execute(ExportCommand.COMMAND_WORD + " "
+                + PREFIX_FILE_PATH + exportPath);
+        assertEquals(String.format(ExportCommand.MESSAGE_SUCCESS, 0, exportPath.toString()),
+                result.getFeedbackToUser());
+        assertTrue(Files.exists(exportPath));
+    }
+
+    @Test
+    public void execute_importCommand_usesStorageDispatch() throws Exception {
+        Path importPath = temporaryFolder.resolve("imported.json");
+        AddressBook importedBook = new AddressBook();
+        importedBook.addPerson(new PersonBuilder(AMY).withTags().build());
+        new JsonAddressBookStorage(importPath).saveAddressBook(importedBook);
+
+        CommandResult result = logic.execute(ImportCommand.COMMAND_WORD + " "
+                + PREFIX_FILE_PATH + importPath);
+        assertEquals(String.format(ImportCommand.MESSAGE_SUCCESS, 1, 0), result.getFeedbackToUser());
+        assertTrue(model.hasPerson(new PersonBuilder(AMY).withTags().build()));
+    }
+
+    @Test
+    public void getDisplayedPersonList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> logic.getDisplayedPersonList().remove(0));
     }
 
     /**

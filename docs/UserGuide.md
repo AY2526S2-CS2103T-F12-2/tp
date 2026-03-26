@@ -31,10 +31,18 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
    * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
-   
+
    * `edit 2 g/student` : Edits the group information of the 2nd contact in the current list.
 
    * `clear` : Deletes all contacts.
+
+   * `pic 1` : Opens a file picker to set a profile picture for the 1st contact.
+
+   * `followup 1 f/Send project files` : Sets a follow-up reminder on the 1st contact.
+
+   * `clearfollowup 1` : Removes the follow-up reminder from the 1st contact.
+
+   * `toggle color mode` : Switches between dark and light mode.
 
    * `exit` : Exits the app.
 
@@ -83,6 +91,10 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, groups, majors and positions (including 0)
+</div>
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
+CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
 </div>
 
 Examples:
@@ -147,11 +159,141 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
+### Pinning a person : `pin`
+
+Toggles the pin status of the specified person. Pinned persons are moved to the top of the list and display a 📌 icon.
+
+Format: `pin INDEX`
+
+* Pins the person at the specified `INDEX` if they are not already pinned.
+* If the person is already pinned, running `pin INDEX` again will **unpin** them.
+* The index refers to the index number shown in the displayed person list.
+* The index **must be a positive integer** 1, 2, 3, …​
+* A maximum of **3** persons can be pinned at a time. Attempting to pin a 4th person will show an error.
+* Pin status is saved and persists across sessions.
+
+Examples:
+* `pin 1` pins the 1st person in the list.
+* `pin 1` again unpins that person.
+
+### Adding or replacing a profile picture : `pic`
+
+Opens a file picker to set or replace the profile picture for the specified contact.
+The picture is displayed on the right side of the contact card.
+
+* If **no picture** has been set, a 📷 button appears — clicking it opens the file picker.
+* If a **picture already exists**, clicking on it also opens the file picker to replace it.
+
+Format: `pic INDEX`
+
+* `INDEX` must be a positive integer referring to a contact in the current list.
+* Supported formats: PNG, JPG, JPEG, GIF, BMP.
+* The picture is saved persistently and will appear on next launch.
+
+Examples:
+* `pic 1` — opens a file picker to set or replace the picture for the 1st contact.
+* `pic 3` — opens a file picker to set or replace the picture for the 3rd contact.
+
+### Toggling dark / light mode : `toggle color mode`
+
+Switches the application between dark mode and light mode.
+A ☀ / 🌙 button at the top-right corner of the window does the same thing.
+
+Format: `toggle color mode`
+
 ### Clearing all entries : `clear`
 
 Clears all entries from the address book.
 
 Format: `clear`
+
+### Setting a password : `setpassword`
+
+Sets a password to protect the address book. You will be prompted to enter this password every time you start CampusLink.
+
+Format: `setpassword pw/PASSWORD`
+
+* `PASSWORD` must not be empty or consist solely of spaces.
+* If a password is already set, this command replaces it with the new password.
+* The password is stored as a SHA-256 hash — your plaintext password is never saved.
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+After setting a password, if you enter the wrong password 3 times on startup, **all contacts will be permanently erased** and password protection will be removed. There is no way to recover this data.
+</div>
+
+Examples:
+* `setpassword pw/mySecret123`
+
+### Removing password protection : `removepassword`
+
+Removes the password from the address book. The app will no longer prompt for a password on startup.
+
+Format: `removepassword`
+
+* If no password is currently set, a message is shown and no changes are made.
+### Exporting all contacts : `export`
+
+Exports all contacts in the address book to a JSON file at the specified path.
+The exported file uses the same JSON format as the app's data file, so it can be imported back later.
+
+Format: `export fp/FILE_PATH`
+
+* `FILE_PATH` is the path to the output file (e.g. `backup.json` or `data/contacts_backup.json`).
+* If the file already exists it will be overwritten.
+* The export includes **all** contacts regardless of any active filter.
+
+Examples:
+* `export fp/backup.json` exports all contacts to `backup.json` in the current working directory.
+* `export fp/data/team_contacts.json` exports all contacts to `data/team_contacts.json`.
+
+### Importing contacts : `import`
+
+Imports contacts from a JSON file into the current address book.
+Existing contacts are kept; entries whose name matches an existing contact are skipped (not overwritten).
+
+Format: `import fp/FILE_PATH`
+
+* `FILE_PATH` is the path to a valid JSON file previously exported from CampusLink (or any file in the same format).
+* The import is **additive** — your current contacts are never removed or overwritten.
+* Contacts with the same name as an existing contact are considered duplicates and are skipped.
+* After import, the result message shows how many contacts were added and how many were skipped.
+
+Examples:
+* `import fp/backup.json` imports contacts from `backup.json`.
+* `import fp/data/team_contacts.json` imports contacts from `data/team_contacts.json`.
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+Use `export` on one computer and `import` on another to transfer your contacts easily.
+</div>
+
+### Setting a follow-up reminder : `followup`
+
+Attaches a short reminder note to a contact so you know what to follow up on with them.
+The note is shown automatically in the result display every time the app starts.
+
+Format: `followup INDEX f/NOTE`
+
+* Sets the follow-up note for the person at the specified `INDEX`.
+* The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* `NOTE` must not be blank and must not start with whitespace.
+* If a follow-up note already exists on that contact, it is **replaced** by the new note.
+
+Examples:
+* `followup 1 f/Email about internship by Friday` — sets a reminder on the 1st person.
+* `followup 3 f/Discuss project deadline next week` — sets a reminder on the 3rd person.
+
+### Clearing a follow-up reminder : `clearfollowup`
+
+Removes the follow-up note from a contact once you are done with it.
+
+Format: `clearfollowup INDEX`
+
+* Clears the follow-up note for the person at the specified `INDEX`.
+* The index **must be a positive integer** 1, 2, 3, …​
+* If the contact has no follow-up note, an error is shown.
+
+Examples:
+* `clearfollowup 1` — removes the follow-up reminder from the 1st person.
 
 ### Exiting the program : `exit`
 
@@ -177,7 +319,7 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 ## FAQ
 
 **Q**: How do I transfer my data to another Computer?<br>
-**A**: Install the app in the other computer and overwrite the empty data file it creates with the file that contains the data of your previous AddressBook home folder.
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -185,6 +327,7 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
 2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+3. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -196,6 +339,15 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
+**Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
+**Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
+**Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`
+**Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
 **List** | `list`
+**Pin** | `pin INDEX`<br> e.g., `pin 1`
 **Help** | `help`
+**Set Password** | `setpassword pw/PASSWORD`<br> e.g., `setpassword pw/mySecret123`
+**Remove Password** | `removepassword`
+**Profile Picture** | `pic INDEX`<br> e.g., `pic 2`
+**Toggle Color Mode** | `toggle color mode`

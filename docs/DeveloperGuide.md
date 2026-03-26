@@ -239,11 +239,130 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 _{more aspects and alternatives to be added}_
 
+### Import and Export feature
+
+#### Overview
+
+The import/export feature allows users to save all contacts to a JSON file (`export`) and load contacts from a JSON file into the current address book (`import`). This enables data transfer between machines and simple backup/restore workflows.
+
+#### Design
+
+Both `ExportCommand` and `ImportCommand` need access to the `Storage` component to read/write JSON files, but the standard `Command#execute(Model)` signature only provides a `Model`. To solve this without breaking the existing architecture, we introduce a `StorageCommand` abstract class:
+
+* `StorageCommand` extends `Command` and declares an abstract `execute(Model, Storage)` method.
+* It overrides `execute(Model)` to throw a `CommandException`, preventing accidental invocation through the wrong dispatch path.
+* It provides a `shouldAutoSaveAddressBook()` hook (default `true`) that `LogicManager` checks after execution. `ExportCommand` overrides this to return `false` because exporting does not mutate the model and should not trigger a redundant save of the main data file.
+
+`LogicManager#execute(String)` is updated to detect `StorageCommand` instances and call the two-argument `execute(Model, Storage)` instead of the standard `execute(Model)`.
+
+#### Import flow
+
+1. `AddressBookParser` recognises the `import` keyword and delegates to `ImportCommandParser`.
+2. `ImportCommandParser` extracts the `fp/` prefix and creates an `ImportCommand` with the parsed `Path`.
+3. `LogicManager` detects `ImportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
+4. `ImportCommand.execute` proceeds in three steps (following the Single Level of Abstraction Principle):
+   * **`validateFileIsReadable()`** — checks the file exists, is a regular file, and is readable.
+   * **`loadAddressBook(storage)`** — delegates to `storage.readAddressBook(path)` to deserialize the JSON.
+   * **`mergeIntoModel(model, imported)`** — iterates over imported persons, adding those that do not already exist (checked via `model.hasPerson()`) and counting skipped duplicates.
+5. `LogicManager` auto-saves the updated address book to the default path.
+
+#### Export flow
+
+1. `AddressBookParser` recognises the `export` keyword and delegates to `ExportCommandParser`.
+2. `ExportCommandParser` extracts the `fp/` prefix and creates an `ExportCommand` with the parsed `Path`.
+3. `LogicManager` detects `ExportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
+4. `ExportCommand.execute` calls `storage.saveAddressBook(model.getAddressBook(), targetFilePath)`.
+5. Because `shouldAutoSaveAddressBook()` returns `false`, `LogicManager` skips the default auto-save.
 ### \[Proposed\] Data archiving
 
 _{Explain here how the data archiving feature will be implemented}_
 
+### Password protection feature
 
+#### Implementation
+
+Password protection is implemented across four layers: `Model`/`UserPrefs` (storage), `Logic` (persistence), `Logic` commands (set/remove), and `MainApp` (startup enforcement).
+
+**Password storage**
+
+The password hash is stored as a new `passwordHash` field in `UserPrefs`, which is already serialized to `preferences.json` by Jackson. No separate file is needed.
+`ReadOnlyUserPrefs` exposes `getPasswordHash()` read-only. `Model` and `ModelManager` expose `getPasswordHash()` / `setPasswordHash(String)` so commands can update it.
+
+**Hashing**
+
+`SecurityUtil` (in `commons.util`) provides two static methods:
+* `hashPassword(String) → String` — SHA-256 hash of the password, returned as a 64-character lowercase hex string.
+* `verifyPassword(String, String) → boolean` — hashes the candidate and compares to the stored hash.
+
+The plaintext password is never stored anywhere.
+
+**Commands**
+
+| Command | Class | Behaviour |
+|---|---|---|
+| `setpassword pw/PASSWORD` | `SetPasswordCommand` | Hashes the password via `SecurityUtil` and calls `model.setPasswordHash(hash)` |
+| `removepassword` | `RemovePasswordCommand` | Calls `model.setPasswordHash(null)`; returns a distinct message if no password was set |
+
+`SetPasswordCommandParser` extracts the `pw/` prefix, trims whitespace, and rejects empty values.
+
+Outcome matrix:
+
+| User action | Result |
+|---|---|
+| Correct password | App opens normally |
+| Cancel dialog | `Platform.exit()` — app closes, no data wiped |
+| 3 wrong entries | `eraseAllData()` — contacts cleared, hash set to null, both files saved |
+
+### Follow-up reminder feature
+
+#### Overview
+
+The follow-up reminder feature lets users attach a short note to a contact indicating what they need to do next. Every time the app opens, any contacts that have a non-empty follow-up note are listed in the result display automatically, so the user sees their outstanding reminders before typing any command.
+
+Two commands are provided:
+
+| Command | Syntax | Effect |
+|---|---|---|
+| `followup` | `followup INDEX f/NOTE` | Sets (or replaces) the follow-up note on the contact at `INDEX` |
+| `clearfollowup` | `clearfollowup INDEX` | Removes the follow-up note from the contact at `INDEX` |
+
+#### Implementation
+
+**Model layer**
+
+A `FollowUp` value class is added to `seedu.address.model.person`, following the same pattern as `Address` and `Email`:
+
+* `FollowUp#value` — the note text (empty string represents "no reminder").
+* `FollowUp.EMPTY` — shared sentinel for the no-reminder state, avoiding repeated `new FollowUp("")` calls.
+* `FollowUp#isValidFollowUp(String)` — accepts either empty (no reminder) or any string not starting with whitespace.
+* `Person` gains a `followUp` field in all three constructors (existing two-arg and five-arg constructors delegate to the new full constructor, defaulting to `FollowUp.EMPTY`).
+* `Person#equals`, `hashCode`, and `toString` are updated to include the `followUp` field.
+
+**Storage layer**
+
+`JsonAdaptedPerson` adds a `followUp` JSON property.
+In `JsonAdaptedPerson(Person source)` it is written from `source.getFollowUp().value`.
+In `toModelType()`, a null or missing `followUp` field defaults to `FollowUp.EMPTY` (backward-compatible with existing data files that predate this feature).
+
+**Logic layer — commands and parsers**
+
+`FollowUpCommandParser` tokenizes the input using `ArgumentTokenizer` with `PREFIX_FOLLOW_UP` (`f/`), validates that both the preamble (index) and the `f/` value are present, then constructs a `FollowUpCommand`.
+
+`FollowUpCommand#execute` looks up the person by index, rebuilds a `Person` with the new `FollowUp`, and calls `model.setPerson(original, edited)`. The address book is auto-saved by `LogicManager` as usual.
+
+`ClearFollowUpCommandParser` and `ClearFollowUpCommand` mirror the `DeleteCommandParser` / `DeleteCommand` pattern. `ClearFollowUpCommand#execute` rejects a clear attempt when the contact already has no follow-up, to give meaningful feedback to the user.
+
+Both command words are registered in `AddressBookParser` alongside the existing commands.
+
+**UI layer — startup reminder**
+
+At the end of `MainWindow#fillInnerParts()`, a `Platform.runLater` call is scheduled to invoke `showFollowUpReminders()` after the JavaFX scene has finished rendering. This method:
+
+1. Calls `logic.getPersonsWithFollowUp()`, which queries the **full** address book (not the filtered list) to ensure no reminders are missed when a filter is active.
+2. If the list is non-empty, formats it as `"Follow-up reminders:\n  - <name>: <note>\n  - ..."` and passes it to `resultDisplay.setFeedbackToUser(...)`.
+3. If the list is empty, does nothing (leaves the result display blank).
+
+Because this runs after `ui.start(primaryStage)` in `MainApp`, which is itself called only after a successful password unlock, reminders are never shown before authentication.
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, configuration, dev-ops**
@@ -417,6 +536,56 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
+**Use case: Set password protection**
+
+**MSS**
+
+1. User enters `setpassword pw/PASSWORD`
+2. AddressBook hashes the password and saves it to user preferences
+3. AddressBook displays a success message
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The `pw/` prefix is missing or the password value is empty.
+
+    * 1a1. AddressBook shows an error message with the correct format.
+
+      Use case resumes at step 1.
+
+**Use case: Unlock password-protected address book on startup**
+
+**MSS**
+
+1. User launches the app
+2. AddressBook detects a stored password hash and shows a password dialog
+3. User enters the correct password
+4. AddressBook opens normally
+
+   Use case ends.
+
+**Extensions**
+
+* 3a. User enters an incorrect password (attempt 1 or 2).
+
+    * 3a1. AddressBook shows how many attempts remain and re-prompts.
+
+      Use case resumes at step 3.
+
+* 3b. User enters an incorrect password for the 3rd time.
+
+    * 3b1. AddressBook erases all contacts and removes the password.
+    * 3b2. AddressBook opens with an empty address book.
+
+      Use case ends.
+
+* 3c. User cancels the dialog.
+
+    * 3c1. AddressBook closes without wiping any data.
+
+      Use case ends.
+
 **Use case: Edit a contact's details**
 
 **MSS**
@@ -448,6 +617,72 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 4a1. AddressBook shows a duplicate contact error message.
 
       Use case resumes at step 2.
+
+**Use case: Export contacts**
+
+**MSS**
+
+1.  User enters the export command with a file path (e.g., `export fp/backup.json`)
+2.  AddressBook writes all contacts to the specified file in JSON format
+3.  AddressBook displays a success message showing the number of contacts exported
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The file path is missing or blank.
+
+    * 1a1. AddressBook shows an error message with the correct usage format.
+
+      Use case resumes at step 1.
+
+* 2a. The file cannot be written (e.g., read-only directory, invalid path).
+
+    * 2a1. AddressBook shows an I/O error message.
+
+      Use case resumes at step 1.
+
+**Use case: Import contacts**
+
+**MSS**
+
+1.  User enters the import command with a file path (e.g., `import fp/backup.json`)
+2.  AddressBook reads the JSON file and merges the contacts into the current address book
+3.  AddressBook displays a success message showing the number of contacts added and the number of duplicates skipped
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The file path is missing or blank.
+
+    * 1a1. AddressBook shows an error message with the correct usage format.
+
+      Use case resumes at step 1.
+
+* 2a. The specified file does not exist.
+
+    * 2a1. AddressBook shows a "file not found" error message.
+
+      Use case resumes at step 1.
+
+* 2b. The file exists but is not readable or not a regular file.
+
+    * 2b1. AddressBook shows a "file not readable" error message.
+
+      Use case resumes at step 1.
+
+* 2c. The file contains invalid JSON or does not match the expected format.
+
+    * 2c1. AddressBook shows a data format error message.
+
+      Use case resumes at step 1.
+
+* 2d. All contacts in the import file are duplicates of existing contacts.
+
+    * 2d1. AddressBook displays a success message showing 0 added and N skipped.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
@@ -517,6 +752,106 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Password protection
+
+1. Setting a password
+
+   1. Prerequisites: App is running with no password set.
+
+   1. Test case: `setpassword pw/mySecret123`<br>
+      Expected: Success message displayed. `preferences.json` now contains a `passwordHash` field.
+
+   1. Test case: `setpassword pw/`<br>
+      Expected: Error message shown. No password is set.
+
+   1. Test case: `setpassword mySecret123` (missing `pw/` prefix)<br>
+      Expected: Error message with correct format shown.
+
+1. Removing a password
+
+   1. Prerequisites: Password is set (run `setpassword pw/test` first).
+
+   1. Test case: `removepassword`<br>
+      Expected: Success message. `passwordHash` field removed from `preferences.json`.
+
+   1. Test case: `removepassword` when no password is set<br>
+      Expected: Message indicating no password is currently set. No changes made.
+
+1. Correct password on startup
+
+   1. Prerequisites: Set a password with `setpassword pw/test123`, then exit and relaunch.
+
+   1. Enter `test123` in the password dialog.<br>
+      Expected: App opens normally with all contacts intact.
+
+1. Wrong password — data erasure after 3 attempts
+
+   1. Prerequisites: Set a password with `setpassword pw/correctPass`, add at least one contact, then exit and relaunch.
+
+   1. Enter `wrong1`, then `wrong2`, then `wrong3` in the password dialog.<br>
+      Expected: After the 3rd wrong entry, the app opens with an empty contact list. `preferences.json` no longer contains a `passwordHash`.
+
+1. Cancelling the password dialog
+
+   1. Prerequisites: Password is set. Relaunch the app.
+
+   1. Click the **Cancel** button on the password dialog.<br>
+      Expected: App closes. No data is erased. On next relaunch, the password dialog appears again.
+### Exporting contacts
+
+1. Exporting with contacts in the address book
+
+   1. Prerequisites: At least one contact in the list.
+
+   1. Test case: `export fp/test_export.json`<br>
+      Expected: File `test_export.json` is created. Success message shows the number of contacts exported. The file contains valid JSON matching the app's data format.
+
+   1. Test case: `export fp/test_export.json` (run again)<br>
+      Expected: The file is overwritten with the current contacts. Success message displayed.
+
+   1. Test case: `export`<br>
+      Expected: No file is created. Error message showing correct usage format.
+
+1. Exporting with an empty address book
+
+   1. Prerequisites: Run `clear` to empty the address book.
+
+   1. Test case: `export fp/empty_export.json`<br>
+      Expected: File `empty_export.json` is created with an empty persons list. Success message shows 0 contacts exported.
+
+### Importing contacts
+
+1. Importing from a valid file
+
+   1. Prerequisites: Have a valid exported JSON file (e.g., created by running `export fp/test_export.json` with some contacts).
+
+   1. Test case: `import fp/test_export.json`<br>
+      Expected: New contacts from the file are added to the address book. Duplicates (same name) are skipped. Success message shows counts of added and skipped contacts.
+
+1. Importing from a non-existent file
+
+   1. Test case: `import fp/does_not_exist.json`<br>
+      Expected: Error message indicating the file was not found. Address book unchanged.
+
+1. Importing from an invalid JSON file
+
+   1. Prerequisites: Create a file `bad.json` containing the text `not valid json`.
+
+   1. Test case: `import fp/bad.json`<br>
+      Expected: Error message indicating the data could not be read. Address book unchanged.
+
+1. Importing with all duplicates
+
+   1. Prerequisites: Export the current address book with `export fp/dup_test.json`. Do not add or remove any contacts.
+
+   1. Test case: `import fp/dup_test.json`<br>
+      Expected: Success message shows 0 added and N skipped (where N is the number of contacts in the file). Address book unchanged.
+
+1. Missing file path
+
+   1. Test case: `import`<br>
+      Expected: Error message showing correct usage format.
 
 ### Saving data
 

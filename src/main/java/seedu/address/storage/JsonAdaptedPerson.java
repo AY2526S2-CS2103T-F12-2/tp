@@ -13,6 +13,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
@@ -32,11 +33,14 @@ class JsonAdaptedPerson {
     private final String phone;
     private final String email;
     private final String address;
+    private final String profilePicturePath;
+    private final String followUp;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final List<JsonAdaptedPosition> positions = new ArrayList<>();
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
     private final List<JsonAdaptedGroup> groups = new ArrayList<>();
     private final List<JsonAdaptedAvailableHours> availableHours = new ArrayList<>();
+    private final boolean pinned;
 
     /**
      * Constructs a {@code JsonAdaptedPerson} with the given person details.
@@ -44,15 +48,21 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
                              @JsonProperty("email") String email, @JsonProperty("address") String address,
+                             @JsonProperty("profilePicturePath") String profilePicturePath,
+                             @JsonProperty("followUp") String followUp,
                              @JsonProperty("tags") List<JsonAdaptedTag> tags,
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
                              @JsonProperty("groups") List<JsonAdaptedGroup> groups,
-                             @JsonProperty("availableHours") List<JsonAdaptedAvailableHours> availableHours) {
+                             @JsonProperty("availableHours") List<JsonAdaptedAvailableHours> availableHours,
+                             @JsonProperty("pinned") Boolean pinned) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
+        this.followUp = followUp != null ? followUp : "";
+        this.pinned = pinned != null ? pinned : false;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -71,6 +81,16 @@ class JsonAdaptedPerson {
     }
 
     /**
+     * Backward-compatible constructor without profilePicturePath or followUp (used by tests).
+     */
+    public JsonAdaptedPerson(String name, String phone, String email, String address,
+                             List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
+                             List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
+                             List<JsonAdaptedAvailableHours> availableHours) {
+        this(name, phone, email, address, "", "", tags, positions, majors, groups, availableHours, false);
+    }
+
+    /**
      * Converts a given {@code Person} into this class for Jackson use.
      */
     public JsonAdaptedPerson(Person source) {
@@ -78,6 +98,9 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
+        profilePicturePath = source.getProfilePicturePath();
+        followUp = source.getFollowUp().value;
+        pinned = source.isPinned();
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -164,8 +187,20 @@ class JsonAdaptedPerson {
         final Set<Group> modelGroups = new HashSet<>(personGroups);
         final Set<AvailableHours> modelAvailableHours = new HashSet<>(personAvailableHours);
 
+        final FollowUp modelFollowUp;
+        if (followUp != null && !followUp.isEmpty()) {
+            if (!FollowUp.isValidFollowUp(followUp)) {
+                throw new IllegalValueException(FollowUp.MESSAGE_CONSTRAINTS);
+            }
+            modelFollowUp = new FollowUp(followUp);
+        } else {
+            modelFollowUp = FollowUp.EMPTY;
+        }
+
         return new Person(modelName, modelPhone, modelEmail, modelAddress,
-                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours);
+                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours,
+                modelFollowUp,
+                profilePicturePath, pinned);
     }
 
 }
