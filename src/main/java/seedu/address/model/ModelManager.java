@@ -36,8 +36,8 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
-        sortedPersons = new SortedList<>(filteredPersons,
-                (p1, p2) -> Boolean.compare(p2.isPinned(), p1.isPinned()));
+        sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> Boolean.compare(
+                p2.isPinned(), p1.isPinned()));
     }
 
     public ModelManager() {

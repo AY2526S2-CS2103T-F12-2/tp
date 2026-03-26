@@ -4,19 +4,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.AvailableHours;
-import seedu.address.model.person.Group;
-import seedu.address.model.person.Major;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.Position;
-import seedu.address.model.tag.Tag;
 
 /**
  * Toggles the pin status of a person identified using their displayed index.
