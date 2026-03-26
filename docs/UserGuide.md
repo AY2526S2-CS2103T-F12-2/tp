@@ -180,7 +180,7 @@ Examples:
 
 Sorts the displayed contact list by a specified field and order. Pinned contacts always remain at the top.
 
-Format: `sort CONDITION ORDER`
+Format: `sort CONDITION ORDER` (ORDER can be `ASC`, `DESC`, `a`, or `d`)
 
 * `CONDITION`: `firstname` or `lastname`
   * `firstname` sorts by the first word of the person's name.
@@ -190,8 +190,8 @@ Format: `sort CONDITION ORDER`
 * Pinned contacts always appear at the top of the list, with the sort applied within pinned and unpinned groups.
 
 Examples:
-* `sort firstname ASC` sorts all contacts by first name, A to Z.
-* `sort lastname DESC` sorts all contacts by last name, Z to A.
+* `sort firstname ASC` (or `sort firstname a`) sorts all contacts by first name, A to Z.
+* `sort lastname DESC` (or `sort lastname d`) sorts all contacts by last name, Z to A.
 
 ### Adding or replacing a profile picture : `pic`
 
@@ -363,7 +363,7 @@ Action | Format, Examples
 **Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
 **List** | `list`
 **Pin** | `pin INDEX`<br> e.g., `pin 1`
-**Sort** | `sort CONDITION ORDER`<br> e.g., `sort firstname ASC`
+**Sort** | `sort CONDITION ORDER`<br> e.g., `sort firstname a`
 **Help** | `help`
 **Set Password** | `setpassword pw/PASSWORD`<br> e.g., `setpassword pw/mySecret123`
 **Remove Password** | `removepassword`
