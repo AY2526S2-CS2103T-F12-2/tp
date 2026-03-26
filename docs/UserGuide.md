@@ -31,7 +31,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
    * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
-   
+
    * `edit 2 g/student` : Edits the group information of the 2nd contact in the current list.
 
    * `clear` : Deletes all contacts.
@@ -186,6 +186,41 @@ Clears all entries from the address book.
 
 Format: `clear`
 
+### Exporting all contacts : `export`
+
+Exports all contacts in the address book to a JSON file at the specified path.
+The exported file uses the same JSON format as the app's data file, so it can be imported back later.
+
+Format: `export fp/FILE_PATH`
+
+* `FILE_PATH` is the path to the output file (e.g. `backup.json` or `data/contacts_backup.json`).
+* If the file already exists it will be overwritten.
+* The export includes **all** contacts regardless of any active filter.
+
+Examples:
+* `export fp/backup.json` exports all contacts to `backup.json` in the current working directory.
+* `export fp/data/team_contacts.json` exports all contacts to `data/team_contacts.json`.
+
+### Importing contacts : `import`
+
+Imports contacts from a JSON file into the current address book.
+Existing contacts are kept; entries whose name matches an existing contact are skipped (not overwritten).
+
+Format: `import fp/FILE_PATH`
+
+* `FILE_PATH` is the path to a valid JSON file previously exported from CampusLink (or any file in the same format).
+* The import is **additive** — your current contacts are never removed or overwritten.
+* Contacts with the same name as an existing contact are considered duplicates and are skipped.
+* After import, the result message shows how many contacts were added and how many were skipped.
+
+Examples:
+* `import fp/backup.json` imports contacts from `backup.json`.
+* `import fp/data/team_contacts.json` imports contacts from `data/team_contacts.json`.
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+Use `export` on one computer and `import` on another to transfer your contacts easily.
+</div>
+
 ### Exiting the program : `exit`
 
 Exits the program.
@@ -210,7 +245,7 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 ## FAQ
 
 **Q**: How do I transfer my data to another Computer?<br>
-**A**: Install the app in the other computer and overwrite the empty data file it creates with the file that contains the data of your previous AddressBook home folder.
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -229,7 +264,9 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
+**Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
+**Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
 **List** | `list`
 **Help** | `help`
 **Profile Picture** | `pic INDEX`<br> e.g., `pic 2`

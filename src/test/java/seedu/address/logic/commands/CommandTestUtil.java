@@ -19,6 +19,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
+import seedu.address.storage.Storage;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 
 /**
@@ -111,6 +112,34 @@ public class CommandTestUtil {
         assertEquals(expectedAddressBook, actualModel.getAddressBook());
         assertEquals(expectedFilteredList, actualModel.getFilteredPersonList());
     }
+
+    /**
+     * Executes the given {@link StorageCommand}, confirms success message and model state.
+     */
+    public static void assertStorageCommandSuccess(StorageCommand command, Model actualModel, Storage storage,
+            String expectedMessage, Model expectedModel) {
+        try {
+            CommandResult result = command.execute(actualModel, storage);
+            assertEquals(expectedMessage, result.getFeedbackToUser());
+            assertEquals(expectedModel, actualModel);
+        } catch (CommandException ce) {
+            throw new AssertionError("Execution of command should not fail.", ce);
+        }
+    }
+
+    /**
+     * Executes the given {@link StorageCommand}, confirms {@link CommandException} and unchanged address book.
+     */
+    public static void assertStorageCommandFailure(StorageCommand command, Model actualModel, Storage storage,
+            String expectedMessage) {
+        AddressBook expectedAddressBook = new AddressBook(actualModel.getAddressBook());
+        List<Person> expectedFilteredList = new ArrayList<>(actualModel.getFilteredPersonList());
+
+        assertThrows(CommandException.class, expectedMessage, () -> command.execute(actualModel, storage));
+        assertEquals(expectedAddressBook, actualModel.getAddressBook());
+        assertEquals(expectedFilteredList, actualModel.getFilteredPersonList());
+    }
+
     /**
      * Updates {@code model}'s filtered list to show only the person at the given {@code targetIndex} in the
      * {@code model}'s address book.
