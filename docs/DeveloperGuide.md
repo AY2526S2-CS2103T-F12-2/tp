@@ -300,6 +300,86 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 
 _{Explain here how the data archiving feature will be implemented}_
 
+### Pin feature
+
+#### Implementation
+
+The pin feature allows users to pin up to 3 contacts to the top of the displayed list. It is implemented as a toggle command — running `pin INDEX` on an unpinned contact pins it, and running it again unpins it.
+
+**Model changes:**
+
+`Person` has a `boolean pinned` field (default `false`) with an `isPinned()` getter. This field follows the same pattern as `profilePicturePath` — it is excluded from `equals()`/`hashCode()`/`toString()` because pin status is UI metadata, not part of a person's identity. This design avoids breaking existing tests.
+
+`JsonAdaptedPerson` serializes the `pinned` field with a backward-compatible default of `false` for older data files.
+
+`ModelManager` wraps its `FilteredList<Person>` with a `SortedList<Person>` using a comparator that places pinned contacts first. The `getFilteredPersonList()` method returns the sorted view.
+
+**Command flow:**
+
+1. `AddressBookParser` recognises `pin` and delegates to `PinCommandParser`.
+2. `PinCommandParser` extracts the index (same pattern as `DeleteCommandParser`).
+3. `PinCommand#execute()` toggles the pin status:
+   * If unpinned → checks the 3-pin limit → creates a new `Person` with `pinned = true` → calls `model.setPerson()`.
+   * If already pinned → creates a new `Person` with `pinned = false` → calls `model.setPerson()`.
+4. The `SortedList` in `ModelManager` automatically re-sorts the list.
+
+**UI changes:**
+
+`PersonListCard.fxml` has a 📌 `Label` (fx:id `pinIcon`) at the top-left of the avatar. `PersonCard.java` sets its visibility based on `person.isPinned()`.
+
+#### Design considerations
+
+**Aspect: Separate pinned list vs boolean field on Person**
+
+* **Alternative 1 (current choice):** Boolean `pinned` field on `Person`.
+  * Pros: Persists automatically through existing JSON serialization. No sync issues. Minimal code.
+  * Cons: Slightly increases the `Person` class.
+
+* **Alternative 2:** Separate list of pinned person IDs.
+  * Pros: Keeps `Person` unchanged.
+  * Cons: Needs a new data structure, sync logic, and storage changes. More code, more bugs.
+
+**Aspect: Toggle vs separate pin/unpin commands**
+
+* **Alternative 1 (current choice):** Single `pin` command that toggles.
+  * Pros: Fewer classes (1 command + 1 parser instead of 2+2). Simpler UX.
+  * Cons: Less explicit — user must know the current state.
+
+* **Alternative 2:** Separate `pin` and `unpin` commands.
+  * Pros: More explicit.
+  * Cons: More code for no real benefit.
+
+### Sort feature
+
+#### Implementation
+
+The sort feature allows users to sort the contact list by first name or last name, in ascending or descending order. It works alongside the pin feature — pinned contacts always remain at the top.
+
+`SortCommand` accepts a `SortField` (FIRSTNAME or LASTNAME) and an `isAscending` boolean. On execution, it builds a composite comparator:
+
+1. **Primary:** Pinned contacts first (`!isPinned()` — false sorts before true).
+2. **Secondary:** The user-specified field sort.
+
+For name extraction from `Name.fullName`:
+* `FIRSTNAME` = first word (`split("\\s+")[0]`)
+* `LASTNAME` = last word (`split("\\s+")[last]`)
+
+The comparator is applied via `model.updateSortComparator(comparator)`, which calls `SortedList#setComparator()` in `ModelManager`. This uses the existing `SortedList` infrastructure introduced by the pin feature — no new data structures needed.
+
+`SortCommandParser` parses the two-argument format (`sort CONDITION ORDER`) case-insensitively.
+
+#### Design considerations
+
+**Aspect: Sort mechanism**
+
+* **Alternative 1 (current choice):** Update the `SortedList` comparator dynamically.
+  * Pros: Reuses the existing `SortedList` from the pin feature. No new data structures. The sort is a view-level operation — the underlying data order is unchanged.
+  * Cons: Sort is non-persistent (resets on restart). This is acceptable because sort is a display preference, not data.
+
+* **Alternative 2:** Physically reorder the `UniquePersonList`.
+  * Pros: Sort persists.
+  * Cons: Destructive — changes the data model. Harder to undo.
+
 ### Password protection feature
 
 #### Implementation
@@ -591,6 +671,49 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
+**Use case: Pin a contact**
+
+**MSS**
+
+1. User lists all contacts
+2. User enters `pin INDEX` to pin a contact
+3. AddressBook toggles the pin status and moves the contact to the top
+4. AddressBook displays a success message
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The given index is invalid.
+
+    * 2a1. AddressBook shows an error message.
+
+      Use case resumes at step 1.
+
+* 2b. 3 contacts are already pinned and the target is unpinned.
+
+    * 2b1. AddressBook shows a "maximum pins reached" error.
+
+      Use case resumes at step 1.
+
+**Use case: Sort contacts**
+
+**MSS**
+
+1. User enters `sort CONDITION ORDER` (e.g., `sort firstname ASC`)
+2. AddressBook sorts the displayed list accordingly, keeping pinned contacts at the top
+3. AddressBook displays a success message
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The condition or order is invalid.
+
+    * 1a1. AddressBook shows an error message with the correct format.
+
+      Use case resumes at step 1.
+
 **Use case: Export contacts**
 
 **MSS**
@@ -825,6 +948,59 @@ testers are expected to do more *exploratory* testing.
 
    1. Test case: `import`<br>
       Expected: Error message showing correct usage format.
+
+### Pinning a contact
+
+1. Pinning while all persons are shown
+
+   1. Prerequisites: List all persons using `list`. At least 2 persons in the list. No persons pinned.
+
+   1. Test case: `pin 1`<br>
+      Expected: First contact moves to (stays at) the top with a 📌 icon. Success message displayed.
+
+   1. Test case: `pin 1` again (same contact, now pinned)<br>
+      Expected: Contact is unpinned. 📌 icon disappears. Success message displayed.
+
+   1. Test case: `pin 0`<br>
+      Expected: No change. Error details shown.
+
+1. Pinning when maximum (3) pins reached
+
+   1. Prerequisites: Pin 3 contacts using `pin 1`, `pin 2`, `pin 3`.
+
+   1. Test case: `pin 4` (an unpinned contact)<br>
+      Expected: Error message indicating maximum pins reached.
+
+   1. Test case: `pin 1` (unpin one), then `pin 4`<br>
+      Expected: First unpin succeeds, then pin succeeds.
+
+### Sorting contacts
+
+1. Sorting by first name
+
+   1. Prerequisites: Multiple contacts in the list.
+
+   1. Test case: `sort firstname ASC`<br>
+      Expected: Contacts sorted alphabetically by first name (A→Z). Pinned contacts remain at the top. Success message displayed.
+
+   1. Test case: `sort firstname DESC`<br>
+      Expected: Contacts sorted reverse-alphabetically by first name (Z→A). Success message displayed.
+
+1. Sorting by last name
+
+   1. Test case: `sort lastname ASC`<br>
+      Expected: Contacts sorted by last word of name, A→Z.
+
+1. Invalid sort commands
+
+   1. Test case: `sort`<br>
+      Expected: Error message with correct usage format.
+
+   1. Test case: `sort email ASC`<br>
+      Expected: Error message (invalid condition).
+
+   1. Test case: `sort firstname UP`<br>
+      Expected: Error message (invalid order).
 
 ### Saving data
 
