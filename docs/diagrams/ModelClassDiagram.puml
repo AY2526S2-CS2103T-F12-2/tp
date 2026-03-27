@@ -21,6 +21,9 @@ Class Email
 Class Name
 Class Phone
 Class Tag
+Class Position
+Class Major
+Class Group
 
 Class I #FFFFFF
 }
@@ -44,6 +47,9 @@ Person *--> Phone
 Person *--> Email
 Person *--> Address
 Person *--> "*" Tag
+Person *--> "*" Position
+Person *-right> "*" Major
+Person *-left> "*" Group
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
