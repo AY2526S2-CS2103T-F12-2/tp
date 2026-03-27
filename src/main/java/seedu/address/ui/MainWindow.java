@@ -202,9 +202,11 @@ public class MainWindow extends UiPart<Stage> {
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
             try {
+                logger.info("Setting up picture...");
                 logic.setPicture(index, file.getAbsolutePath());
                 resultDisplay.setFeedbackToUser("Profile picture updated for person " + index.getOneBased() + ".");
             } catch (CommandException e) {
+                logger.warning("An error occurred while setting picture!");
                 resultDisplay.setFeedbackToUser("Failed to update picture: " + e.getMessage());
             }
         }

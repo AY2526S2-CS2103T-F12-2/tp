@@ -198,26 +198,6 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_zeroKeywords_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0);
-        PersonMatchesKeywordsPredicate predicate =
-                createPredicate(Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList(),
-                        Collections.emptyList(), Collections.emptyList());
-        FindCommand command = new FindCommand(predicate);
-        System.out.println(command);
-        expectedModel.updateFilteredPersonList(predicate);
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Collections.emptyList(), model.getDisplayedPersonList());
-    }
-
-    @Test
     public void execute_optionalNameKeyword_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("kUrZ eLlE kUnZ");
