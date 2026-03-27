@@ -85,6 +85,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         this.optionalAvailableHoursKeywords = optionalAvailableHoursKeywords;
         this.areAllOptionalKeywordsEmpty = areAllOptionalKeywordsEmpty();
         this.areAllCompulsoryKeywordsEmpty = areAllCompulsoryKeywordsEmpty();
+        assert !(areAllOptionalKeywordsEmpty && areAllCompulsoryKeywordsEmpty) : "Empty input found for FindCommand!";
     }
 
     /**
@@ -95,6 +96,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (areAllCompulsoryKeywordsEmpty && areAllOptionalKeywordsEmpty) {
             return false;
         }
+
         return testCompulsory(person) && testOptional(person);
     }
 
