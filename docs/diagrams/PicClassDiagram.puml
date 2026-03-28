@@ -1,0 +1,55 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+
+' Toggle dark/light mode: uncomment the line below for dark mode
+'!define DARK_MODE
+
+!ifdef DARK_MODE
+skinparam backgroundColor #1F1F1F
+skinparam Package {
+    BackgroundColor #2D2D2D
+}
+!else
+skinparam backgroundColor #FFFFFF
+skinparam Package {
+    BackgroundColor #FFFFFF
+}
+!endif
+
+Class "{abstract}\nCommand" as Command
+Class PicCommand
+
+package "Pic classes"{
+Class "<<interface>>\nParser" as Parser
+Class PicCommandParser
+Class ParserUtil
+Class MainWindow
+Class LogicManager
+Class "<<interface>>\nLogic" as Logic
+Class FileChooser
+Class Person
+}
+
+Class HiddenOutside #FFFFFF
+HiddenOutside ..> PicCommandParser
+
+PicCommand -up-|> Command
+PicCommandParser .up.|> Parser
+PicCommandParser ..> PicCommand : <<create>>
+PicCommandParser ..> ParserUtil : <<use>>
+MainWindow .right.> Logic : <<use>>
+LogicManager .up.|> Logic
+MainWindow ..> FileChooser : <<use>>
+Logic ..> Person : <<use>>
+LogicManager ..> Person : <<create>>
+
+note right of MainWindow
+  handlePicUpload() opens a FileChooser,
+  then calls logic.setPicture(index, path)
+  to update the Person's profilePicturePath
+  and persist to storage.
+end note
+@enduml

@@ -1,0 +1,56 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor LOGIC_COLOR_T4
+skinparam classBackgroundColor LOGIC_COLOR
+
+' Toggle dark/light mode: uncomment the line below for dark mode
+'!define DARK_MODE
+
+!ifdef DARK_MODE
+skinparam backgroundColor #1F1F1F
+skinparam Package {
+    BackgroundColor #2D2D2D
+}
+!else
+skinparam backgroundColor #FFFFFF
+skinparam Package {
+    BackgroundColor #FFFFFF
+}
+!endif
+
+Class "{abstract}\nCommand" as Command
+Class FindCommand
+
+package "Find classes"{
+Class "<<interface>>\nParser" as Parser
+Class FindCommandParser
+Class "<<enumeration>>\nFindFlag" as FindFlag
+Class ArgumentMultimap
+Class ArgumentTokenizer
+Class CliSyntax
+Class PersonMatchesKeywordsPredicate
+}
+
+Class HiddenOutside #FFFFFF
+HiddenOutside ..> FindCommandParser
+
+FindCommand -up-|> Command
+FindCommandParser .up.|> Parser
+FindCommandParser ..> FindCommand : <<create>>
+FindCommandParser ..> FindFlag : <<use>>
+FindCommandParser ..> ArgumentMultimap
+FindCommandParser ..> ArgumentTokenizer
+ArgumentTokenizer .left.> ArgumentMultimap
+FindCommandParser ..> CliSyntax
+FindCommand ..> PersonMatchesKeywordsPredicate : <<use>>
+
+note right of FindCommandParser
+  FindCommandParser parses flags (-c/-o)
+  and prefixes (n/, a/, p/, m/, e/,
+  t/, po/, g/, h/) into compulsory
+  and optional keyword lists, then
+  creates FindCommand with a
+  PersonMatchesKeywordsPredicate.
+end note
+@enduml
