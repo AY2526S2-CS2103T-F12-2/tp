@@ -443,6 +443,54 @@ At the end of `MainWindow#fillInnerParts()`, a `Platform.runLater` call is sched
 3. If the list is empty, does nothing (leaves the result display blank).
 
 Because this runs after `ui.start(primaryStage)` in `MainApp`, which is itself called only after a successful password unlock, reminders are never shown before authentication.
+
+### Find feature
+
+#### Implementation
+
+The find feature allows users to filter the contact list by one or more fields using compulsory (`-c`) and optional (`-o`) flags.
+
+The class diagram below shows the key classes involved:
+
+<img src="images/FindClassDiagram.png" width="700"/>
+
+**How it works:**
+
+1. `AddressBookParser` recognises the `find` keyword and delegates to `FindCommandParser`.
+2. `FindCommandParser` uses `splitByFindFlags` to split the input into segments, each tagged with a `FindFlag` (`COMPULSORY` or `OPTIONAL`; default is `OPTIONAL`).
+3. Each segment is tokenised by `ArgumentTokenizer` using `CliSyntax` prefixes (`n/`, `a/`, `p/`, `m/`, `e/`, `t/`, `po/`, `g/`, `h/`), and keywords are collected into compulsory and optional lists per field.
+4. A `PersonMatchesKeywordsPredicate` is constructed from all keyword lists and passed to `FindCommand`.
+5. `FindCommand#execute` calls `model.updateFilteredPersonList(predicate)` to apply the filter.
+
+**Matching logic** (in `PersonMatchesKeywordsPredicate`):
+* A contact passes if **all** compulsory-field conditions are satisfied **and** **at least one** optional-field condition is satisfied.
+* If no optional keywords are provided, the optional check is skipped (treated as passed).
+
+### Upload image feature
+
+#### Implementation
+
+The upload image feature allows users to set or replace a profile picture for any contact via the `pic INDEX` command or by clicking the 📷 button on a contact card.
+
+The class diagram below shows the key classes involved:
+
+<img src="images/PicClassDiagram.png" width="700"/>
+
+**How it works:**
+
+1. `AddressBookParser` recognises the `pic` keyword and delegates to `PicCommandParser`.
+2. `PicCommandParser` uses `ParserUtil.parseIndex` to extract the target index and creates a `PicCommand`.
+3. `PicCommand#execute` validates the index against the displayed list and returns a `CommandResult` with `showPicPicker = true` and the zero-based index.
+4. `MainWindow` detects `commandResult.isShowPicPicker()` and calls `handlePicUpload(index)`, which:
+   * Opens a `FileChooser` filtered to image formats (PNG, JPG, JPEG, GIF, BMP).
+   * On file selection, calls `logic.setPicture(index, file.getAbsolutePath())`.
+5. `LogicManager#setPicture` creates a new `Person` with the updated `profilePicturePath` and persists the change to storage immediately.
+
+**UI behaviour:**
+* If no picture is set, a 📷 button is shown on the contact card; clicking it also triggers the file picker.
+* If a picture is already set, the image is displayed (120×120 px); clicking the image replaces it.
+* The picture path is stored in the JSON data file and loaded on every subsequent launch.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, configuration, dev-ops**
