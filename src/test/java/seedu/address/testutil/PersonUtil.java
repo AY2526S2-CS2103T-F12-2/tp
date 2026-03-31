@@ -1,7 +1,7 @@
 package seedu.address.testutil;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.person.TimeSlot;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Person;
@@ -54,8 +54,8 @@ public class PersonUtil {
         person.getPositions().stream().forEach(
                 s -> sb.append(PREFIX_POSITION + s.value + " ")
         );
-        person.getAvailableHours().stream().forEach(
-                s -> sb.append(PREFIX_AVAILABLE_HOURS + s.toOriginalString() + " ")
+        person.getTimeSlots().stream().forEach(
+                s -> sb.append(PREFIX_TIME + s.toOriginalString() + " ")
         );
         return sb.toString();
     }
@@ -103,12 +103,12 @@ public class PersonUtil {
             }
         }
 
-        if (descriptor.getAvailableHours().isPresent()) {
-            Set<AvailableHours> availableHours = descriptor.getAvailableHours().get();
-            if (availableHours.isEmpty()) {
-                sb.append(PREFIX_AVAILABLE_HOURS);
+        if (descriptor.getTimeSlots().isPresent()) {
+            Set<TimeSlot> TimeSlot = descriptor.getTimeSlots().get();
+            if (TimeSlot.isEmpty()) {
+                sb.append(PREFIX_TIME);
             } else {
-                availableHours.forEach(s -> sb.append(PREFIX_AVAILABLE_HOURS)
+                TimeSlot.forEach(s -> sb.append(PREFIX_TIME)
                         .append(s.toOriginalString()).append(" "));
             }
         }

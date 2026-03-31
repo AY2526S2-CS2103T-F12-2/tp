@@ -47,7 +47,7 @@ public class Messages {
                 .append("; Majors: ")
                 .append(person.getMajors())
                 .append("; Available Hours: ")
-                .append(person.getAvailableHours())
+                .append(person.getTimeSlots())
                 .append("; Group: ")
                 .append(person.getGroups())
                 .append("; Position: ")

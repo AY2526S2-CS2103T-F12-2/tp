@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_FLAG;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -49,7 +49,7 @@ public class EditCommandParser implements Parser<EditCommand> {
 
         ArgumentMultimap argMultimap =
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG,
-                        PREFIX_AVAILABLE_HOURS, PREFIX_POSITION, PREFIX_MAJOR, PREFIX_GROUP);
+                        PREFIX_TIME, PREFIX_POSITION, PREFIX_MAJOR, PREFIX_GROUP);
 
         Index index;
 
@@ -60,7 +60,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         }
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
-                PREFIX_ADDRESS, PREFIX_AVAILABLE_HOURS);
+                PREFIX_ADDRESS, PREFIX_TIME);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
         editPersonDescriptor.setEditFlag(flag);
@@ -85,8 +85,8 @@ public class EditCommandParser implements Parser<EditCommand> {
                 .ifPresent(editPersonDescriptor::setMajors);
         parsePrefixForEdit(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
                 .ifPresent(editPersonDescriptor::setGroups);
-        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS), ParserUtil::parseAvailableHours)
-                .ifPresent(editPersonDescriptor::setAvailableHours);
+        parsePrefixForEdit(argMultimap.getAllValues(PREFIX_TIME), ParserUtil::parseTimeSlots)
+                .ifPresent(editPersonDescriptor::setTimeSlots);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);

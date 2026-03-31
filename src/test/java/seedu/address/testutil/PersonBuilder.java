@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import seedu.address.model.person.Address;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
@@ -34,7 +34,7 @@ public class PersonBuilder {
     private Set<Position> positions;
     private Set<Major> majors;
     private Set<Group> groups;
-    private Set<AvailableHours> availableHours;
+    private Set<TimeSlot> timeSlots;
     private FollowUp followUp;
 
     /**
@@ -49,7 +49,7 @@ public class PersonBuilder {
         majors = new HashSet<>();
         groups = new HashSet<>();
         positions = new HashSet<>();
-        availableHours = new HashSet<>();
+        timeSlots = new HashSet<>();
         followUp = FollowUp.EMPTY;
     }
 
@@ -65,7 +65,7 @@ public class PersonBuilder {
         groups = new HashSet<>(personToCopy.getGroups());
         positions = new HashSet<>(personToCopy.getPositions());
         majors = new HashSet<>(personToCopy.getMajors());
-        availableHours = new HashSet<>(personToCopy.getAvailableHours());
+        timeSlots = new HashSet<>(personToCopy.getTimeSlots());
         followUp = personToCopy.getFollowUp();
     }
 
@@ -110,11 +110,11 @@ public class PersonBuilder {
     }
 
     /**
-     * Parses the {@code availableHours} into a {@code Set<AvailableHours>},
+     * Parses the {@code timeSlots} into a {@code Set<TimeSlot>},
      * and set it to the {@code Person} that we are building.
      */
-    public PersonBuilder withAvailableHours(String ... availableHours) {
-        this.availableHours = SampleDataUtil.getAvailableHoursSet(availableHours);
+    public PersonBuilder withAvailableHours(String ... timeSlots) {
+        this.timeSlots = SampleDataUtil.getTimeSlotsSet(timeSlots);
         return this;
     }
 
@@ -154,7 +154,7 @@ public class PersonBuilder {
      * Builds and returns the {@code Person}.
      */
     public Person build() {
-        return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours,
+        return new Person(name, phone, email, address, tags, positions, majors, groups, timeSlots,
                 followUp, "");
     }
 

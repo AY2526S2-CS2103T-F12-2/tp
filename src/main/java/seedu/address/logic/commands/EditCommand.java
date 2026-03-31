@@ -2,7 +2,7 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -26,7 +26,6 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Address;
-import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
@@ -34,6 +33,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Position;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -53,7 +53,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_MAJOR + "MAJOR] "
-            + "[" + PREFIX_AVAILABLE_HOURS + "AVAILABLE_HOURS] "
+            + "[" + PREFIX_TIME + "AVAILABLE_HOURS] "
             + "[" + PREFIX_GROUP + "GROUP] "
             + "[" + PREFIX_POSITION + "POSITION] "
             + "[" + PREFIX_TAG + "TAG]...\n"
@@ -115,8 +115,8 @@ public class EditCommand extends Command {
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
-        Set<AvailableHours> updatedAvailableHours =
-                editPersonDescriptor.getAvailableHours().orElse(personToEdit.getAvailableHours());
+        Set<TimeSlot> updatedTimeSlots =
+                editPersonDescriptor.getTimeSlots().orElse(personToEdit.getTimeSlots());
 
         final Set<Tag> updatedTags;
         final Set<Major> updatedMajors;
@@ -143,7 +143,7 @@ public class EditCommand extends Command {
         }
 
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
-                updatedMajors, updatedGroups, updatedAvailableHours, personToEdit.getFollowUp(),
+                updatedMajors, updatedGroups, updatedTimeSlots, personToEdit.getFollowUp(),
                 personToEdit.getProfilePicturePath());
     }
 
@@ -184,7 +184,7 @@ public class EditCommand extends Command {
         private Set<Major> majors;
         private Set<Position> positions;
         private Set<Group> groups;
-        private Set<AvailableHours> availableHours;
+        private Set<TimeSlot> timeSlots;
         private EditFlag flag = EditFlag.NONE;
 
         public EditPersonDescriptor() {}
@@ -202,7 +202,7 @@ public class EditCommand extends Command {
             setPositions(toCopy.positions);
             setMajors(toCopy.majors);
             setGroups(toCopy.groups);
-            setAvailableHours(toCopy.availableHours);
+            setTimeSlots(toCopy.timeSlots);
             setEditFlag(toCopy.flag);
         }
 
@@ -211,7 +211,7 @@ public class EditCommand extends Command {
          */
         public boolean isAnyFieldEdited() {
             return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, majors,
-                    groups, positions, availableHours);
+                    groups, positions, timeSlots);
         }
 
         public void setName(Name name) {
@@ -323,21 +323,21 @@ public class EditCommand extends Command {
         }
 
         /**
-         * Sets {@code availableHours} to this object's {@code availableHours}.
-         * A defensive copy of {@code availableHours} is used internally.
+         * Sets {@code timeSlots} to this object's {@code timeSlots}.
+         * A defensive copy of {@code timeSlots} is used internally.
          */
-        public void setAvailableHours(Set<AvailableHours> availableHours) {
-            this.availableHours = (availableHours != null) ? new HashSet<>(availableHours) : null;
+        public void setTimeSlots(Set<TimeSlot> timeSlots) {
+            this.timeSlots = (timeSlots != null) ? new HashSet<>(timeSlots) : null;
         }
 
         /**
          * Returns an unmodifiable available hour set, which throws {@code UnsupportedOperationException}
          * if modification is attempted.
-         * Returns {@code Optional#empty()} if {@code availableHours} is null.
+         * Returns {@code Optional#empty()} if {@code timeSlots} is null.
          */
-        public Optional<Set<AvailableHours>> getAvailableHours() {
-            return (availableHours != null)
-                    ? Optional.of(Collections.unmodifiableSet(availableHours))
+        public Optional<Set<TimeSlot>> getTimeSlots() {
+            return (timeSlots != null)
+                    ? Optional.of(Collections.unmodifiableSet(timeSlots))
                     : Optional.empty();
         }
 
@@ -368,7 +368,7 @@ public class EditCommand extends Command {
                     && Objects.equals(groups, otherEditPersonDescriptor.groups)
                     && Objects.equals(majors, otherEditPersonDescriptor.majors)
                     && Objects.equals(positions, otherEditPersonDescriptor.positions)
-                    && Objects.equals(availableHours, otherEditPersonDescriptor.availableHours)
+                    && Objects.equals(timeSlots, otherEditPersonDescriptor.timeSlots)
                     && Objects.equals(flag, otherEditPersonDescriptor.flag);
         }
 
@@ -383,7 +383,7 @@ public class EditCommand extends Command {
                     .add("positions", positions)
                     .add("majors", majors)
                     .add("groups", groups)
-                    .add("available hours", availableHours)
+                    .add("time slots", timeSlots)
                     .toString();
         }
     }

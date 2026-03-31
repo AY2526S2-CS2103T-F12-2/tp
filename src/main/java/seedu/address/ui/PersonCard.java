@@ -15,7 +15,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
 
 /**
@@ -59,7 +59,7 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label majors;
     @FXML
-    private Label availableHours;
+    private Label timeSlot;
     @FXML
     private FlowPane groups;
     @FXML
@@ -96,10 +96,10 @@ public class PersonCard extends UiPart<Region> {
         email.setText(person.getEmail().value);
         String majorsText = person.getMajors().stream().map(m -> m.value).collect(Collectors.joining(", "));
         majors.setText("Major: " + (majorsText.isEmpty() ? EMPTY_FIELD_MESSAGE : majorsText));
-        String availableHoursText = person.getAvailableHours().stream()
-                .map(AvailableHours::toString).collect(Collectors.joining(", "));
-        availableHours.setText("Available hours: "
-                + (availableHoursText.isEmpty() ? EMPTY_FIELD_MESSAGE : availableHoursText));
+        String timeSlotText = person.getTimeSlots().stream()
+                .map(TimeSlot::toString).collect(Collectors.joining(", "));
+        timeSlot.setText("Available hours: "
+                + (timeSlotText.isEmpty() ? EMPTY_FIELD_MESSAGE : timeSlotText));
         String positionsText = person.getPositions().stream().map(p -> p.value).collect(Collectors.joining(", "));
         positions.setText("Position: " + (positionsText.isEmpty() ? EMPTY_FIELD_MESSAGE : positionsText));
         person.getTags().stream()
@@ -182,7 +182,7 @@ public class PersonCard extends UiPart<Region> {
         }
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HHmm");
-        for (var ah : person.getAvailableHours()) {
+        for (var ah : person.getTimeSlots()) {
             sb.append(" h/").append(ah.startTime.format(fmt))
             .append("-").append(ah.endTime.format(fmt));
         }

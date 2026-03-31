@@ -107,7 +107,7 @@ public class LogicManager implements Logic {
         Person original = lastShownList.get(index.getZeroBased());
         Person updated = new Person(original.getName(), original.getPhone(), original.getEmail(),
                 original.getAddress(), original.getTags(), original.getPositions(),
-                original.getMajors(), original.getGroups(), original.getAvailableHours(),
+                original.getMajors(), original.getGroups(), original.getTimeSlots(),
                 original.getFollowUp(), picturePath);
         model.setPerson(original, updated);
         try {

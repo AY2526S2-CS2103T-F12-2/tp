@@ -3,7 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.FindFlag;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
@@ -46,7 +46,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         List<String> compulsoryEmailKeywords = new ArrayList<>();
         List<String> compulsoryTagKeywords = new ArrayList<>();
         List<String> compulsoryPositionKeywords = new ArrayList<>();
-        List<String> compulsoryAvailableHoursKeywords = new ArrayList<>();
+        List<String> compulsoryTimeSlotKeywords = new ArrayList<>();
 
         List<String> optionalNameKeywords = new ArrayList<>();
         List<String> optionalGroupKeywords = new ArrayList<>();
@@ -56,24 +56,24 @@ public class FindCommandParser implements Parser<FindCommand> {
         List<String> optionalEmailKeywords = new ArrayList<>();
         List<String> optionalTagKeywords = new ArrayList<>();
         List<String> optionalPositionKeywords = new ArrayList<>();
-        List<String> optionalAvailableHoursKeywords = new ArrayList<>();
+        List<String> optionalTimeSlotKeywords = new ArrayList<>();
 
         List<FlaggedSegment> segments = splitByFindFlags(args);
 
         for (FlaggedSegment segment : segments) {
             ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(
                     " " + segment.content(), PREFIX_NAME, PREFIX_GROUP, PREFIX_ADDRESS, PREFIX_PHONE,
-                    PREFIX_MAJOR, PREFIX_EMAIL, PREFIX_TAG, PREFIX_POSITION, PREFIX_AVAILABLE_HOURS);
+                    PREFIX_MAJOR, PREFIX_EMAIL, PREFIX_TAG, PREFIX_POSITION, PREFIX_TIME);
 
             if (segment.flag() == FindFlag.COMPULSORY) {
                 extractAllKeywords(compulsoryNameKeywords, compulsoryGroupKeywords, compulsoryAddressKeywords,
                         compulsoryPhoneKeywords, compulsoryMajorKeywords, compulsoryEmailKeywords,
-                        compulsoryTagKeywords, compulsoryPositionKeywords, compulsoryAvailableHoursKeywords,
+                        compulsoryTagKeywords, compulsoryPositionKeywords, compulsoryTimeSlotKeywords,
                         argMultimap);
             } else {
                 extractAllKeywords(optionalNameKeywords, optionalGroupKeywords, optionalAddressKeywords,
                         optionalPhoneKeywords, optionalMajorKeywords, optionalEmailKeywords,
-                        optionalTagKeywords, optionalPositionKeywords, optionalAvailableHoursKeywords,
+                        optionalTagKeywords, optionalPositionKeywords, optionalTimeSlotKeywords,
                         argMultimap);
             }
         }
@@ -87,7 +87,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                 compulsoryEmailKeywords, optionalEmailKeywords,
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
-                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
+                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
 
         return new FindCommand(new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
@@ -98,13 +98,13 @@ public class FindCommandParser implements Parser<FindCommand> {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords));
+                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords));
     }
 
     private void extractAllKeywords(List<String> nameKeywords, List<String> groupKeywords, List<String> addressKeywords,
                                     List<String> phoneKeywords, List<String> majorKeywords, List<String> emailKeywords,
                                     List<String> tagKeywords, List<String> positionKeywords,
-                                    List<String> availableHoursKeywords, ArgumentMultimap argMultimap) {
+                                    List<String> timeSlotKeywords, ArgumentMultimap argMultimap) {
         nameKeywords.addAll(argMultimap.getAllValues(PREFIX_NAME));
         groupKeywords.addAll(argMultimap.getAllValues(PREFIX_GROUP));
         addressKeywords.addAll(argMultimap.getAllValues(PREFIX_ADDRESS));
@@ -113,7 +113,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         emailKeywords.addAll(argMultimap.getAllValues(PREFIX_EMAIL));
         tagKeywords.addAll(argMultimap.getAllValues(PREFIX_TAG));
         positionKeywords.addAll(argMultimap.getAllValues(PREFIX_POSITION));
-        availableHoursKeywords.addAll(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS));
+        timeSlotKeywords.addAll(argMultimap.getAllValues(PREFIX_TIME));
     }
 
     /**
@@ -162,13 +162,13 @@ public class FindCommandParser implements Parser<FindCommand> {
         }
     }
 
-    private static void verifyValidAvailableHours(List<String> keywords) throws ParseException {
+    private static void verifyValidTimeSlot(List<String> keywords) throws ParseException {
         for (String keyword : keywords) {
-            if (AvailableHours.isValidAvailableHours(keyword)) {
+            if (TimeSlot.isValidTimeSlot(keyword)) {
                 continue;
             }
             try {
-                AvailableHours.stringToTime(keyword);
+                TimeSlot.stringToTime(keyword);
             } catch (WrongTimeFormatException e) {
                 throw new ParseException(e.getMessage());
             }
@@ -184,7 +184,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
-            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords)
+            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords)
             throws ParseException {
 
         if (compulsoryNameKeywords.isEmpty() && optionalNameKeywords.isEmpty()
@@ -195,7 +195,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                 && compulsoryEmailKeywords.isEmpty() && optionalEmailKeywords.isEmpty()
                 && compulsoryTagKeywords.isEmpty() && optionalTagKeywords.isEmpty()
                 && compulsoryPositionKeywords.isEmpty() && optionalPositionKeywords.isEmpty()
-                && compulsoryAvailableHoursKeywords.isEmpty() && optionalAvailableHoursKeywords.isEmpty()) {
+                && compulsoryTimeSlotKeywords.isEmpty() && optionalTimeSlotKeywords.isEmpty()) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
@@ -216,8 +216,8 @@ public class FindCommandParser implements Parser<FindCommand> {
         verifyValidKeywords(optionalTagKeywords);
         verifyValidKeywords(compulsoryPositionKeywords);
         verifyValidKeywords(optionalPositionKeywords);
-        verifyValidAvailableHours(compulsoryAvailableHoursKeywords);
-        verifyValidAvailableHours(optionalAvailableHoursKeywords);
+        verifyValidTimeSlot(compulsoryTimeSlotKeywords);
+        verifyValidTimeSlot(optionalTimeSlotKeywords);
     }
 
     private record FlaggedSegment(FindFlag flag, String content) {}
