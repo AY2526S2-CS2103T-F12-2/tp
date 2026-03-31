@@ -14,7 +14,7 @@ import java.util.Set;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.model.person.TimeSlot;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Person;
@@ -104,11 +104,11 @@ public class PersonUtil {
         }
 
         if (descriptor.getTimeSlots().isPresent()) {
-            Set<TimeSlot> TimeSlot = descriptor.getTimeSlots().get();
-            if (TimeSlot.isEmpty()) {
+            Set<TimeSlot> timeSlots = descriptor.getTimeSlots().get();
+            if (timeSlots.isEmpty()) {
                 sb.append(PREFIX_TIME);
             } else {
-                TimeSlot.forEach(s -> sb.append(PREFIX_TIME)
+                timeSlots.forEach(s -> sb.append(PREFIX_TIME)
                         .append(s.toOriginalString()).append(" "));
             }
         }

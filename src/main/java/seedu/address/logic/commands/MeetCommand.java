@@ -2,19 +2,19 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_PERSONS_LISTED_OVERVIEW;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
-import seedu.address.model.TimeSlot;
 
 /**
  * Creates a meeting at a specified time with contacts who match at least one filter.
@@ -50,6 +50,8 @@ public class MeetCommand extends Command {
             "Meeting created: %1$s (%2$s). %3$s";
     public static final String MESSAGE_NO_MATCHING_ATTENDEES =
             "No available contacts match the provided filters for this meeting.";
+    public static final String MESSAGE_DUPLICATE_MEETING =
+            "This meeting already exists in the address book.";
 
     private final String description;
     private final TimeSlot meetingSlot;
@@ -78,6 +80,12 @@ public class MeetCommand extends Command {
 
         Meeting meeting = new Meeting(description, meetingSlot.startTime, meetingSlot.endTime,
                 model.getDisplayedPersonList());
+
+        if (model.hasMeeting(meeting)) {
+            throw new CommandException(MESSAGE_DUPLICATE_MEETING);
+        }
+
+        model.addMeeting(meeting);
         String listMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, meeting.getAttendees().size());
         return new CommandResult(String.format(MESSAGE_SUCCESS,
                 meeting.getDescription(), meetingSlot.toOriginalString(), listMessage));
