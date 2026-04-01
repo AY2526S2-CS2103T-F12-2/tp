@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
-import seedu.address.model.TimeSlot;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.TimeSlot;
 
 /**
  * Tests that a {@code Person}'s fields match any of the provided keywords.

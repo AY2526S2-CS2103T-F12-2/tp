@@ -38,7 +38,8 @@ public class UnmeetCommandTest {
         String expectedMessage = String.format(UnmeetCommand.MESSAGE_DELETE_MEETING_SUCCESS, meetingToDelete);
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.deleteMeeting(expectedModel.getAddressBook().getMeetingList().get(INDEX_FIRST_PERSON.getZeroBased()));
+        expectedModel.deleteMeeting(
+                expectedModel.getAddressBook().getMeetingList().get(INDEX_FIRST_PERSON.getZeroBased()));
 
         assertCommandSuccess(unmeetCommand, model, expectedMessage, expectedModel);
     }

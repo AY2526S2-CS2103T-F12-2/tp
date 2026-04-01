@@ -235,7 +235,7 @@ public class Person {
                 .add("positions", positions)
                 .add("majors", majors)
                 .add("groups", groups)
-                .add("time slots", timeSlots)
+                .add("available hours", timeSlots)
                 .add("followUp", followUp)
                 .toString();
     }
