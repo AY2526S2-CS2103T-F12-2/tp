@@ -34,7 +34,7 @@ public class PersonBuilder {
     private Set<Position> positions;
     private Set<Major> majors;
     private Set<Group> groups;
-    private Set<TimeSlot> timeSlots;
+    private Set<TimeSlot> availableHours;
     private FollowUp followUp;
 
     /**
@@ -49,7 +49,7 @@ public class PersonBuilder {
         majors = new HashSet<>();
         groups = new HashSet<>();
         positions = new HashSet<>();
-        timeSlots = new HashSet<>();
+        availableHours = new HashSet<>();
         followUp = FollowUp.EMPTY;
     }
 
@@ -65,7 +65,7 @@ public class PersonBuilder {
         groups = new HashSet<>(personToCopy.getGroups());
         positions = new HashSet<>(personToCopy.getPositions());
         majors = new HashSet<>(personToCopy.getMajors());
-        timeSlots = new HashSet<>(personToCopy.getTimeSlots());
+        availableHours = new HashSet<>(personToCopy.getAvailableHours());
         followUp = personToCopy.getFollowUp();
     }
 
@@ -114,7 +114,7 @@ public class PersonBuilder {
      * and set it to the {@code Person} that we are building.
      */
     public PersonBuilder withAvailableHours(String ... timeSlots) {
-        this.timeSlots = SampleDataUtil.getTimeSlotsSet(timeSlots);
+        this.availableHours = SampleDataUtil.getTimeSlotsSet(timeSlots);
         return this;
     }
 
@@ -154,7 +154,7 @@ public class PersonBuilder {
      * Builds and returns the {@code Person}.
      */
     public Person build() {
-        return new Person(name, phone, email, address, tags, positions, majors, groups, timeSlots,
+        return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours,
                 followUp, "");
     }
 

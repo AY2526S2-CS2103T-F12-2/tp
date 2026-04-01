@@ -90,7 +90,7 @@ public class SampleDataUtil {
     }
 
     /**
-     * Returns a set of available hours containing the list of strings given.
+     * Returns a set of time slots containing the list of strings given.
      */
     public static Set<TimeSlot> getTimeSlotsSet(String... strings) {
         return Arrays.stream(strings)

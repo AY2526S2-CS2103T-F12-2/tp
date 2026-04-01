@@ -55,7 +55,7 @@ public class FollowUpCommand extends Command {
         Person editedPerson = new Person(
                 personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
                 personToEdit.getAddress(), personToEdit.getTags(), personToEdit.getPositions(),
-                personToEdit.getMajors(), personToEdit.getGroups(), personToEdit.getTimeSlots(),
+                personToEdit.getMajors(), personToEdit.getGroups(), personToEdit.getAvailableHours(),
                 followUp, personToEdit.getProfilePicturePath());
 
         model.setPerson(personToEdit, editedPerson);

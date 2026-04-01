@@ -229,11 +229,11 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
-        if (person.getTimeSlots().isEmpty()) {
+        if (person.getAvailableHours().isEmpty()) {
             return false;
         }
 
-        return person.getTimeSlots().stream()
+        return person.getAvailableHours().stream()
                 .anyMatch(duration -> keywords.stream()
                         .anyMatch(keyword -> TimeSlot.isValidTimeSlot(keyword)
                                 ? TimeSlot.isSlotWithinTimeSlot(new TimeSlot(keyword), duration)

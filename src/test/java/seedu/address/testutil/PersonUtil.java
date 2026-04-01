@@ -54,7 +54,7 @@ public class PersonUtil {
         person.getPositions().stream().forEach(
                 s -> sb.append(PREFIX_POSITION + s.value + " ")
         );
-        person.getTimeSlots().stream().forEach(
+        person.getAvailableHours().stream().forEach(
                 s -> sb.append(PREFIX_TIME + s.toOriginalString() + " ")
         );
         return sb.toString();

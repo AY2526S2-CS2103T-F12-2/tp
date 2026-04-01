@@ -113,7 +113,7 @@ class JsonAdaptedPerson {
         groups.addAll(source.getGroups().stream()
                 .map(JsonAdaptedGroup::new)
                 .collect(Collectors.toList()));
-        timeSlots.addAll(source.getTimeSlots().stream()
+        timeSlots.addAll(source.getAvailableHours().stream()
                 .map(JsonAdaptedTimeSlot::new)
                 .collect(Collectors.toList()));
     }

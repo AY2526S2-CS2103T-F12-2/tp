@@ -116,7 +116,7 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
         Set<TimeSlot> updatedTimeSlots =
-                editPersonDescriptor.getTimeSlots().orElse(personToEdit.getTimeSlots());
+                editPersonDescriptor.getTimeSlots().orElse(personToEdit.getAvailableHours());
 
         final Set<Tag> updatedTags;
         final Set<Major> updatedMajors;

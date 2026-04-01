@@ -45,7 +45,7 @@ public class JsonAdaptedPersonTest {
     private static final List<JsonAdaptedPosition> VALID_POSITIONS = BENSON.getPositions().stream()
             .map(JsonAdaptedPosition::new)
             .collect(Collectors.toList());
-    private static final List<JsonAdaptedTimeSlot> VALID_TIME_SLOTS = BENSON.getTimeSlots().stream()
+    private static final List<JsonAdaptedTimeSlot> VALID_TIME_SLOTS = BENSON.getAvailableHours().stream()
             .map(JsonAdaptedTimeSlot::new)
             .collect(Collectors.toList());
 

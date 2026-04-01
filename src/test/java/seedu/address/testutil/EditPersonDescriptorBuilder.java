@@ -44,7 +44,7 @@ public class EditPersonDescriptorBuilder {
         descriptor.setPositions(person.getPositions());
         descriptor.setMajors(person.getMajors());
         descriptor.setGroups(person.getGroups());
-        descriptor.setTimeSlots(person.getTimeSlots());
+        descriptor.setTimeSlots(person.getAvailableHours());
     }
 
     /**

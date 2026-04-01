@@ -96,7 +96,7 @@ public class PersonCard extends UiPart<Region> {
         email.setText(person.getEmail().value);
         String majorsText = person.getMajors().stream().map(m -> m.value).collect(Collectors.joining(", "));
         majors.setText("Major: " + (majorsText.isEmpty() ? EMPTY_FIELD_MESSAGE : majorsText));
-        String timeSlotText = person.getTimeSlots().stream()
+        String timeSlotText = person.getAvailableHours().stream()
                 .map(TimeSlot::toString).collect(Collectors.joining(", "));
         timeSlot.setText("Available hours: "
                 + (timeSlotText.isEmpty() ? EMPTY_FIELD_MESSAGE : timeSlotText));
@@ -182,7 +182,7 @@ public class PersonCard extends UiPart<Region> {
         }
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HHmm");
-        for (var ah : person.getTimeSlots()) {
+        for (var ah : person.getAvailableHours()) {
             sb.append(" h/").append(ah.startTime.format(fmt))
             .append("-").append(ah.endTime.format(fmt));
         }

@@ -30,8 +30,8 @@ public class Person {
     private final Set<Major> majors = new HashSet<>();
     private final Set<Tag> tags = new HashSet<>();
     private final Set<Group> groups = new HashSet<>();
-    // We ensure timeSlots only ever contains 0 or 1 object.
-    private final Set<TimeSlot> timeSlots = new HashSet<>();
+    // We ensure availableHours only ever contains 0 or 1 object.
+    private final Set<TimeSlot> availableHours = new HashSet<>();
 
     // Optional profile picture (file path), empty string if not set
     private String profilePicturePath;
@@ -45,17 +45,17 @@ public class Person {
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> timeSlots) {
-        this(name, phone, email, address, tags, positions, majors, groups, timeSlots, FollowUp.EMPTY, "", false);
+                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours) {
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY, "", false);
     }
 
     /**
      * Constructor with optional profile picture path (no follow-up).
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> timeSlots,
+                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours,
                   String profilePicturePath) {
-        this(name, phone, email, address, tags, positions, majors, groups, timeSlots, FollowUp.EMPTY,
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY,
                 profilePicturePath, false);
     }
 
@@ -63,9 +63,9 @@ public class Person {
      * Constructor including follow-up note and profile picture path.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> timeSlots, FollowUp followUp,
+                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours, FollowUp followUp,
                   String profilePicturePath) {
-        this(name, phone, email, address, tags, positions, majors, groups, timeSlots, followUp,
+        this(name, phone, email, address, tags, positions, majors, groups, availableHours, followUp,
                 profilePicturePath, false);
     }
 
@@ -73,9 +73,9 @@ public class Person {
      * Full constructor including follow-up note, profile picture path, and pinned status.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> timeSlots, FollowUp followUp,
+                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours, FollowUp followUp,
                   String profilePicturePath, boolean pinned) {
-        requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, timeSlots, followUp);
+        requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours, followUp);
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -84,7 +84,7 @@ public class Person {
         this.majors.addAll(majors);
         this.tags.addAll(tags);
         this.groups.addAll(groups);
-        this.timeSlots.addAll(timeSlots);
+        this.availableHours.addAll(availableHours);
         this.followUp = followUp;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
         this.pinned = pinned;
@@ -142,8 +142,8 @@ public class Person {
      * Returns an immutable {@code Set<TimeSlot>}, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
-    public Set<TimeSlot> getTimeSlots() {
-        return Collections.unmodifiableSet(timeSlots);
+    public Set<TimeSlot> getAvailableHours() {
+        return Collections.unmodifiableSet(availableHours);
     }
 
     public String getProfilePicturePath() {
@@ -214,14 +214,14 @@ public class Person {
                 && positions.equals(otherPerson.positions)
                 && majors.equals(otherPerson.majors)
                 && groups.equals(otherPerson.groups)
-                && timeSlots.equals(otherPerson.timeSlots)
+                && availableHours.equals(otherPerson.availableHours)
                 && followUp.equals(otherPerson.followUp);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, timeSlots, followUp);
+        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours, followUp);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class Person {
                 .add("positions", positions)
                 .add("majors", majors)
                 .add("groups", groups)
-                .add("available hours", timeSlots)
+                .add("available hours", availableHours)
                 .add("followUp", followUp)
                 .toString();
     }
