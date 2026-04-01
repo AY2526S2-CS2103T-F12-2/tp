@@ -16,20 +16,36 @@ public class Meeting {
     private final int index;
     private final String description;
     private final TimeSlot timeSlot;
+    private final Date date;
     private final List<Person> attendees;
 
     /**
      * Creates a meeting with the specified description, time range, and attendees.
      */
     public Meeting(String description, TimeSlot timeSlot, List<Person> attendees) {
-        this(0, description, timeSlot, attendees);
+        this(0, description, Date.today(), timeSlot, attendees);
+    }
+
+    /**
+     * Creates a meeting with the specified description, date, time range, and attendees.
+     */
+    public Meeting(String description, Date date, TimeSlot timeSlot, List<Person> attendees) {
+        this(0, description, date, timeSlot, attendees);
     }
 
     /**
      * Creates a meeting with an explicit index.
      */
     public Meeting(int index, String description, TimeSlot timeSlot, List<Person> attendees) {
+        this(index, description, Date.today(), timeSlot, attendees);
+    }
+
+    /**
+     * Creates a meeting with an explicit index and date.
+     */
+    public Meeting(int index, String description, Date date, TimeSlot timeSlot, List<Person> attendees) {
         requireNonNull(description);
+        requireNonNull(date);
         requireNonNull(timeSlot);
         requireNonNull(attendees);
         assert !attendees.isEmpty() : "A meeting must have at least one attendee";
@@ -38,6 +54,7 @@ public class Meeting {
         }
         this.index = index;
         this.description = description;
+        this.date = date;
         this.timeSlot = timeSlot;
         this.attendees = List.copyOf(attendees);
     }
@@ -48,6 +65,10 @@ public class Meeting {
 
     public String getDescription() {
         return description;
+    }
+
+    public Date getDate() {
+        return date;
     }
 
     public LocalTime getStartTime() {
@@ -66,7 +87,7 @@ public class Meeting {
      * Returns a copy of this meeting with {@code newIndex}.
      */
     public Meeting withIndex(int newIndex) {
-        return new Meeting(newIndex, description, timeSlot, attendees);
+        return new Meeting(newIndex, description, date, timeSlot, attendees);
     }
 
     /**
@@ -79,6 +100,7 @@ public class Meeting {
 
         return otherMeeting != null
                 && description.equals(otherMeeting.description)
+                && date.equals(otherMeeting.date)
                 && timeSlot.equals(otherMeeting.timeSlot);
     }
 
@@ -91,7 +113,8 @@ public class Meeting {
                 .map(name -> name.fullName)
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        return description + ". Time: " + timeSlot + ". Attendees: " + attendeeString;
+        return "Meeting: " + description + ". Date: " + date + ". Time: "
+                + timeSlot + ". Attendees: " + attendeeString;
     }
 
     @Override
@@ -101,7 +124,7 @@ public class Meeting {
                 .map(name -> name.fullName)
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        return "Meeting #" + index + ": " + description + ". Time: " + timeSlot
+        return "Meeting #" + index + ": " + description + ". Date: " + date + ". Time: " + timeSlot
                 + ". Attendees: " + attendeeString;
     }
 
@@ -116,12 +139,13 @@ public class Meeting {
         Meeting otherMeeting = (Meeting) other;
         return index == otherMeeting.index
                 && description.equals(otherMeeting.description)
+                && date.equals(otherMeeting.date)
                 && timeSlot.equals(otherMeeting.timeSlot)
                 && attendees.equals(otherMeeting.attendees);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(index, description, timeSlot, attendees);
+        return Objects.hash(index, description, date, timeSlot, attendees);
     }
 }

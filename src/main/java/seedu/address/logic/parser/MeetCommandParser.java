@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -15,6 +16,7 @@ import java.util.List;
 import seedu.address.logic.commands.MeetCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.TimeSlot;
+import seedu.address.model.meeting.Date;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
@@ -29,11 +31,11 @@ public class MeetCommandParser implements Parser<MeetCommand> {
      */
     @Override
     public MeetCommand parse(String args) throws ParseException {
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_TIME, PREFIX_NAME,
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_TIME, PREFIX_DATE, PREFIX_NAME,
                 PREFIX_GROUP, PREFIX_MAJOR, PREFIX_POSITION, PREFIX_TAG);
 
-        // Time is required and must appear exactly once.
-        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_TIME);
+        // Time is required and must appear exactly once. Date is optional and can appear at most once.
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_TIME, PREFIX_DATE);
 
         // Description is the preamble (unprefixed part)
         String description = argMultimap.getPreamble().trim();
@@ -45,6 +47,17 @@ public class MeetCommandParser implements Parser<MeetCommand> {
 
         if (argMultimap.getValue(PREFIX_TIME).isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MeetCommand.MESSAGE_USAGE));
+        }
+
+        // Parse optional meeting date (defaults to today when omitted)
+        Date meetingDate = Date.today();
+        if (argMultimap.getValue(PREFIX_DATE).isPresent()) {
+            String dateValue = argMultimap.getValue(PREFIX_DATE).get();
+            try {
+                meetingDate = new Date(dateValue);
+            } catch (IllegalArgumentException ex) {
+                throw new ParseException(Date.MESSAGE_CONSTRAINTS);
+            }
         }
 
         // Parse the meeting time slot
@@ -85,7 +98,7 @@ public class MeetCommandParser implements Parser<MeetCommand> {
                 emptyList, groupKeywords,
                 new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)), emptyList);
 
-        return new MeetCommand(description, meetingSlot, predicate);
+        return new MeetCommand(description, meetingDate, meetingSlot, predicate);
     }
 
     private static void verifyValidKeywords(List<String> keywords) throws ParseException {
@@ -96,4 +109,3 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         }
     }
 }
-
