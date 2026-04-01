@@ -78,7 +78,7 @@ public class MeetCommand extends Command {
             throw new CommandException(MESSAGE_NO_MATCHING_ATTENDEES);
         }
 
-        Meeting meeting = new Meeting(description, meetingSlot.startTime, meetingSlot.endTime,
+        Meeting meeting = new Meeting(description, meetingSlot,
                 model.getDisplayedPersonList());
 
         if (model.hasMeeting(meeting)) {

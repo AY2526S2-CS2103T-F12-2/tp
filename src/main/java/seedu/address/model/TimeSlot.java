@@ -46,6 +46,37 @@ public class TimeSlot {
         this.endTime = hours[1];
     }
 
+    /**
+     * Constructs a {@code TimeSlot} with given start and end times.
+     *
+     * @param startTime The start time of the time slot.
+     * @param endTime The end time of the time slot.
+     * @throws WrongTimeFormatException if startTime is not before endTime.
+     */
+    public TimeSlot(LocalTime startTime, LocalTime endTime) throws WrongTimeFormatException {
+        requireNonNull(startTime);
+        requireNonNull(endTime);
+        if (!startTime.isBefore(endTime)) {
+            throw new WrongTimeFormatException(MESSAGE_CONSTRAINTS);
+        }
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    /**
+     * Returns the start time of the time slot.
+     */
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Returns the end time of the time slot.
+     */
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
     private static LocalTime[] timeParser(String input) throws WrongTimeFormatException {
         String[] times = input.trim().split("-");
         if (times.length != 2) {

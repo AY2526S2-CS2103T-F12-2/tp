@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
@@ -56,6 +57,12 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         List<String> positionKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_POSITION));
         List<String> tagKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_TAG));
 
+        verifyValidKeywords(nameKeywords);
+        verifyValidKeywords(groupKeywords);
+        verifyValidKeywords(majorKeywords);
+        verifyValidKeywords(positionKeywords);
+        verifyValidKeywords(tagKeywords);
+
         // Validate that at least one filter is provided
         if (nameKeywords.isEmpty() && groupKeywords.isEmpty() && majorKeywords.isEmpty()
                 && positionKeywords.isEmpty() && tagKeywords.isEmpty()) {
@@ -64,21 +71,29 @@ public class MeetCommandParser implements Parser<MeetCommand> {
 
         // For MeetCommand, we use optional keywords only (no compulsory/optional distinction)
         // Create empty compulsory lists (all criteria are optional in meet command)
-        List<String> emptyCompulsoryList = new ArrayList<>();
+        List<String> emptyList = new ArrayList<>();
 
         // Create predicate with optional filters for all criteria
         PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(
-                emptyCompulsoryList, nameKeywords,
-                emptyCompulsoryList, emptyCompulsoryList,
-                emptyCompulsoryList, emptyCompulsoryList,
-                emptyCompulsoryList, majorKeywords,
-                emptyCompulsoryList, emptyCompulsoryList,
-                emptyCompulsoryList, tagKeywords,
-                emptyCompulsoryList, positionKeywords,
-                emptyCompulsoryList, groupKeywords,
-                emptyCompulsoryList, new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)));
+                emptyList, nameKeywords,
+                emptyList, emptyList,
+                emptyList, emptyList,
+                emptyList, majorKeywords,
+                emptyList, emptyList,
+                emptyList, tagKeywords,
+                emptyList, positionKeywords,
+                emptyList, groupKeywords,
+                new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)), emptyList);
 
         return new MeetCommand(description, meetingSlot, predicate);
+    }
+
+    private static void verifyValidKeywords(List<String> keywords) throws ParseException {
+        for (String keyword : keywords) {
+            if (keyword.isEmpty()) {
+                throw new ParseException(MESSAGE_INVALID_KEYWORD);
+            }
+        }
     }
 }
 

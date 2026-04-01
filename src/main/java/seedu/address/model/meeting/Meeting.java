@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
 
 /**
@@ -14,24 +15,22 @@ import seedu.address.model.person.Person;
 public class Meeting {
     private final int index;
     private final String description;
-    private final LocalTime startTime;
-    private final LocalTime endTime;
+    private final TimeSlot timeSlot;
     private final List<Person> attendees;
 
     /**
      * Creates a meeting with the specified description, time range, and attendees.
      */
-    public Meeting(String description, LocalTime startTime, LocalTime endTime, List<Person> attendees) {
-        this(0, description, startTime, endTime, attendees);
+    public Meeting(String description, TimeSlot timeSlot, List<Person> attendees) {
+        this(0, description, timeSlot, attendees);
     }
 
     /**
      * Creates a meeting with an explicit index.
      */
-    public Meeting(int index, String description, LocalTime startTime, LocalTime endTime, List<Person> attendees) {
+    public Meeting(int index, String description, TimeSlot timeSlot, List<Person> attendees) {
         requireNonNull(description);
-        requireNonNull(startTime);
-        requireNonNull(endTime);
+        requireNonNull(timeSlot);
         requireNonNull(attendees);
         assert !attendees.isEmpty() : "A meeting must have at least one attendee";
         if (index < 0) {
@@ -39,8 +38,7 @@ public class Meeting {
         }
         this.index = index;
         this.description = description;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.timeSlot = timeSlot;
         this.attendees = List.copyOf(attendees);
     }
 
@@ -53,11 +51,11 @@ public class Meeting {
     }
 
     public LocalTime getStartTime() {
-        return startTime;
+        return timeSlot.getStartTime();
     }
 
     public LocalTime getEndTime() {
-        return endTime;
+        return timeSlot.getEndTime();
     }
 
     public List<Person> getAttendees() {
@@ -68,7 +66,7 @@ public class Meeting {
      * Returns a copy of this meeting with {@code newIndex}.
      */
     public Meeting withIndex(int newIndex) {
-        return new Meeting(newIndex, description, startTime, endTime, attendees);
+        return new Meeting(newIndex, description, timeSlot, attendees);
     }
 
     /**
@@ -81,8 +79,7 @@ public class Meeting {
 
         return otherMeeting != null
                 && description.equals(otherMeeting.description)
-                && startTime.equals(otherMeeting.startTime)
-                && endTime.equals(otherMeeting.endTime);
+                && timeSlot.equals(otherMeeting.timeSlot);
     }
 
     /**
@@ -94,8 +91,7 @@ public class Meeting {
                 .map(name -> name.fullName)
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        return description + ". Time: " + startTime + " - "
-                + endTime + ". Attendees: " + attendeeString;
+        return description + ". Time: " + timeSlot + ". Attendees: " + attendeeString;
     }
 
     @Override
@@ -105,8 +101,8 @@ public class Meeting {
                 .map(name -> name.fullName)
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        return "Meeting #" + index + ": " + description + ". Time: " + startTime + " - "
-                + endTime + ". Attendees: " + attendeeString;
+        return "Meeting #" + index + ": " + description + ". Time: " + timeSlot
+                + ". Attendees: " + attendeeString;
     }
 
     @Override
@@ -120,13 +116,12 @@ public class Meeting {
         Meeting otherMeeting = (Meeting) other;
         return index == otherMeeting.index
                 && description.equals(otherMeeting.description)
-                && startTime.equals(otherMeeting.startTime)
-                && endTime.equals(otherMeeting.endTime)
+                && timeSlot.equals(otherMeeting.timeSlot)
                 && attendees.equals(otherMeeting.attendees);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(index, description, startTime, endTime, attendees);
+        return Objects.hash(index, description, timeSlot, attendees);
     }
 }

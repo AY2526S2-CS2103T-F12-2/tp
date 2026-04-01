@@ -11,8 +11,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
 /**
  * Jackson-friendly version of {@link Meeting}.
@@ -69,10 +71,12 @@ class JsonAdaptedMeeting {
 
         LocalTime modelStartTime;
         LocalTime modelEndTime;
+        TimeSlot modelTimeSlot;
         try {
             modelStartTime = LocalTime.parse(startTime);
             modelEndTime = LocalTime.parse(endTime);
-        } catch (DateTimeParseException ex) {
+            modelTimeSlot = new TimeSlot(modelStartTime, modelEndTime);
+        } catch (DateTimeParseException | WrongTimeFormatException ex) {
             throw new IllegalValueException(MESSAGE_INVALID_TIME_FORMAT);
         }
 
@@ -82,7 +86,7 @@ class JsonAdaptedMeeting {
         }
 
         int modelIndex = index == null ? 0 : index;
-        return new Meeting(modelIndex, description, modelStartTime, modelEndTime, modelAttendees);
+        return new Meeting(modelIndex, description, modelTimeSlot, modelAttendees);
     }
 }
 

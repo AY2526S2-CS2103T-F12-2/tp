@@ -9,7 +9,6 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
-import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.meeting.Meeting;
 
@@ -86,13 +86,11 @@ public class UnmeetCommandTest {
 
         Meeting firstMeeting = new Meeting(
                 "Project sync",
-                LocalTime.of(10, 0),
-                LocalTime.of(11, 0),
+                new TimeSlot("1000-1100"),
                 List.of(model.getDisplayedPersonList().get(0)));
         Meeting secondMeeting = new Meeting(
                 "Design review",
-                LocalTime.of(14, 0),
-                LocalTime.of(15, 0),
+                new TimeSlot("1400-1500"),
                 List.of(model.getDisplayedPersonList().get(1)));
 
         model.addMeeting(firstMeeting);
