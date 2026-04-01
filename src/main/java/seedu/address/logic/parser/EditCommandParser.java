@@ -86,7 +86,7 @@ public class EditCommandParser implements Parser<EditCommand> {
         parsePrefixForEdit(argMultimap.getAllValues(PREFIX_GROUP), ParserUtil::parseGroups)
                 .ifPresent(editPersonDescriptor::setGroups);
         parsePrefixForEdit(argMultimap.getAllValues(PREFIX_TIME), ParserUtil::parseTimeSlots)
-                .ifPresent(editPersonDescriptor::setTimeSlots);
+                .ifPresent(editPersonDescriptor::setAvailableHours);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);

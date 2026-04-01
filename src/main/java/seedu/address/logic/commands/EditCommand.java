@@ -115,8 +115,8 @@ public class EditCommand extends Command {
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
-        Set<TimeSlot> updatedTimeSlots =
-                editPersonDescriptor.getTimeSlots().orElse(personToEdit.getAvailableHours());
+        Set<TimeSlot> updatedAvailableHours =
+                editPersonDescriptor.getAvailableHours().orElse(personToEdit.getAvailableHours());
 
         final Set<Tag> updatedTags;
         final Set<Major> updatedMajors;
@@ -143,7 +143,7 @@ public class EditCommand extends Command {
         }
 
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, updatedPositions,
-                updatedMajors, updatedGroups, updatedTimeSlots, personToEdit.getFollowUp(),
+                updatedMajors, updatedGroups, updatedAvailableHours, personToEdit.getFollowUp(),
                 personToEdit.getProfilePicturePath());
     }
 
@@ -184,7 +184,7 @@ public class EditCommand extends Command {
         private Set<Major> majors;
         private Set<Position> positions;
         private Set<Group> groups;
-        private Set<TimeSlot> timeSlots;
+        private Set<TimeSlot> availableHours;
         private EditFlag flag = EditFlag.NONE;
 
         public EditPersonDescriptor() {}
@@ -202,7 +202,7 @@ public class EditCommand extends Command {
             setPositions(toCopy.positions);
             setMajors(toCopy.majors);
             setGroups(toCopy.groups);
-            setTimeSlots(toCopy.timeSlots);
+            setAvailableHours(toCopy.availableHours);
             setEditFlag(toCopy.flag);
         }
 
@@ -211,7 +211,7 @@ public class EditCommand extends Command {
          */
         public boolean isAnyFieldEdited() {
             return CollectionUtil.isAnyNonNull(name, phone, email, address, tags, majors,
-                    groups, positions, timeSlots);
+                    groups, positions, availableHours);
         }
 
         public void setName(Name name) {
@@ -248,10 +248,6 @@ public class EditCommand extends Command {
 
         public void setEditFlag(EditFlag flag) {
             this.flag = flag;
-        }
-
-        public Optional<EditFlag> getEditFlag() {
-            return Optional.ofNullable(flag);
         }
 
         /**
@@ -323,21 +319,21 @@ public class EditCommand extends Command {
         }
 
         /**
-         * Sets {@code timeSlots} to this object's {@code timeSlots}.
-         * A defensive copy of {@code timeSlots} is used internally.
+         * Sets {@code availableHours} to this object's {@code availableHours}.
+         * A defensive copy of {@code availableHours} is used internally.
          */
-        public void setTimeSlots(Set<TimeSlot> timeSlots) {
-            this.timeSlots = (timeSlots != null) ? new HashSet<>(timeSlots) : null;
+        public void setAvailableHours(Set<TimeSlot> availableHours) {
+            this.availableHours = (availableHours != null) ? new HashSet<>(availableHours) : null;
         }
 
         /**
          * Returns an unmodifiable available hour set, which throws {@code UnsupportedOperationException}
          * if modification is attempted.
-         * Returns {@code Optional#empty()} if {@code timeSlots} is null.
+         * Returns {@code Optional#empty()} if {@code availableHours} is null.
          */
-        public Optional<Set<TimeSlot>> getTimeSlots() {
-            return (timeSlots != null)
-                    ? Optional.of(Collections.unmodifiableSet(timeSlots))
+        public Optional<Set<TimeSlot>> getAvailableHours() {
+            return (availableHours != null)
+                    ? Optional.of(Collections.unmodifiableSet(availableHours))
                     : Optional.empty();
         }
 
@@ -368,7 +364,7 @@ public class EditCommand extends Command {
                     && Objects.equals(groups, otherEditPersonDescriptor.groups)
                     && Objects.equals(majors, otherEditPersonDescriptor.majors)
                     && Objects.equals(positions, otherEditPersonDescriptor.positions)
-                    && Objects.equals(timeSlots, otherEditPersonDescriptor.timeSlots)
+                    && Objects.equals(availableHours, otherEditPersonDescriptor.availableHours)
                     && Objects.equals(flag, otherEditPersonDescriptor.flag);
         }
 
@@ -383,7 +379,7 @@ public class EditCommand extends Command {
                     .add("positions", positions)
                     .add("majors", majors)
                     .add("groups", groups)
-                    .add("available hours", timeSlots)
+                    .add("available hours", availableHours)
                     .toString();
         }
     }

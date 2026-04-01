@@ -76,11 +76,6 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         verifyValidKeywords(positionKeywords);
         verifyValidKeywords(tagKeywords);
 
-        // Validate that at least one filter is provided
-        if (nameKeywords.isEmpty() && groupKeywords.isEmpty() && majorKeywords.isEmpty()
-                && positionKeywords.isEmpty() && tagKeywords.isEmpty()) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MeetCommand.MESSAGE_USAGE));
-        }
 
         // For MeetCommand, we use optional keywords only (no compulsory/optional distinction)
         // Create empty compulsory lists (all criteria are optional in meet command)

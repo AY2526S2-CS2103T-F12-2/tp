@@ -46,7 +46,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         List<String> compulsoryEmailKeywords = new ArrayList<>();
         List<String> compulsoryTagKeywords = new ArrayList<>();
         List<String> compulsoryPositionKeywords = new ArrayList<>();
-        List<String> compulsoryTimeSlotKeywords = new ArrayList<>();
+        List<String> compulsoryAvailableHoursKeywords = new ArrayList<>();
 
         List<String> optionalNameKeywords = new ArrayList<>();
         List<String> optionalGroupKeywords = new ArrayList<>();
@@ -56,7 +56,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         List<String> optionalEmailKeywords = new ArrayList<>();
         List<String> optionalTagKeywords = new ArrayList<>();
         List<String> optionalPositionKeywords = new ArrayList<>();
-        List<String> optionalTimeSlotKeywords = new ArrayList<>();
+        List<String> optionalAvailableHoursKeywords = new ArrayList<>();
 
         List<FlaggedSegment> segments = splitByFindFlags(args);
 
@@ -68,12 +68,12 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (segment.flag() == FindFlag.COMPULSORY) {
                 extractAllKeywords(compulsoryNameKeywords, compulsoryGroupKeywords, compulsoryAddressKeywords,
                         compulsoryPhoneKeywords, compulsoryMajorKeywords, compulsoryEmailKeywords,
-                        compulsoryTagKeywords, compulsoryPositionKeywords, compulsoryTimeSlotKeywords,
+                        compulsoryTagKeywords, compulsoryPositionKeywords, compulsoryAvailableHoursKeywords,
                         argMultimap);
             } else {
                 extractAllKeywords(optionalNameKeywords, optionalGroupKeywords, optionalAddressKeywords,
                         optionalPhoneKeywords, optionalMajorKeywords, optionalEmailKeywords,
-                        optionalTagKeywords, optionalPositionKeywords, optionalTimeSlotKeywords,
+                        optionalTagKeywords, optionalPositionKeywords, optionalAvailableHoursKeywords,
                         argMultimap);
             }
         }
@@ -87,7 +87,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                 compulsoryEmailKeywords, optionalEmailKeywords,
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
-                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
+                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
 
         return new FindCommand(new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
@@ -98,13 +98,13 @@ public class FindCommandParser implements Parser<FindCommand> {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords));
+                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords));
     }
 
     private void extractAllKeywords(List<String> nameKeywords, List<String> groupKeywords, List<String> addressKeywords,
                                     List<String> phoneKeywords, List<String> majorKeywords, List<String> emailKeywords,
                                     List<String> tagKeywords, List<String> positionKeywords,
-                                    List<String> timeSlotKeywords, ArgumentMultimap argMultimap) {
+                                    List<String> availableHoursKeywords, ArgumentMultimap argMultimap) {
         nameKeywords.addAll(argMultimap.getAllValues(PREFIX_NAME));
         groupKeywords.addAll(argMultimap.getAllValues(PREFIX_GROUP));
         addressKeywords.addAll(argMultimap.getAllValues(PREFIX_ADDRESS));
@@ -113,7 +113,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         emailKeywords.addAll(argMultimap.getAllValues(PREFIX_EMAIL));
         tagKeywords.addAll(argMultimap.getAllValues(PREFIX_TAG));
         positionKeywords.addAll(argMultimap.getAllValues(PREFIX_POSITION));
-        timeSlotKeywords.addAll(argMultimap.getAllValues(PREFIX_TIME));
+        availableHoursKeywords.addAll(argMultimap.getAllValues(PREFIX_TIME));
     }
 
     /**
@@ -162,7 +162,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         }
     }
 
-    private static void verifyValidTimeSlot(List<String> keywords) throws ParseException {
+    private static void verifyValidAvailableHours(List<String> keywords) throws ParseException {
         for (String keyword : keywords) {
             if (TimeSlot.isValidTimeSlot(keyword)) {
                 continue;
@@ -184,7 +184,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
-            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords)
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords)
             throws ParseException {
 
         if (compulsoryNameKeywords.isEmpty() && optionalNameKeywords.isEmpty()
@@ -195,7 +195,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                 && compulsoryEmailKeywords.isEmpty() && optionalEmailKeywords.isEmpty()
                 && compulsoryTagKeywords.isEmpty() && optionalTagKeywords.isEmpty()
                 && compulsoryPositionKeywords.isEmpty() && optionalPositionKeywords.isEmpty()
-                && compulsoryTimeSlotKeywords.isEmpty() && optionalTimeSlotKeywords.isEmpty()) {
+                && compulsoryAvailableHoursKeywords.isEmpty() && optionalAvailableHoursKeywords.isEmpty()) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
@@ -216,8 +216,8 @@ public class FindCommandParser implements Parser<FindCommand> {
         verifyValidKeywords(optionalTagKeywords);
         verifyValidKeywords(compulsoryPositionKeywords);
         verifyValidKeywords(optionalPositionKeywords);
-        verifyValidTimeSlot(compulsoryTimeSlotKeywords);
-        verifyValidTimeSlot(optionalTimeSlotKeywords);
+        verifyValidAvailableHours(compulsoryAvailableHoursKeywords);
+        verifyValidAvailableHours(optionalAvailableHoursKeywords);
     }
 
     private record FlaggedSegment(FindFlag flag, String content) {}

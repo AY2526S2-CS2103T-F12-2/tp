@@ -86,7 +86,6 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         this.optionalTimeSlotKeywords = optionalTimeSlotKeywords;
         this.areAllOptionalKeywordsEmpty = areAllOptionalKeywordsEmpty();
         this.areAllCompulsoryKeywordsEmpty = areAllCompulsoryKeywordsEmpty();
-        assert !(areAllOptionalKeywordsEmpty && areAllCompulsoryKeywordsEmpty) : "Empty input found for FindCommand!";
     }
 
     /**
@@ -95,7 +94,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     @Override
     public boolean test(Person person) {
         if (areAllCompulsoryKeywordsEmpty && areAllOptionalKeywordsEmpty) {
-            return false;
+            return true; // No keywords means all persons match.
         }
 
         return testCompulsory(person) && testOptional(person);
@@ -230,7 +229,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return isCompulsory;
         }
         if (person.getAvailableHours().isEmpty()) {
-            return false;
+            return true; // If person has no available hours, they are always free by default.
         }
 
         return person.getAvailableHours().stream()

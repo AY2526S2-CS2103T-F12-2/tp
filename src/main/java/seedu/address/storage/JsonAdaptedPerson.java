@@ -39,7 +39,7 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedPosition> positions = new ArrayList<>();
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
     private final List<JsonAdaptedGroup> groups = new ArrayList<>();
-    private final List<JsonAdaptedTimeSlot> timeSlots = new ArrayList<>();
+    private final List<JsonAdaptedTimeSlot> availableHours = new ArrayList<>();
     private final boolean pinned;
 
     /**
@@ -54,7 +54,7 @@ class JsonAdaptedPerson {
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
                              @JsonProperty("groups") List<JsonAdaptedGroup> groups,
-                             @JsonProperty("timeSlot") List<JsonAdaptedTimeSlot> timeSlots,
+                             @JsonProperty("timeSlot") List<JsonAdaptedTimeSlot> availableHours,
                              @JsonProperty("pinned") Boolean pinned) {
         this.name = name;
         this.phone = phone;
@@ -75,8 +75,8 @@ class JsonAdaptedPerson {
         if (groups != null) {
             this.groups.addAll(groups);
         }
-        if (timeSlots != null) {
-            this.timeSlots.addAll(timeSlots);
+        if (availableHours != null) {
+            this.availableHours.addAll(availableHours);
         }
     }
 
@@ -86,8 +86,8 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(String name, String phone, String email, String address,
                              List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
                              List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
-                             List<JsonAdaptedTimeSlot> timeSlots) {
-        this(name, phone, email, address, "", "", tags, positions, majors, groups, timeSlots, false);
+                             List<JsonAdaptedTimeSlot> availableHours) {
+        this(name, phone, email, address, "", "", tags, positions, majors, groups, availableHours, false);
     }
 
     /**
@@ -113,7 +113,7 @@ class JsonAdaptedPerson {
         groups.addAll(source.getGroups().stream()
                 .map(JsonAdaptedGroup::new)
                 .collect(Collectors.toList()));
-        timeSlots.addAll(source.getAvailableHours().stream()
+        availableHours.addAll(source.getAvailableHours().stream()
                 .map(JsonAdaptedTimeSlot::new)
                 .collect(Collectors.toList()));
     }
@@ -145,8 +145,8 @@ class JsonAdaptedPerson {
         }
 
         final List<TimeSlot> personTimeSlots = new ArrayList<>();
-        for (JsonAdaptedTimeSlot timeSlot : timeSlots) {
-            personTimeSlots.add(timeSlot.toModelType());
+        for (JsonAdaptedTimeSlot personTimeSlot : availableHours) {
+            personTimeSlots.add(personTimeSlot.toModelType());
         }
 
         if (name == null) {
