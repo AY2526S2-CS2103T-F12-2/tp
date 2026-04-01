@@ -103,8 +103,8 @@ public class PersonUtil {
             }
         }
 
-        if (descriptor.getTimeSlots().isPresent()) {
-            Set<TimeSlot> timeSlots = descriptor.getTimeSlots().get();
+        if (descriptor.getAvailableHours().isPresent()) {
+            Set<TimeSlot> timeSlots = descriptor.getAvailableHours().get();
             if (timeSlots.isEmpty()) {
                 sb.append(PREFIX_TIME);
             } else {

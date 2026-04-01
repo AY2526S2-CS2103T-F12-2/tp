@@ -44,7 +44,7 @@ public class EditPersonDescriptorBuilder {
         descriptor.setPositions(person.getPositions());
         descriptor.setMajors(person.getMajors());
         descriptor.setGroups(person.getGroups());
-        descriptor.setTimeSlots(person.getAvailableHours());
+        descriptor.setAvailableHours(person.getAvailableHours());
     }
 
     /**
@@ -127,7 +127,7 @@ public class EditPersonDescriptorBuilder {
         Set<TimeSlot> timeSlotSet = Stream.of(timeSlots)
                 .map(TimeSlot::new)
                 .collect(Collectors.toSet());
-        descriptor.setTimeSlots(timeSlotSet);
+        descriptor.setAvailableHours(timeSlotSet);
         return this;
     }
 

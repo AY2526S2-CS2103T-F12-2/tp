@@ -69,7 +69,7 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getPositions().orElse(null) + ", majors="
                 + editPersonDescriptor.getMajors().orElse(null) + ", groups="
                 + editPersonDescriptor.getGroups().orElse(null) + ", available hours="
-                + editPersonDescriptor.getTimeSlots().orElse(null) + "}";
+                + editPersonDescriptor.getAvailableHours().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
 }
