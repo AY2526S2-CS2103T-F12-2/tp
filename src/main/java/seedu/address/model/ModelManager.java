@@ -122,6 +122,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void deleteMeeting(Meeting target) {
+        requireNonNull(target);
+        addressBook.removeMeeting(target);
+    }
+
+    @Override
     public void addPerson(Person person) {
         requireNonNull(person);
         addressBook.addPerson(person);

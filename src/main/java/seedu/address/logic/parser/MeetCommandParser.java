@@ -31,6 +31,9 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_TIME, PREFIX_NAME,
                 PREFIX_GROUP, PREFIX_MAJOR, PREFIX_POSITION, PREFIX_TAG);
 
+        // Time is required and must appear exactly once.
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_TIME);
+
         // Description is the preamble (unprefixed part)
         String description = argMultimap.getPreamble().trim();
 

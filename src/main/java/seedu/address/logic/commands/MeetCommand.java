@@ -47,7 +47,7 @@ public class MeetCommand extends Command {
             + PREFIX_TAG + "project";
 
     public static final String MESSAGE_SUCCESS =
-            "Meeting created: %1$s (%2$s). %3$s";
+            "Meeting created:\n%1$s.\n%2$s";
     public static final String MESSAGE_NO_MATCHING_ATTENDEES =
             "No available contacts match the provided filters for this meeting.";
     public static final String MESSAGE_DUPLICATE_MEETING =
@@ -87,8 +87,8 @@ public class MeetCommand extends Command {
 
         model.addMeeting(meeting);
         String listMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, meeting.getAttendees().size());
-        return new CommandResult(String.format(MESSAGE_SUCCESS,
-                meeting.getDescription(), meetingSlot.toOriginalString(), listMessage));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, meeting.toNoIndexString(),
+                listMessage));
     }
 
     @Override

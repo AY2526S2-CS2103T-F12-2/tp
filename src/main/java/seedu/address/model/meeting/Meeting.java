@@ -33,6 +33,7 @@ public class Meeting {
         requireNonNull(startTime);
         requireNonNull(endTime);
         requireNonNull(attendees);
+        assert !attendees.isEmpty() : "A meeting must have at least one attendee";
         if (index < 0) {
             throw new IllegalArgumentException("Meeting index cannot be negative");
         }
@@ -60,7 +61,7 @@ public class Meeting {
     }
 
     public List<Person> getAttendees() {
-        return attendees;
+        return List.copyOf(attendees);
     }
 
     /**
@@ -71,7 +72,7 @@ public class Meeting {
     }
 
     /**
-     * Returns true if both meetings have the same identity fields.
+     * Returns true if both meetings have the same identity fields excluding attendees.
      */
     public boolean isSameMeeting(Meeting otherMeeting) {
         if (otherMeeting == this) {
@@ -84,10 +85,28 @@ public class Meeting {
                 && endTime.equals(otherMeeting.endTime);
     }
 
+    /**
+     * Returns a string representation of the meeting without the index.
+     */
+    public String toNoIndexString() {
+        String attendeeString = this.attendees.stream()
+                .map(Person::getName)
+                .map(name -> name.fullName)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        return description + ". Time: " + startTime + " - "
+                + endTime + ". Attendees: " + attendeeString;
+    }
+
     @Override
     public String toString() {
-        return "Meeting #" + index + ": " + description + " Time: " + startTime + " - "
-                + endTime + " Attendees: " + attendees;
+        String attendeeString = this.attendees.stream()
+                .map(Person::getName)
+                .map(name -> name.fullName)
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+        return "Meeting #" + index + ": " + description + ". Time: " + startTime + " - "
+                + endTime + ". Attendees: " + attendeeString;
     }
 
     @Override

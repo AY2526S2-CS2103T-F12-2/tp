@@ -28,6 +28,7 @@ import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
 import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ToggleColorModeCommand;
+import seedu.address.logic.commands.UnmeetCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -124,6 +125,9 @@ public class AddressBookParser {
 
         case MeetCommand.COMMAND_WORD:
             return new MeetCommandParser().parse(arguments);
+
+        case UnmeetCommand.COMMAND_WORD:
+            return new UnmeetCommandParser().parse(arguments);
 
         default:
             logger.finer("This user input caused a ParseException: " + userInput);

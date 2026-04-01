@@ -87,9 +87,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Adds a meeting to the address book.
      */
     public void addMeeting(Meeting meeting) {
-        Meeting meetingToAdd = meeting.getIndex() == 0
-                ? meeting.withIndex(meetings.size() + 1)
-                : meeting;
+        Meeting meetingToAdd = meeting.withIndex(meetings.size() + 1);
         meetings.add(meetingToAdd);
     }
 
@@ -113,6 +111,13 @@ public class AddressBook implements ReadOnlyAddressBook {
      */
     public void removePerson(Person key) {
         persons.remove(key);
+    }
+
+    /**
+     * Removes {@code meeting} from this {@code AddressBook}.
+     */
+    public void removeMeeting(Meeting meeting) {
+        meetings.remove(meeting);
     }
 
     @Override
