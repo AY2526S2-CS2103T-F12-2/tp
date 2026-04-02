@@ -74,6 +74,20 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
+### Using command autocomplete
+
+As you type in the command box, CampusLink suggests matching commands in a dropdown.
+
+* The popup appears while you are typing the **command word** (before the first space).
+* Each suggestion shows the command name and a short summary of its parameters, e.g. `sort - CONDITION ORDER (e.g. firstname a)`.
+* Use `↓` / `↑` to move between suggestions. Press `Enter` to apply the highlighted suggestion — this fills the command field with a template you can edit.
+* Press `Esc` to dismiss the popup without applying anything.
+* After the template is inserted, replace the placeholder values with your input and press `Enter` to execute the command.
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+For commands with no arguments (e.g. `list`, `clear`, `exit`), pressing `Enter` on the suggestion executes the command immediately without a second press.
+</div>
+
 ### Viewing help : `help`
 
 Shows a message explaining how to access the help page.
@@ -346,9 +360,10 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
-3. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
+1. **Pressing Enter twice for templated commands**: When you type a partial command word (e.g. `sort`) and press `Enter` to accept the autocomplete suggestion, the command field is filled with a template (e.g. `sort firstname a`). Edit the placeholders and press `Enter` **once** to execute. The first `Enter` only applies the template; it does not execute the command.
+2. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
+3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
