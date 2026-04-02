@@ -6,12 +6,16 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * Utility methods for password hashing.
  */
 public final class SecurityUtil {
 
     private static final String HASH_ALGORITHM = "SHA-256";
+    private static final String HMAC_ALGORITHM = "HmacSHA256";
     private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
 
     private SecurityUtil() {}
@@ -40,6 +44,30 @@ public final class SecurityUtil {
         requireNonNull(storedHash);
         return hashPassword(password).equals(storedHash);
     }
+
+    /**
+     * Returns a keyed HMAC-SHA256 hash for integrity checking.
+     * Uses the local persisted integrity secret.
+     */
+    public static String hashForIntegrity(String payload) {
+        return hashForIntegrity(Key.KEY, payload);
+    }
+
+    /**
+     * Returns a keyed HMAC-SHA256 hash for integrity checking using the provided secret.
+     */
+    public static String hashForIntegrity(String secretKey, String payload) {
+        requireNonNull(secretKey);
+        requireNonNull(payload);
+        try {
+            Mac mac = Mac.getInstance(HMAC_ALGORITHM);
+            mac.init(new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM));
+            return bytesToHex(mac.doFinal(payload.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            throw new RuntimeException("HMAC-SHA256 algorithm not available", e);
+        }
+    }
+
 
     private static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

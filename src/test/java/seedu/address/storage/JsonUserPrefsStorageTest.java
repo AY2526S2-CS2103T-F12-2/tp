@@ -2,9 +2,12 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -52,20 +55,26 @@ public class JsonUserPrefsStorageTest {
     @Test
     public void readUserPrefs_fileInOrder_successfullyRead() throws DataLoadingException {
         UserPrefs expected = getTypicalUserPrefs();
-        UserPrefs actual = readUserPrefs("TypicalUserPref.json").get();
+        Optional<UserPrefs> actualOptional = readUserPrefs("TypicalUserPref.json");
+        assertTrue(actualOptional.isPresent());
+        UserPrefs actual = actualOptional.get();
         assertEquals(expected, actual);
     }
 
     @Test
     public void readUserPrefs_valuesMissingFromFile_defaultValuesUsed() throws DataLoadingException {
-        UserPrefs actual = readUserPrefs("EmptyUserPrefs.json").get();
+        Optional<UserPrefs> actualOptional = readUserPrefs("EmptyUserPrefs.json");
+        assertTrue(actualOptional.isPresent());
+        UserPrefs actual = actualOptional.get();
         assertEquals(new UserPrefs(), actual);
     }
 
     @Test
     public void readUserPrefs_extraValuesInFile_extraValuesIgnored() throws DataLoadingException {
         UserPrefs expected = getTypicalUserPrefs();
-        UserPrefs actual = readUserPrefs("ExtraValuesUserPref.json").get();
+        Optional<UserPrefs> actualOptional = readUserPrefs("ExtraValuesUserPref.json");
+        assertTrue(actualOptional.isPresent());
+        UserPrefs actual = actualOptional.get();
 
         assertEquals(expected, actual);
     }
@@ -110,14 +119,33 @@ public class JsonUserPrefsStorageTest {
 
         //Try writing when the file doesn't exist
         jsonUserPrefsStorage.saveUserPrefs(original);
-        UserPrefs readBack = jsonUserPrefsStorage.readUserPrefs().get();
+        Optional<UserPrefs> readBackOptional = jsonUserPrefsStorage.readUserPrefs();
+        assertTrue(readBackOptional.isPresent());
+        UserPrefs readBack = readBackOptional.get();
         assertEquals(original, readBack);
 
         //Try saving when the file exists
         original.setGuiSettings(new GuiSettings(5, 5, 5, 5));
         jsonUserPrefsStorage.saveUserPrefs(original);
-        readBack = jsonUserPrefsStorage.readUserPrefs().get();
+        readBackOptional = jsonUserPrefsStorage.readUserPrefs();
+        assertTrue(readBackOptional.isPresent());
+        readBack = readBackOptional.get();
         assertEquals(original, readBack);
+    }
+
+    @Test
+    public void readUserPrefs_tamperedFile_throwsDataLoadingException() throws IOException {
+        UserPrefs original = getTypicalUserPrefs();
+        Path prefsFilePath = testFolder.resolve("TamperedPrefs.json");
+        JsonUserPrefsStorage jsonUserPrefsStorage = new JsonUserPrefsStorage(prefsFilePath);
+
+        jsonUserPrefsStorage.saveUserPrefs(original);
+
+        String tampered = Files.readString(prefsFilePath, StandardCharsets.UTF_8)
+                .replace("addressbook.json", "evil-addressbook.json");
+        Files.writeString(prefsFilePath, tampered, StandardCharsets.UTF_8);
+
+        assertThrows(DataLoadingException.class, jsonUserPrefsStorage::readUserPrefs);
     }
 
 }

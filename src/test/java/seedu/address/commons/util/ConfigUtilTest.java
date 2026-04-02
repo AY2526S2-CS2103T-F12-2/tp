@@ -2,9 +2,12 @@ package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -43,20 +46,26 @@ public class ConfigUtilTest {
 
         Config expected = getTypicalConfig();
 
-        Config actual = read("TypicalConfig.json").get();
+        Optional<Config> actualOptional = read("TypicalConfig.json");
+        assertTrue(actualOptional.isPresent());
+        Config actual = actualOptional.get();
         assertEquals(expected, actual);
     }
 
     @Test
     public void read_valuesMissingFromFile_defaultValuesUsed() throws DataLoadingException {
-        Config actual = read("EmptyConfig.json").get();
+        Optional<Config> actualOptional = read("EmptyConfig.json");
+        assertTrue(actualOptional.isPresent());
+        Config actual = actualOptional.get();
         assertEquals(new Config(), actual);
     }
 
     @Test
     public void read_extraValuesInFile_extraValuesIgnored() throws DataLoadingException {
         Config expected = getTypicalConfig();
-        Config actual = read("ExtraValuesConfig.json").get();
+        Optional<Config> actualOptional = read("ExtraValuesConfig.json");
+        assertTrue(actualOptional.isPresent());
+        Config actual = actualOptional.get();
 
         assertEquals(expected, actual);
     }
@@ -91,14 +100,32 @@ public class ConfigUtilTest {
 
         //Try writing when the file doesn't exist
         ConfigUtil.saveConfig(original, configFilePath);
-        Config readBack = ConfigUtil.readConfig(configFilePath).get();
+        Optional<Config> readBackOptional = ConfigUtil.readConfig(configFilePath);
+        assertTrue(readBackOptional.isPresent());
+        Config readBack = readBackOptional.get();
         assertEquals(original, readBack);
 
         //Try saving when the file exists
         original.setLogLevel(Level.FINE);
         ConfigUtil.saveConfig(original, configFilePath);
-        readBack = ConfigUtil.readConfig(configFilePath).get();
+        readBackOptional = ConfigUtil.readConfig(configFilePath);
+        assertTrue(readBackOptional.isPresent());
+        readBack = readBackOptional.get();
         assertEquals(original, readBack);
+    }
+
+    @Test
+    public void read_tamperedFile_throwsDataLoadingException() throws IOException {
+        Config original = getTypicalConfig();
+        Path configFilePath = tempDir.resolve("TamperedConfig.json");
+
+        ConfigUtil.saveConfig(original, configFilePath);
+
+        String tampered = Files.readString(configFilePath, StandardCharsets.UTF_8)
+                .replace("preferences.json", "evil-preferences.json");
+        Files.writeString(configFilePath, tampered, StandardCharsets.UTF_8);
+
+        assertThrows(DataLoadingException.class, () -> ConfigUtil.readConfig(configFilePath));
     }
 
     private void save(Config config, String configFileInTestDataFolder) throws IOException {

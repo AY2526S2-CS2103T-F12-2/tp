@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.commons.util.SecurityUtil;
 
 /**
  * Represents User's preferences.
@@ -16,6 +17,7 @@ public class UserPrefs implements ReadOnlyUserPrefs {
     private GuiSettings guiSettings = new GuiSettings();
     private Path addressBookFilePath = Paths.get("data" , "addressbook.json");
     private String passwordHash = null;
+    private String integrityHash = null;
 
     /**
      * Creates a {@code UserPrefs} with default values.
@@ -67,6 +69,25 @@ public class UserPrefs implements ReadOnlyUserPrefs {
         this.passwordHash = passwordHash;
     }
 
+    /**
+     * Recomputes and stores the integrity hash for the current preferences state.
+     */
+    public void refreshIntegrityHash() {
+        integrityHash = SecurityUtil.hashForIntegrity(buildIntegrityPayload());
+    }
+
+    /**
+     * Returns true if the stored integrity hash matches the current preferences state.
+     * Legacy preference files without an integrity hash are treated as valid.
+     */
+    public boolean isIntegrityHashValid() {
+        return integrityHash == null || integrityHash.equals(SecurityUtil.hashForIntegrity(buildIntegrityPayload()));
+    }
+
+    private String buildIntegrityPayload() {
+        return guiSettings + "|" + addressBookFilePath + "|" + passwordHash;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -74,11 +95,10 @@ public class UserPrefs implements ReadOnlyUserPrefs {
         }
 
         // instanceof handles nulls
-        if (!(other instanceof UserPrefs)) {
+        if (!(other instanceof UserPrefs otherUserPrefs)) {
             return false;
         }
 
-        UserPrefs otherUserPrefs = (UserPrefs) other;
         return guiSettings.equals(otherUserPrefs.guiSettings)
                 && addressBookFilePath.equals(otherUserPrefs.addressBookFilePath)
                 && Objects.equals(passwordHash, otherUserPrefs.passwordHash);
@@ -91,11 +111,9 @@ public class UserPrefs implements ReadOnlyUserPrefs {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Gui Settings : " + guiSettings);
-        sb.append("\nLocal data file location : " + addressBookFilePath);
-        sb.append("\nPassword protected : " + (passwordHash != null));
-        return sb.toString();
+        return "Gui Settings : " + guiSettings
+                + "\nLocal data file location : " + addressBookFilePath
+                + "\nPassword protected : " + (passwordHash != null);
     }
 
 }

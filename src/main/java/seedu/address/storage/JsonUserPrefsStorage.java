@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
@@ -14,7 +15,7 @@ import seedu.address.model.UserPrefs;
  */
 public class JsonUserPrefsStorage implements UserPrefsStorage {
 
-    private Path filePath;
+    private final Path filePath;
 
     public JsonUserPrefsStorage(Path filePath) {
         this.filePath = filePath;
@@ -36,12 +37,18 @@ public class JsonUserPrefsStorage implements UserPrefsStorage {
      * @throws DataLoadingException if the file format is not as expected.
      */
     public Optional<UserPrefs> readUserPrefs(Path prefsFilePath) throws DataLoadingException {
-        return JsonUtil.readJsonFile(prefsFilePath, UserPrefs.class);
+        Optional<UserPrefs> userPrefsOptional = JsonUtil.readJsonFile(prefsFilePath, UserPrefs.class);
+        if (userPrefsOptional.isPresent() && !userPrefsOptional.get().isIntegrityHashValid()) {
+            throw new DataLoadingException(new IllegalValueException("User preferences integrity check failed."));
+        }
+        return userPrefsOptional;
     }
 
     @Override
     public void saveUserPrefs(ReadOnlyUserPrefs userPrefs) throws IOException {
-        JsonUtil.saveJsonFile(userPrefs, filePath);
+        UserPrefs toSave = new UserPrefs(userPrefs);
+        toSave.refreshIntegrityHash();
+        JsonUtil.saveJsonFile(toSave, filePath);
     }
 
 }
