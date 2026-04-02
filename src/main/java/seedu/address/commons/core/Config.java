@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.commons.util.SecurityUtil;
+import seedu.address.commons.util.ToStringBuilder;
 
 /**
  * Config values used by the app

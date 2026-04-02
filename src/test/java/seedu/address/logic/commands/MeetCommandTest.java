@@ -65,8 +65,8 @@ public class MeetCommandTest {
         PersonMatchesKeywordsPredicate noMatchPredicate = createPredicateWithOptionalNameKeyword("NoSuchPerson");
         MeetCommand meetCommand = new MeetCommand(DESCRIPTION, MEETING_DATE, MEETING_SLOT, noMatchPredicate);
 
-        assertThrows(CommandException.class, MeetCommand.MESSAGE_NO_MATCHING_ATTENDEES,
-                () -> meetCommand.execute(model));
+        assertThrows(CommandException.class,
+                MeetCommand.MESSAGE_NO_MATCHING_ATTENDEES, () -> meetCommand.execute(model));
     }
 
     @Test
@@ -76,8 +76,8 @@ public class MeetCommandTest {
 
         meetCommand.execute(model);
 
-        assertThrows(CommandException.class, MeetCommand.MESSAGE_DUPLICATE_MEETING,
-                () -> meetCommand.execute(model));
+        assertThrows(CommandException.class,
+                MeetCommand.MESSAGE_DUPLICATE_MEETING, () -> meetCommand.execute(model));
     }
 
     @Test
