@@ -34,7 +34,7 @@
           <padding>
             <Insets top="15" right="15" bottom="15" left="15"/>
           </padding>
-          
+
           <!-- Tags and Groups -->
           <VBox spacing="5">
             <Label text="tags" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
