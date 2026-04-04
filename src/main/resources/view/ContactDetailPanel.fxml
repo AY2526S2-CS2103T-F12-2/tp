@@ -16,7 +16,7 @@
     <StackPane>
       <VBox fx:id="detailContainer" alignment="TOP_CENTER" spacing="20" StackPane.alignment="TOP_CENTER">
         <padding>
-          <Insets top="20" right="20" bottom="20" left="20" />
+          <Insets top="60" right="20" bottom="20" left="20" />
         </padding>
 
         <!-- Profile picture or initial -->
@@ -36,69 +36,76 @@
           </padding>
           
           <!-- Tags and Groups -->
-          <FlowPane fx:id="tags" hgap="5" vgap="5" />
-          <HBox spacing="5" alignment="CENTER_LEFT">
-            <Label text="Group:" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+          <VBox spacing="5">
+            <Label text="tags" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
+            <FlowPane fx:id="tags" hgap="5" vgap="5" />
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <VBox spacing="5">
+            <Label text="groups" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
             <FlowPane fx:id="groups" hgap="6" vgap="4" />
-          </HBox>
+          </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Phone/Mobile -->
           <VBox spacing="5">
             <Label text="mobile" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
-            <Label fx:id="phone" styleClass="cell_big_label" style="-fx-font-size: 16px;"/>
+            <Label fx:id="phone" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Email -->
           <VBox spacing="5">
             <Label text="email" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="email" styleClass="cell_small_label" style="-fx-font-size: 14px;"/>
+            <Label fx:id="email" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Address -->
           <VBox spacing="5">
             <Label text="address" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="address" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+            <Label fx:id="address" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Majors, Hours, Positions -->
           <VBox spacing="5">
             <Label text="majors" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="majors" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+            <Label fx:id="majors" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <VBox spacing="5">
             <Label text="available hours" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="availableHours" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+            <Label fx:id="availableHours" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <VBox spacing="5">
             <Label text="positions" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="positions" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+            <Label fx:id="positions" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
           </VBox>
-          <Region fx:id="extrasDivider" prefHeight="1" styleClass="divider" />
+          <Region fx:id="notesDivider" prefHeight="1" styleClass="divider" />
 
           <!-- Notes / FollowUp -->
           <VBox spacing="5" fx:id="notesContainer">
             <Label text="Notes" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="notes" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+            <Label fx:id="notes" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
           </VBox>
 
         </VBox>
 
-        <!-- Mockup Buttons -->
-        <VBox spacing="10" alignment="BOTTOM_CENTER">
-          <Button text="Send Message" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
-          <Button text="Share Contact" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
-          <Button text="Block Contact" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
-        </VBox>
-
       </VBox>
+
+      <!-- Edit/Delete Buttons -->
+      <HBox alignment="TOP_RIGHT" StackPane.alignment="TOP_RIGHT" pickOnBounds="false" spacing="10" maxHeight="30" maxWidth="100">
+        <padding>
+          <Insets top="15" right="15" />
+        </padding>
+        <Button text="✎" style="-fx-background-color: transparent; -fx-padding: 0; -fx-font-size: 16px; -fx-text-fill: white; -fx-border-width: 0;" />
+        <Button text="✕" style="-fx-background-color: transparent; -fx-padding: 0; -fx-font-size: 16px; -fx-text-fill: white; -fx-border-width: 0;" />
+      </HBox>
     </StackPane>
   </ScrollPane>
 
