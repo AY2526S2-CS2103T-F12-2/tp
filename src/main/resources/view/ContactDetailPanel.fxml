@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="transparent-pane" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+    <StackPane>
+      <VBox fx:id="detailContainer" alignment="TOP_CENTER" spacing="20" StackPane.alignment="TOP_CENTER">
+        <padding>
+          <Insets top="20" right="20" bottom="20" left="20" />
+        </padding>
+
+        <!-- Profile picture or initial -->
+        <StackPane fx:id="profilePicPane" styleClass="avatar-circle" prefWidth="120" prefHeight="120" minWidth="120" minHeight="120" maxWidth="120" maxHeight="120" style="-fx-background-radius: 60;">
+          <Label fx:id="avatarInitial" style="-fx-font-size: 60px; -fx-text-fill: white; -fx-font-family: 'Segoe UI Semibold';"/>
+          <ImageView fx:id="profilePicView" fitWidth="120" fitHeight="120" preserveRatio="true" visible="false" styleClass="profile-pic-view"/>
+        </StackPane>
+
+        <!-- Name -->
+        <Label fx:id="name" style="-fx-font-size: 32px; -fx-font-family: 'Segoe UI Semibold';" wrapText="true" textAlignment="CENTER"/>
+
+
+
+        <VBox spacing="15" VBox.vgrow="ALWAYS" styleClass="pane-with-border">
+          <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+          </padding>
+          
+          <!-- Tags and Groups -->
+          <FlowPane fx:id="tags" hgap="5" vgap="5" />
+          <HBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Group:" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <FlowPane fx:id="groups" hgap="6" vgap="4" />
+          </HBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Phone/Mobile -->
+          <VBox spacing="5">
+            <Label text="mobile" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
+            <Label fx:id="phone" styleClass="cell_big_label" style="-fx-font-size: 16px;"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Email -->
+          <VBox spacing="5">
+            <Label text="email" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="email" styleClass="cell_small_label" style="-fx-font-size: 14px;"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Address -->
+          <VBox spacing="5">
+            <Label text="address" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="address" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Majors, Hours, Positions -->
+          <VBox spacing="5">
+            <Label text="majors" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="majors" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <VBox spacing="5">
+            <Label text="available hours" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="availableHours" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <VBox spacing="5">
+            <Label text="positions" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="positions" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+          </VBox>
+          <Region fx:id="extrasDivider" prefHeight="1" styleClass="divider" />
+
+          <!-- Notes / FollowUp -->
+          <VBox spacing="5" fx:id="notesContainer">
+            <Label text="Notes" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="notes" styleClass="cell_small_label" style="-fx-font-size: 14px;" wrapText="true"/>
+          </VBox>
+
+        </VBox>
+
+        <!-- Mockup Buttons -->
+        <VBox spacing="10" alignment="BOTTOM_CENTER">
+          <Button text="Send Message" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
+          <Button text="Share Contact" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
+          <Button text="Block Contact" prefWidth="500" alignment="CENTER_LEFT" styleClass="button" style="-fx-padding: 10 15;" disable="true"/>
+        </VBox>
+
+      </VBox>
+    </StackPane>
+  </ScrollPane>
+
+  <!-- Placeholder for empty state -->
+  <VBox fx:id="emptyPlaceholder" alignment="CENTER" visible="false">
+    <Label text="No contact selected" styleClass="cell_big_label" style="-fx-opacity: 0.5;"/>
+  </VBox>
+</StackPane>
