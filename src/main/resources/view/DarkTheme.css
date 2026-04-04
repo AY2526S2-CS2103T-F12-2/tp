@@ -375,6 +375,11 @@
     -fx-border-radius: 30;
 }
 
+.avatar-circle:hover {
+    -fx-background-color: #555555;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.15), 8, 0, 0, 0);
+}
+
 .avatar-label {
     -fx-font-family: "Segoe UI Bold";
     -fx-font-size: 24px;
