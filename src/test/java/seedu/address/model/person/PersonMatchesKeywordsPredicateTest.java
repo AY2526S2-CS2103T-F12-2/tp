@@ -177,6 +177,106 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     /**
+     * Ensures fuzzy name matching returns true for keywords with at most 2 typos.
+     */
+    @Test
+    public void test_fuzzyNameMatch_returnsTrue() {
+        // "Alce" is 1 edit away from "Alice"
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), Collections.singletonList("Alce"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
+
+        // "Alie" is 2 edits away from "Alice" (delete c, change e->e — actually 1 edit)
+        // Let's use "Alicf" which is 1 edit from "Alice"
+        PersonMatchesKeywordsPredicate predicate2 =
+                createPredicate(List.of(), Collections.singletonList("Alicf"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate2.test(new PersonBuilder().withName("Alice Bob").build()));
+    }
+
+    /**
+     * Ensures fuzzy name matching returns false for keywords more than 2 edits away.
+     */
+    @Test
+    public void test_fuzzyName_returnsFalse() {
+        // "Alixyz" is 3+ edits away from "Alice"
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), Collections.singletonList("Alixyz"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
+    }
+
+    /**
+     * Ensures tag matching does not use fuzzy search (typos should not match).
+     */
+    @Test
+    public void test_fuzzyTag_returnsFalse() {
+        // "frends" is 1 edit away from "friends" but tag does not use fuzzy matching
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), Collections.singletonList("frends"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withTags("friends").build()));
+    }
+
+    /**
+     * Ensures major matching does not use fuzzy search (typos should not match).
+     */
+    @Test
+    public void test_fuzzyMajor_returnsFalse() {
+        // "Cx" is 1 edit away from "CS" but major does not use fuzzy matching
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), Collections.singletonList("Cx"), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withMajors("CS").build()));
+    }
+
+    /**
+     * Ensures computeFuzzyScore returns 0 for exact matches and higher values for fuzzy matches.
+     */
+    @Test
+    public void test_computeFuzzyScore_correct() {
+        // Exact name match => score 0
+        PersonMatchesKeywordsPredicate exactPredicate =
+                createPredicate(List.of(), Collections.singletonList("Alice"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertEquals(0, exactPredicate.computeFuzzyScore(new PersonBuilder().withName("Alice Bob").build()));
+
+        // Fuzzy name match "Alce" vs "Alice" => score 1
+        PersonMatchesKeywordsPredicate fuzzyPredicate =
+                createPredicate(List.of(), Collections.singletonList("Alce"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertEquals(1, fuzzyPredicate.computeFuzzyScore(new PersonBuilder().withName("Alice Bob").build()));
+
+        // No fuzzy keywords (only tag) => score 0
+        PersonMatchesKeywordsPredicate tagOnlyPredicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), Collections.singletonList("friends"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertEquals(0, tagOnlyPredicate.computeFuzzyScore(new PersonBuilder().withTags("friends").build()));
+    }
+
+    /**
+     * Ensures fuzzy address matching returns true for keywords with at most 2 typos.
+     */
+    @Test
+    public void test_fuzzyAddressMatch_returnsTrue() {
+        // "Jurong" vs "Jurng" is 1 edit
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), Collections.singletonList("Jurng"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withAddress("123 Jurong Ave").build()));
+    }
+
+    /**
      * Ensures the toString method formats all keyword lists.
      */
     @Test

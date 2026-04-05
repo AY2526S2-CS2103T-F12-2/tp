@@ -223,7 +223,8 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(BENSON, CARL), model.getDisplayedPersonList());
+        // CARL has address "wall street" (exact match, distance 0); BENSON matched via major only (distance > 0)
+        assertEquals(Arrays.asList(CARL, BENSON), model.getDisplayedPersonList());
     }
 
     @Test
@@ -247,7 +248,8 @@ public class FindCommandTest {
 
     @Test
     public void execute_compulsoryNameKeyword_singlePersonsFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
+        // "Kunz" also fuzzy-matches "Kurz" (Carl) with Levenshtein distance 1
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 2);
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(Collections.singletonList("Kunz"), Collections.emptyList(),
                         Collections.emptyList(), Collections.emptyList(),
@@ -261,7 +263,8 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(FIONA), model.getDisplayedPersonList());
+        // FIONA "Fiona Kunz" exact match (distance 0) comes before CARL "Carl Kurz" (distance 1)
+        assertEquals(Arrays.asList(FIONA, CARL), model.getDisplayedPersonList());
     }
 
     @Test
@@ -376,6 +379,29 @@ public class FindCommandTest {
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(Collections.singletonList(ELLE), model.getDisplayedPersonList());
+    }
+
+    /**
+     * Ensures fuzzy search results are sorted by ascending Levenshtein distance.
+     */
+    @Test
+    public void execute_fuzzySearch_sortedByDistance() {
+        // "Kunz" exactly matches FIONA "Fiona Kunz" (distance 0)
+        // and fuzzily matches CARL "Carl Kurz" (distance 1, r->n substitution)
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), Collections.singletonList("Kunz"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
+        FindCommand command = new FindCommand(predicate);
+        command.execute(model);
+        // closest match first: FIONA (distance 0) before CARL (distance 1)
+        assertEquals(Arrays.asList(FIONA, CARL), model.getDisplayedPersonList());
     }
 
     /**

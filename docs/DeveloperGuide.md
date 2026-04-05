@@ -448,7 +448,7 @@ Because this runs after `ui.start(primaryStage)` in `MainApp`, which is itself c
 
 #### Implementation
 
-The find feature allows users to filter the contact list by one or more fields using compulsory (`-c`) and optional (`-o`) flags.
+The find feature allows users to filter the contact list by one or more fields using compulsory (`-c`) and optional (`-o`) flags. It also supports **fuzzy search** for the name, phone, address, and email fields, tolerating up to 2 character edits, and automatically sorts results by closeness of match.
 
 The class diagram below shows the key classes involved:
 
@@ -460,11 +460,23 @@ The class diagram below shows the key classes involved:
 2. `FindCommandParser` uses `splitByFindFlags` to split the input into segments, each tagged with a `FindFlag` (`COMPULSORY` or `OPTIONAL`; default is `OPTIONAL`).
 3. Each segment is tokenised by `ArgumentTokenizer` using `CliSyntax` prefixes (`n/`, `a/`, `p/`, `m/`, `e/`, `t/`, `po/`, `g/`, `h/`), and keywords are collected into compulsory and optional lists per field.
 4. A `PersonMatchesKeywordsPredicate` is constructed from all keyword lists and passed to `FindCommand`.
-5. `FindCommand#execute` calls `model.updateFilteredPersonList(predicate)` to apply the filter.
+5. `FindCommand#execute` calls `model.updateFilteredPersonList(predicate)` to apply the filter, then calls `model.updateSortComparator` with a comparator that ranks pinned contacts first and all other contacts by ascending fuzzy score.
 
 **Matching logic** (in `PersonMatchesKeywordsPredicate`):
 * A contact passes if **all** compulsory-field conditions are satisfied **and** **at least one** optional-field condition is satisfied.
 * If no optional keywords are provided, the optional check is skipped (treated as passed).
+
+**Fuzzy matching** (name, phone, address, email fields only):
+* Implemented via `StringUtil.fuzzyMatchesWord(text, keyword, maxDistance)`. The keyword is split by whitespace into parts; each part must fuzzy-match at least one whitespace-delimited token in the field within the allowed edit distance.
+* The edit distance used is **Levenshtein distance**, computed by `StringUtil.levenshteinDistance`. The maximum allowed distance is `StringUtil.FUZZY_MATCH_MAX_DISTANCE` (currently 2).
+* Tag, major, position, and group fields use exact case-insensitive substring matching only.
+
+**Result sorting by fuzzy score:**
+* `PersonMatchesKeywordsPredicate#computeFuzzyScore(Person)` computes the relevance score for a matched contact. It calls `StringUtil.minFuzzyDistance(fieldValue, keyword)` for every name/phone/address/email keyword:
+    * Returns 0 if the field contains the keyword as an exact substring.
+    * Otherwise returns the maximum, over all keyword parts, of the minimum Levenshtein distance from that part to any token in the field.
+* The overall score is the minimum across all fuzzy-relevant keywords and fields. A score of 0 means an exact match; higher scores indicate fuzzier matches.
+* `FindCommand#execute` passes `predicate::computeFuzzyScore` to `model.updateSortComparator` so that contacts with lower scores appear first. Pinned contacts are always placed at the top regardless of score.
 
 ### Upload image feature
 
