@@ -14,6 +14,8 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
 1. Ensure you have Java `17` or above installed in your Computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+   **Windows users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
+   **Linux users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
 
 1. Download the latest `.jar` file from [here](https://github.com/AY2526S2-CS2103T-F12-2/tp/releases).
 
@@ -63,7 +65,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
   e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 
 * Items with `…`​ after them can be used multiple times including zero times.<br>
-  e.g. `[t/TAG]…​` can be used as ` ` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
+  e.g. `[t/TAG]…​` can be used as ` ` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
 
 * Parameters can be in any order.<br>
   e.g. if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
@@ -74,265 +76,569 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
+### Using command autocomplete
+
+As you type in the command box, CampusLink suggests matching commands in a dropdown.
+
+* The popup appears while you are typing the **command word** (before the first space).
+* Each suggestion shows the command name and a short summary of its parameters, e.g. `sort - CONDITION ORDER (e.g. firstname a)`.
+* Use `↓` / `↑` to move between suggestions. Press `Enter` to apply the highlighted suggestion — this fills the command field with a template you can edit.
+* Press `Esc` to dismiss the popup without applying anything.
+* After the template is inserted, replace the placeholder values with your input and press `Enter` to execute the command.
+
+<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
+For commands with no arguments (e.g. `list`, `clear`, `exit`), pressing `Enter` on the suggestion executes the command immediately without a second press.
+</div>
+
+--------------------------------------------------------------------------------------------------------------------
+
 ### Viewing help : `help`
 
-Shows a message explaining how to access the help page.
+**Opens a link to the full CampusLink User Guide in your browser.**
 
-![help message](images/helpMessage.png)
+If you are unsure what commands are available or how to use a specific feature, `help` displays a pop-up window with a URL to this guide. Click the **Copy URL** button and paste it into your browser to read the full documentation.
 
 Format: `help`
 
+![help message](images/helpMessage.png)
 
-### Adding a person: `add`
+**What happens:** A help window appears with a link to this User Guide. No changes are made to your contacts.
 
-Adds a person to the address book.
+--------------------------------------------------------------------------------------------------------------------
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]​`
+### Adding a person : `add`
+
+**Saves a new contact to CampusLink.**
+
+Use this command when you meet someone new — a classmate, professor, or project teammate — and want to store their details for later. You must provide their name, phone number, email, and address. Everything else (tags, group, position, major, available hours) is optional and can be added now or edited later.
+
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
+
+**Arguments:**
+
+| Argument | Prefix | Required | Description |
+|---|---|---|---|
+| Name | `n/` | ✅ Yes | Full name of the contact |
+| Phone number | `p/` | ✅ Yes | Contact's phone number |
+| Email | `e/` | ✅ Yes | Contact's email address |
+| Address | `a/` | ✅ Yes | Contact's address |
+| Tag | `t/` | No | A short label (e.g. `friend`, `TA`). Add as many as you like. |
+| Group | `g/` | No | A class or project group (e.g. `CS2103T`). Add as many as you like. |
+| Position | `po/` | No | Their role or title (e.g. `Professor`, `Peer`). Add as many as you like. |
+| Major | `m/` | No | Their course of study (e.g. `Computer Science`). Add as many as you like. |
+| Available hours | `h/` | No | When they are typically free (e.g. `Mon 2-4pm`). |
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, groups, majors and positions (including 0)
+A person can have any number of tags, groups, majors, and positions (including 0). You can always add or change these later using the `edit` command.
 </div>
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
 CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
 </div>
 
-Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 m/Biology`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+**Examples:**
 
-### Listing all persons : `list`
+* Adding a classmate with just the required details:
+  ```
+  add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01
+  ```
+  *Outcome: John Doe is added to the contact list with his phone, email, and address.*
 
-Shows a list of all persons in the address book.
+* Adding a contact with optional fields (major and tags):
+  ```
+  add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal m/Law
+  ```
+  *Outcome: Betsy Crowe is added with two tags (`friend`, `criminal`) and her major set to `Law`.*
+
+![Ui](images/features/addResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
+### Listing all contacts : `list`
+
+**Shows every contact saved in CampusLink.**
+
+Use this after a `find` or `sort` command to return to the full unfiltered view of all your contacts.
 
 Format: `list`
 
-### Editing a person : `edit`
+**What happens:** The contact panel refreshes to display all saved contacts in their current sort order. No contacts are added, removed, or modified.
 
-Edits an existing person in the address book.
+--------------------------------------------------------------------------------------------------------------------
 
-Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+### Editing a contact : `edit`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
-* If "-a" is used as flag, new fields will be appended to existing ones; if "-r" is used, then existing fields will be overwritten.
-* If no flag is given, then by default existing fields will be overwritten.
-* For fields where a contact can have at most one (e.g., name, address), "-a" flag will overwrite the existing fields.
-* At least one of the optional fields (excluding flag) must be provided.
-* You can remove all the person’s tags, groups, etc.,  by typing `t/` without
-    specifying any tags after it.
+**Updates one or more details of an existing contact.**
 
-Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit -a 2 t/visible` Adds tag "visible" to the 2nd person.
+Use this when a classmate changes their phone number, you want to add a new tag, or you need to fix a typo in someone's name. You identify the contact by their position number in the currently displayed list, then specify only the fields you want to change.
 
-### Locating persons by name: `find`
+Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
 
-Finds persons whose names contain any of the given keywords.
+**Arguments:**
 
-Format: `find [[FLAG] [PREFIX/KEYWORDS]]`.
+| Argument | Description |
+|---|---|
+| `FLAG` | Optional. Use `-a` to **append** new values to existing ones (e.g. add a tag without removing existing tags). Use `-r` to **replace** all existing values with the new ones. If omitted, fields like name and phone are overwritten, and multi-value fields (tags, groups, etc.) are replaced. |
+| `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
+| `n/NAME` | New name for the contact. |
+| `p/PHONE` | New phone number. |
+| `e/EMAIL` | New email address. |
+| `a/ADDRESS` | New address. |
+| `t/TAG` | Tag to set. Use `t/` with nothing after it to remove all tags. |
+| `g/GROUP` | Group to set. Use `g/` with nothing after it to remove all groups. |
+| `po/POSITION` | Position to set. |
+| `m/MAJOR` | Major to set. |
+| `h/AVAILABLE_HOURS` | Available hours to set. |
 
-* The search is case-insensitive. e.g `hans` will match `Hans`. Keywords themselves have no restriction, but they must be nonempty when leading and trailing spaces are trimmed (i.e., "n/Al?ce" is allowed but "n/[SPACE]" is not).
-* The order of the keywords does not matter. e.g. `n/Hans n/Bo` will match `Bo Hans`
-* User supplies at least one of search keywords, all of which should be preceded by corresponding prefix (e.g., n/).
-* For names, only full words will be matched e.g. `Han` will not match `Hans`
-* User can use flags: "-o" for optional fields, "-c" for compulsory fields. All keywords following a certain flag will be processed according to that flag. By default (no flag) fields are all optional.
-* Flags should be preceded and followed by one space each. Where a part of input can be interpreted as both flag and keyword, it will be treated as a flag.
-* When more than two flags exist, keywords will be processed according to the last flag before it. E.g., for "-c -o n/James -c po/Principal", parse result will be an optional name "James" and a compulsory position "Principal".
-* Persons matching all compulsory fields (if any) AND, when optional keywords exist, at least one optional keyword, will be returned (i.e., for "-c n/James -o po/Principal", find result will contain everyone who is both named "James" and has position "Principal").
+<div markdown="span" class="alert alert-info">:information_source: **Note:**
+At least one field (besides the flag) must be provided. You cannot run `edit 1` with nothing else — there would be nothing to change.
+</div>
 
-Examples:
-* `find n/John` returns `john` and `John Doe`
-* `find n/alex n/david` returns `Alex Yeoh`, `David Li`<br>
+**Examples:**
+
+* Update the phone number and email of the 1st contact:
+  ```
+  edit 1 p/91234567 e/johndoe@example.com
+  ```
+  *Outcome: The 1st contact's phone becomes `91234567` and email becomes `johndoe@example.com`. All other details remain unchanged.*
+
+* Add a tag to the 2nd contact without removing their existing tags:
+  ```
+  edit -a 2 t/visible
+  ```
+  *Outcome: The tag `visible` is added to the 2nd contact's existing tags.*
+
+* Remove all tags from the 3rd contact:
+  ```
+  edit 3 t/
+  ```
+  *Outcome: All tags are cleared from the 3rd contact.*
+![Ui](images/features/editResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
+### Finding contacts : `find`
+
+**Searches your contact list and shows only matching results.**
+
+Use this when you want to quickly locate a specific person or a group of people — for example, all contacts in a particular class or everyone named "Alex". You can search across multiple fields at once and combine required and optional search terms.
+
+Format: `find [[FLAG] PREFIX/KEYWORD]…`
+
+**Arguments:**
+
+| Argument | Description |
+|---|---|
+| `PREFIX/KEYWORD` | What to search for. Use `n/` for name, `p/` for phone, `e/` for email, `a/` for address, `g/` for group, `po/` for position, `m/` for major, `t/` for tag, `h/` for available hours. |
+| `-c` (flag) | Makes the following keywords **compulsory** — only contacts matching all `-c` fields are shown. |
+| `-o` (flag) | Makes the following keywords **optional** — contacts matching at least one `-o` field are shown. |
+
+**How matching works:**
+* Search is case-insensitive — `hans` matches `Hans`.
+* For names, only full words match — `Han` does **not** match `Hans`.
+* Keywords for other fields (email, phone, etc.) are partial matches.
+* When both `-c` and `-o` flags are used, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
+* If no flag is given, all keywords are treated as optional.
+
+**Examples:**
+
+* Find everyone named John:
+  ```
+  find n/John
+  ```
+  *Outcome: Shows all contacts whose name contains the word "John" (e.g. `John Doe`, `John Smith`).*
+
+* Find contacts named Alex or David:
+  ```
+  find n/Alex n/David
+  ```
+  *Outcome: Shows `Alex Yeoh`, `David Li`, and anyone else named Alex or David.*
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
-### Deleting a person : `delete`
+* Find contacts who are compulsorily named James and optionally hold the position of Principal:
+  ```
+  find -c n/James -o po/Principal
+  ```
+  *Outcome: Shows only contacts named James who are also Principals.*
 
-Deletes the specified person from the address book.
+--------------------------------------------------------------------------------------------------------------------
+
+### Deleting a contact : `delete`
+
+**Permanently removes a contact from CampusLink.**
+
+Use this when someone is no longer relevant to your studies — for example, a contact from a module you have completed. The contact is identified by their position number in the currently displayed list.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
+**Arguments:**
 
-Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+| Argument | Description |
+|---|---|
+| `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
 
-### Pinning a person : `pin`
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+Deletion is permanent. There is no undo. If you are unsure, consider using `find` first to confirm you have the right contact before deleting.
+</div>
 
-Toggles the pin status of the specified person. Pinned persons are moved to the top of the list and display a 📌 icon.
+**Examples:**
+
+* Delete the 2nd contact currently shown:
+  ```
+  delete 2
+  ```
+  *Outcome: The 2nd contact in the displayed list is permanently removed.*
+
+* Find a specific person, then delete them:
+  ```
+  find n/Betsy
+  delete 1
+  ```
+  *Outcome: Searches for "Betsy", then deletes the 1st result (the first contact named Betsy).*
+![Ui](images/features/deleteResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
+### Pinning a contact : `pin`
+
+**Keeps an important contact permanently at the top of your list.**
+
+Use this to bookmark your most frequently contacted people — professors you are emailing regularly, or project teammates you need to reach quickly. Running the same command again on a pinned contact will unpin them.
 
 Format: `pin INDEX`
 
-* Pins the person at the specified `INDEX` if they are not already pinned.
-* If the person is already pinned, running `pin INDEX` again will **unpin** them.
-* The index refers to the index number shown in the displayed person list.
-* The index **must be a positive integer** 1, 2, 3, …​
-* A maximum of **3** persons can be pinned at a time. Attempting to pin a 4th person will show an error.
-* Pin status is saved and persists across sessions.
+**Arguments:**
 
-Examples:
-* `pin 1` pins the 1st person in the list.
-* `pin 1` again unpins that person.
+| Argument | Description |
+|---|---|
+| `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
+
+* A pinned contact moves to the top of the list and shows a 📌 icon.
+* Running `pin INDEX` on an already-pinned contact **unpins** them and returns them to their normal position.
+* A maximum of **3** contacts can be pinned at a time. Attempting to pin a 4th will show an error.
+* Pin status is saved automatically and persists when you close and reopen the app.
+
+**Examples:**
+
+* Pin the 1st contact:
+  ```
+  pin 1
+  ```
+  *Outcome: The 1st contact moves to the top of the list with a 📌 icon.*
+
+* Unpin a previously pinned contact (who is now showing as contact 1 at the top):
+  ```
+  pin 1
+  ```
+  *Outcome: The 📌 icon is removed and the contact returns to their normal position in the list.*
+![Ui](images/features/pinResult.png)
+--------------------------------------------------------------------------------------------------------------------
 
 ### Sorting contacts : `sort`
 
-Sorts the displayed contact list by a specified field and order. Pinned contacts always remain at the top.
+**Reorders the contact list by a field of your choice.**
 
-Format: `sort CONDITION ORDER` (ORDER can be `ASC`, `DESC`, `a`, or `d`)
+Use this to quickly browse your contacts in alphabetical order, or to surface recently added contacts at the top. Pinned contacts always stay at the very top regardless of sort order, with the sort applied to everyone else below them.
 
-* `CONDITION`: `firstname`, `lastname`, or `recent`
-  * `firstname` sorts by the first word of the person's name.
-  * `lastname` sorts by the last word of the person's name.
-  * `recent` sorts contacts by their underlying storage/import order (newly imported contacts appear at the top).
-* `ORDER`: `ASC` (ascending, A→Z) or `DESC` (descending, Z→A)
-  * Note: For `recent`, `ASC` and `DESC` determine the ordering direction of the underlying list structure.
+Format: `sort CONDITION ORDER`
+
+**Arguments:**
+
+| Argument | Values | Description |
+|---|---|---|
+| `CONDITION` | `firstname` | Sorts by the **first word** of each contact's name (e.g. "Alice" in "Alice Tan"). |
+| | `lastname` | Sorts by the **last word** of each contact's name (e.g. "Tan" in "Alice Tan"). |
+| | `recent` | Sorts by the order contacts were added or imported — newest first. |
+| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; oldest first for `recent`). |
+| | `d` or `DESC` | Descending order (Z → A for names; newest first for `recent`). |
+
 * The sort is case-insensitive.
-* Pinned contacts always appear at the top of the list, with the sort applied within pinned and unpinned groups.
+* Sorting is a **display preference only** — it does not modify the saved data and resets when you restart the app.
 
-Examples:
-* `sort firstname ASC` (or `sort firstname a`) sorts all contacts by first name, A to Z.
-* `sort lastname DESC` (or `sort lastname d`) sorts all contacts by last name, Z to A.
-* `sort recent a` restores the list to its original insertion order, displaying recently imported contacts at the top.
+**Examples:**
 
-### Adding or replacing a profile picture : `pic`
+* Sort everyone alphabetically by first name (A to Z):
+  ```
+  sort firstname a
+  ```
+  *Outcome: The list reorders so contacts starting with A appear first, Z last.*
 
-Opens a file picker to set or replace the profile picture for the specified contact.
-The picture is displayed on the right side of the contact card.
+* Sort by last name in reverse order (Z to A):
+  ```
+  sort lastname DESC
+  ```
+  *Outcome: Contacts with surnames starting with Z appear first.*
 
-* If **no picture** has been set, a 📷 button appears — clicking it opens the file picker.
-* If a **picture already exists**, clicking on it also opens the file picker to replace it.
+* Restore the list to the order contacts were originally added:
+  ```
+  sort recent a
+  ```
+  *Outcome: The most recently added or imported contacts appear at the top.*
+![Ui](images/features/sortResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
+### Setting a profile picture : `pic`
+
+**Attaches a photo to a contact so you can recognise them at a glance.**
+
+Use this to add a face to a name — useful when your contact list grows large or when you want to quickly identify someone on campus. Running the command opens a file picker where you can choose an image from your computer.
 
 Format: `pic INDEX`
 
-* `INDEX` must be a positive integer referring to a contact in the current list.
-* Supported formats: PNG, JPG, JPEG, GIF, BMP.
-* The picture is saved persistently and will appear on next launch.
+**Arguments:**
 
-Examples:
-* `pic 1` — opens a file picker to set or replace the picture for the 1st contact.
-* `pic 3` — opens a file picker to set or replace the picture for the 3rd contact.
+| Argument | Description |
+|---|---|
+| `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
+
+* Supported image formats: **PNG, JPG, JPEG, GIF, BMP**.
+* If no picture has been set yet, a 📷 button appears on the contact card — clicking it also opens the file picker.
+* If a picture already exists, clicking on the image opens the file picker to replace it.
+* The picture is saved automatically and will appear every time you reopen the app.
+
+**Examples:**
+
+* Open the file picker for the 1st contact:
+  ```
+  pic 1
+  ```
+  *Outcome: A file picker window opens. Select an image file and click Open — the photo will appear on the contact's card.*
+
+* Replace the photo of the 3rd contact:
+  ```
+  pic 3
+  ```
+  *Outcome: A file picker opens. Choose a new image to replace the existing one.*
+
+--------------------------------------------------------------------------------------------------------------------
 
 ### Toggling dark / light mode : `toggle color mode`
 
-Switches the application between dark mode and light mode.
-A ☀ / 🌙 button at the top-right corner of the window does the same thing.
+**Switches the app's colour theme between dark mode and light mode.**
+
+Use this to make CampusLink more comfortable to read depending on your environment — dark mode for low-light settings, light mode for bright rooms. You can also click the ☀ / 🌙 button at the top-right corner of the window to do the same thing.
 
 Format: `toggle color mode`
 
-### Clearing all entries : `clear`
+**What happens:** The entire app switches colour theme instantly. Your preference is saved and applied the next time you open CampusLink.
+![Ui](images/features/darkMode.png)
+![Ui](images/features/lightMode.png)
+--------------------------------------------------------------------------------------------------------------------
 
-Clears all entries from the address book.
+### Clearing all contacts : `clear`
+
+**Deletes every contact in CampusLink at once.**
+
+Use this when you want to start completely fresh — for example, at the beginning of a new semester. This removes all contacts from the app permanently.
 
 Format: `clear`
 
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+This action is permanent and cannot be undone. All contacts will be lost. Consider using `export` to save a backup first if you may need the data later.
+</div>
+
+**What happens:** Every contact is deleted. The contact list becomes empty. No contacts can be recovered after this command.
+![Ui](images/features/clearResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
 ### Setting a password : `setpassword`
 
-Sets a password to protect the address book. You will be prompted to enter this password every time you start CampusLink.
+**Locks CampusLink behind a password so only you can access your contacts.**
+
+Use this if you store sensitive contact information and want to prevent others from viewing it. Once set, every time you open CampusLink you will be asked to enter the password before the app loads. After 3 incorrect attempts, all contacts are permanently erased as a security measure.
 
 Format: `setpassword pw/PASSWORD`
 
-* `PASSWORD` must not be empty or consist solely of spaces.
-* If a password is already set, this command replaces it with the new password.
-* The password is stored as a SHA-256 hash — your plaintext password is never saved.
+**Arguments:**
+
+| Argument | Prefix | Description |
+|---|---|---|
+| Password | `pw/` | The password you want to set. Must not be empty or consist of spaces only. |
+
+* If a password is already set, this command replaces it with the new one.
+* The password is stored as a **SHA-256 hash** — your actual password text is never saved anywhere, making it secure.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-After setting a password, if you enter the wrong password 3 times on startup, **all contacts will be permanently erased** and password protection will be removed. There is no way to recover this data.
+If you enter the wrong password **3 times** on startup, **all contacts will be permanently erased** and password protection will be removed. There is no recovery mechanism. Consider noting your password somewhere safe.
 </div>
 
-Examples:
-* `setpassword pw/mySecret123`
+**Examples:**
+
+* Set a password:
+  ```
+  setpassword pw/mySecret123
+  ```
+  *Outcome: The next time you open CampusLink, you will be prompted to enter `mySecret123` before the app loads.*
+![Ui](images/features/passwordProtection.png)
+![Ui](images/features/setPasswordProtection.png)
+--------------------------------------------------------------------------------------------------------------------
 
 ### Removing password protection : `removepassword`
 
-Removes the password from the address book. The app will no longer prompt for a password on startup.
+**Disables the password requirement so CampusLink opens without asking for a password.**
+
+Use this if you no longer need to lock the app — for example, if you are the only person using your computer.
 
 Format: `removepassword`
 
-* If no password is currently set, a message is shown and no changes are made.
-### Exporting all contacts : `export`
+**What happens:** Password protection is turned off. CampusLink will open directly without a password prompt on the next launch.
 
-Exports all contacts in the address book to a JSON file at the specified path.
-The exported file uses the same JSON format as the app's data file, so it can be imported back later.
+* If no password is currently set, a message is shown and no changes are made.
+![Ui](images/features/removePasswordProtection.png)
+--------------------------------------------------------------------------------------------------------------------
+
+### Exporting contacts : `export`
+
+**Saves all your contacts to a file on your computer.**
+
+Use this to create a backup of your contacts, or to transfer them to another computer. The exported file is saved in JSON format and can be imported back into CampusLink later using the `import` command.
 
 Format: `export fp/FILE_PATH`
 
-* `FILE_PATH` is the path to the output file (e.g. `backup.json` or `data/contacts_backup.json`).
-* If the file already exists it will be overwritten.
-* The export includes **all** contacts regardless of any active filter.
+**Arguments:**
 
-Examples:
-* `export fp/backup.json` exports all contacts to `backup.json` in the current working directory.
-* `export fp/data/team_contacts.json` exports all contacts to `data/team_contacts.json`.
+| Argument | Prefix | Description |
+|---|---|---|
+| File path | `fp/` | The location and name of the file to save (e.g. `backup.json` or `data/contacts_backup.json`). |
+
+* If the file already exists at that path, it will be **overwritten**.
+* The export includes **all** contacts, regardless of any active search filter.
+
+**Examples:**
+
+* Export all contacts to a file called `backup.json` in the same folder as the app:
+  ```
+  export fp/backup.json
+  ```
+  *Outcome: A file named `backup.json` is created in the current folder containing all your contacts.*
+
+* Export to a specific folder:
+  ```
+  export fp/data/team_contacts.json
+  ```
+  *Outcome: A file named `team_contacts.json` is created inside the `data` folder.*
+![Ui](images/features/exportResult.png)
+--------------------------------------------------------------------------------------------------------------------
 
 ### Importing contacts : `import`
 
-Imports contacts from a JSON file into the current address book.
-Existing contacts are kept; entries whose name matches an existing contact are skipped (not overwritten).
+**Loads contacts from a file into CampusLink.**
+
+Use this to restore a backup or to bring in contacts from another computer. The import only adds contacts that do not already exist — your current contacts are never overwritten or removed.
 
 Format: `import fp/FILE_PATH`
 
-* `FILE_PATH` is the path to a valid JSON file previously exported from CampusLink (or any file in the same format).
-* The import is **additive** — your current contacts are never removed or overwritten.
-* Newly imported contacts will be stacked **on top** of all current contacts, preserving their relative order from the imported file.
-* Contacts with the same name as an existing contact are considered duplicates and are skipped.
-* After import, the result message shows how many contacts were added and how many were skipped.
+**Arguments:**
 
-Examples:
-* `import fp/backup.json` imports contacts from `backup.json`.
-* `import fp/data/team_contacts.json` imports contacts from `data/team_contacts.json`.
+| Argument | Prefix | Description |
+|---|---|---|
+| File path | `fp/` | The path to a `.json` file previously exported from CampusLink. |
+
+* The import is **additive** — existing contacts are kept as-is.
+* If an imported contact has the same name as an existing contact, it is **skipped** (not added again).
+* Newly imported contacts are added to the **top** of the list, preserving their relative order from the file.
+* After the command, the result message tells you how many contacts were added and how many were skipped.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 Use `export` on one computer and `import` on another to transfer your contacts easily.
 </div>
 
+**Examples:**
+
+* Import contacts from a backup file:
+  ```
+  import fp/backup.json
+  ```
+  *Outcome: All contacts in `backup.json` that are not already in your list are added. A message shows how many were added and how many were skipped.*
+
+* Import from a specific folder:
+  ```
+  import fp/data/team_contacts.json
+  ```
+  *Outcome: Contacts from `team_contacts.json` inside the `data` folder are merged into your contact list.*
+![Ui](images/features/importResult.png)
+--------------------------------------------------------------------------------------------------------------------
+
 ### Setting a follow-up reminder : `followup`
 
-Attaches a short reminder note to a contact so you know what to follow up on with them.
-The note is shown automatically in the result display every time the app starts.
+**Attaches a reminder note to a contact so you do not forget to follow up with them.**
+
+Use this when you need to remember to send someone a message, share files, or discuss something later. Every time you open CampusLink, all contacts with active reminders are shown in the result panel so you can see what needs your attention.
 
 Format: `followup INDEX f/NOTE`
 
-* Sets the follow-up note for the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
-* `NOTE` must not be blank and must not start with whitespace.
-* If a follow-up note already exists on that contact, it is **replaced** by the new note.
+**Arguments:**
 
-Examples:
-* `followup 1 f/Email about internship by Friday` — sets a reminder on the 1st person.
-* `followup 3 f/Discuss project deadline next week` — sets a reminder on the 3rd person.
+| Argument | Prefix | Description |
+|---|---|---|
+| Index | — | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
+| Note | `f/` | The reminder message. Must not be blank or start with a space. |
+
+* If a reminder already exists on that contact, it is **replaced** by the new note.
+* Reminders are shown automatically in the result display every time the app starts.
+
+**Examples:**
+
+* Add a reminder to the 1st contact:
+  ```
+  followup 1 f/Email about internship by Friday
+  ```
+  *Outcome: The reminder "Email about internship by Friday" is attached to the 1st contact. It will appear in the result panel the next time you open the app.*
+
+* Update the reminder on the 3rd contact:
+  ```
+  followup 3 f/Discuss project deadline next week
+  ```
+  *Outcome: Any existing reminder on the 3rd contact is replaced with the new note.*
+![Ui](images/features/setFollowupResult.png)
+![Ui](images/features/followupResult.png)
+--------------------------------------------------------------------------------------------------------------------
 
 ### Clearing a follow-up reminder : `clearfollowup`
 
-Removes the follow-up note from a contact once you are done with it.
+**Removes the reminder note from a contact once you have finished the task.**
+
+Use this after you have sent that email, made that call, or completed whatever you needed to follow up on. Clearing the reminder removes it from the startup reminder list.
 
 Format: `clearfollowup INDEX`
 
-* Clears the follow-up note for the person at the specified `INDEX`.
-* The index **must be a positive integer** 1, 2, 3, …​
-* If the contact has no follow-up note, an error is shown.
+**Arguments:**
 
-Examples:
-* `clearfollowup 1` — removes the follow-up reminder from the 1st person.
+| Argument | Description |
+|---|---|
+| `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
 
-### Exiting the program : `exit`
+* If the contact has no active reminder, an error message is shown and nothing changes.
 
-Exits the program.
+**Examples:**
+
+* Clear the reminder from the 1st contact:
+  ```
+  clearfollowup 1
+  ```
+  *Outcome: The follow-up note is removed from the 1st contact. They will no longer appear in the startup reminder list.*
+
+--------------------------------------------------------------------------------------------------------------------
+
+### Exiting the app : `exit`
+
+**Closes CampusLink.**
+
+All data is already saved automatically, so you do not need to do anything before exiting.
 
 Format: `exit`
 
+**What happens:** The application window closes. All your contacts and settings are preserved for the next time you open CampusLink.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ### Saving the data
 
-AddressBook data are saved in the hard disk automatically after any command that changes the data. There is no need to save manually.
+CampusLink saves your data automatically to the hard disk after every command that makes a change. **There is no need to save manually.**
 
 ### Editing the data file
 
-AddressBook data are saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users are welcome to edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes to the data file makes its format invalid, AddressBook will discard all data and start with an empty data file at the next run. Hence, it is recommended to take a backup of the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If the data file is edited incorrectly and becomes invalid, CampusLink will discard all data and start with an empty contact list on the next run. It is strongly recommended to keep a backup copy of the file before making any direct edits. Editing the file incorrectly may also cause unexpected behaviour even if the file appears valid.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -346,9 +652,10 @@ Furthermore, certain edits can cause the AddressBook to behave in unexpected way
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
-3. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
+1. **Pressing Enter twice for templated commands**: When you type a partial command word (e.g. `sort`) and press `Enter` to accept the autocomplete suggestion, the command field is filled with a template (e.g. `sort firstname a`). Edit the placeholders and press `Enter` **once** to execute. The first `Enter` only applies the template; it does not execute the command.
+2. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
+3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
