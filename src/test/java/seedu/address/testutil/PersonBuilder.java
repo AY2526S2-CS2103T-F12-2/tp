@@ -3,8 +3,8 @@ package seedu.address.testutil;
 import java.util.HashSet;
 import java.util.Set;
 
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
-import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
@@ -34,7 +34,7 @@ public class PersonBuilder {
     private Set<Position> positions;
     private Set<Major> majors;
     private Set<Group> groups;
-    private Set<AvailableHours> availableHours;
+    private Set<TimeSlot> availableHours;
     private FollowUp followUp;
 
     /**
@@ -110,11 +110,11 @@ public class PersonBuilder {
     }
 
     /**
-     * Parses the {@code availableHours} into a {@code Set<AvailableHours>},
+     * Parses the {@code timeSlots} into a {@code Set<TimeSlot>},
      * and set it to the {@code Person} that we are building.
      */
-    public PersonBuilder withAvailableHours(String ... availableHours) {
-        this.availableHours = SampleDataUtil.getAvailableHoursSet(availableHours);
+    public PersonBuilder withAvailableHours(String ... timeSlots) {
+        this.availableHours = SampleDataUtil.getTimeSlotsSet(timeSlots);
         return this;
     }
 

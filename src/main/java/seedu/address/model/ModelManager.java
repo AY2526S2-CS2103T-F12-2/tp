@@ -13,6 +13,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
 
 /**
@@ -109,9 +110,21 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public boolean hasMeeting(Meeting meeting) {
+        requireNonNull(meeting);
+        return addressBook.hasMeeting(meeting);
+    }
+
+    @Override
     public void deletePerson(Person target) {
         requireNonNull(target);
         addressBook.removePerson(target);
+    }
+
+    @Override
+    public void deleteMeeting(Meeting target) {
+        requireNonNull(target);
+        addressBook.removeMeeting(target);
     }
 
     @Override
@@ -126,6 +139,12 @@ public class ModelManager implements Model {
         requireNonNull(person);
         addressBook.addPerson(index, person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+    }
+
+    @Override
+    public void addMeeting(Meeting meeting) {
+        requireNonNull(meeting);
+        addressBook.addMeeting(meeting);
     }
 
     @Override

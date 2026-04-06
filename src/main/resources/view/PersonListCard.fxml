@@ -51,7 +51,7 @@
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
       <Label fx:id="majors" styleClass="cell_small_label" text="\$majors" />
-      <Label fx:id="availableHours" styleClass="cell_small_label" text="\$availableHours" />
+      <Label fx:id="timeSlot" styleClass="cell_small_label" text="\$timeSlot" />
       <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
     </VBox>
   </GridPane>

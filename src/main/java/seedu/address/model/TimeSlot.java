@@ -1,4 +1,4 @@
-package seedu.address.model.person;
+package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
@@ -14,12 +14,12 @@ import java.util.Objects;
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
 /**
- * Represents a Person's available hours in the address book.
- * Guarantees: immutable; is valid as declared in {@link #isValidAvailableHours(String)}
+ * Represents a person's time slot in the address book.
+ * Guarantees: immutable; is valid as declared in {@link #isValidTimeSlot(String)}.
  */
-public class AvailableHours {
+public class TimeSlot {
 
-    public static final String MESSAGE_CONSTRAINTS = "Available hours must follow HHMM-HHMM (24-hour clock) format, "
+    public static final String MESSAGE_CONSTRAINTS = "Time slot must follow HHMM-HHMM (24-hour clock) format, "
             + "and start time must be before end time.\n"
             + "Format: e.g., 0900-1800\n";
     public static final String MESSAGE_TIME_CONSTRAINTS = "Time should follow HHMM (24-hour clock) format.";
@@ -35,17 +35,46 @@ public class AvailableHours {
     public final LocalTime endTime;
 
     /**
-     * Constructs an {@code AvailableHours}.
-     *
-     * @param availableHours A valid availableHours name.
+     * Constructs a {@code TimeSlot}.
      */
-    public AvailableHours(String availableHours) {
-        requireNonNull(availableHours);
-        checkArgument(isValidAvailableHours(availableHours), MESSAGE_CONSTRAINTS);
+    public TimeSlot(String timeSlot) {
+        requireNonNull(timeSlot);
+        checkArgument(isValidTimeSlot(timeSlot), MESSAGE_CONSTRAINTS);
 
-        LocalTime[] hours = timeParser(availableHours);
+        LocalTime[] hours = timeParser(timeSlot);
         this.startTime = hours[0];
         this.endTime = hours[1];
+    }
+
+    /**
+     * Constructs a {@code TimeSlot} with given start and end times.
+     *
+     * @param startTime The start time of the time slot.
+     * @param endTime The end time of the time slot.
+     * @throws WrongTimeFormatException if startTime is not before endTime.
+     */
+    public TimeSlot(LocalTime startTime, LocalTime endTime) throws WrongTimeFormatException {
+        requireNonNull(startTime);
+        requireNonNull(endTime);
+        if (!startTime.isBefore(endTime)) {
+            throw new WrongTimeFormatException(MESSAGE_CONSTRAINTS);
+        }
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    /**
+     * Returns the start time of the time slot.
+     */
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * Returns the end time of the time slot.
+     */
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
     private static LocalTime[] timeParser(String input) throws WrongTimeFormatException {
@@ -68,12 +97,12 @@ public class AvailableHours {
      * end times.
      *
      * @param time The time to check.
-     * @param duration The available hours containing the start time and end time.
+     * @param timeSlot The available hours containing the start time and end time.
      * @return True if the time is not before the start time and not after the end time. Otherwise, false.
      */
-    public static boolean isTimeWithinDuration(LocalTime time, AvailableHours duration) {
-        boolean isNotEarlier = !time.isBefore(duration.startTime);
-        boolean isNotLater = !time.isAfter(duration.endTime);
+    public static boolean isTimeWithinTimeSlot(LocalTime time, TimeSlot timeSlot) {
+        boolean isNotEarlier = !time.isBefore(timeSlot.startTime);
+        boolean isNotLater = !time.isAfter(timeSlot.endTime);
         return isNotEarlier && isNotLater;
     }
 
@@ -82,12 +111,12 @@ public class AvailableHours {
      * inclusive of both the start and end times.
      *
      * @param slot The time slot to check.
-     * @param duration The available hours containing the allowed start time and end time.
+     * @param timeSlot The available hours containing the allowed start time and end time.
      * @return True exactly if the slot starts at or after the duration start time and ends at or before the duration.
      */
-    public static boolean isSlotWithinDuration(AvailableHours slot, AvailableHours duration) {
-        boolean isNotEarlier = !slot.startTime.isBefore(duration.startTime);
-        boolean isNotLater = !slot.endTime.isAfter(duration.endTime);
+    public static boolean isSlotWithinTimeSlot(TimeSlot slot, TimeSlot timeSlot) {
+        boolean isNotEarlier = !slot.startTime.isBefore(timeSlot.startTime);
+        boolean isNotLater = !slot.endTime.isAfter(timeSlot.endTime);
         return isNotEarlier && isNotLater;
     }
 
@@ -111,7 +140,7 @@ public class AvailableHours {
      *
      * @return The validity of input hours.
      */
-    public static boolean isValidAvailableHours(String test) {
+    public static boolean isValidTimeSlot(String test) {
         try {
             timeParser(test);
             return true;
@@ -147,13 +176,14 @@ public class AvailableHours {
         }
 
         // instanceof handles nulls
-        if (!(other instanceof AvailableHours)) {
+        if (!(other instanceof TimeSlot)) {
             return false;
         }
 
-        AvailableHours otherAvailableHours = (AvailableHours) other;
-        return startTime.equals(otherAvailableHours.startTime)
-                && endTime.equals(otherAvailableHours.endTime);
+        TimeSlot otherTimeSlot = (TimeSlot) other;
+        return startTime.equals(otherTimeSlot.startTime)
+                && endTime.equals(otherTimeSlot.endTime);
     }
 
 }
+
