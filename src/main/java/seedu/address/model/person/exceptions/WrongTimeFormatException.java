@@ -1,6 +1,6 @@
 package seedu.address.model.person.exceptions;
 
-import static seedu.address.model.TimeSlot.MESSAGE_CONSTRAINTS;
+import static seedu.address.model.person.AvailableHours.MESSAGE_CONSTRAINTS;
 
 /**
  * Signals that input time is not in the specified format.
@@ -8,7 +8,7 @@ import static seedu.address.model.TimeSlot.MESSAGE_CONSTRAINTS;
 public class WrongTimeFormatException extends RuntimeException {
 
     /**
-     * Default exception in parsing <code>TimeSlot</code>.
+     * Default exception in parsing <code>AvailableHours</code>.
      */
     public WrongTimeFormatException() {
         super("Wrong time format!\n" + MESSAGE_CONSTRAINTS);

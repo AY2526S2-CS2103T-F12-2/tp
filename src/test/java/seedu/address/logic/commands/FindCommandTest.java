@@ -39,7 +39,7 @@ public class FindCommandTest {
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords) {
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
         return new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
                 compulsoryAddressKeywords, optionalAddressKeywords,
@@ -49,7 +49,7 @@ public class FindCommandTest {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
+                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
     }
 
     /**

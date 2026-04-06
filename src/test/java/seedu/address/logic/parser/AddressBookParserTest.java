@@ -31,7 +31,6 @@ import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
-import seedu.address.logic.commands.UnmeetCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Person;
@@ -65,13 +64,6 @@ public class AddressBookParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), command);
-    }
-
-    @Test
-    public void parseCommand_unmeet() throws Exception {
-        UnmeetCommand command = (UnmeetCommand) parser.parseCommand(
-                UnmeetCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
-        assertEquals(new UnmeetCommand(INDEX_FIRST_PERSON), command);
     }
 
     @Test

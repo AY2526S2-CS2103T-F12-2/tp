@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
@@ -38,7 +38,7 @@ public class SampleDataUtil {
                     getPositionSet("Student"), getMajorSet("Biology"), getGroupSet("friend"), new HashSet<>()),
             new Person(new Name("Irfan Ibrahim"), new Phone("92492021"), new Email("irfan@example.com"),
                 new Address("Blk 47 Tampines Street 20, #17-35"), getTagSet("elder"), getPositionSet("Professor"),
-                    getMajorSet("Chemistry"), getGroupSet("prof"), getTimeSlotsSet("1200-1500")),
+                    getMajorSet("Chemistry"), getGroupSet("prof"), getAvailableHoursSet("1200-1500")),
             new Person(new Name("Roy Balakrishnan"), new Phone("92624417"), new Email("royb@example.com"),
                 new Address("Blk 45 Aljunied Street 85, #11-31"),
                 getTagSet("colleagues"), new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>())
@@ -90,11 +90,11 @@ public class SampleDataUtil {
     }
 
     /**
-     * Returns a set of time slots containing the list of strings given.
+     * Returns a set of available hours containing the list of strings given.
      */
-    public static Set<TimeSlot> getTimeSlotsSet(String... strings) {
+    public static Set<AvailableHours> getAvailableHoursSet(String... strings) {
         return Arrays.stream(strings)
-                .map(TimeSlot::new)
+                .map(AvailableHours::new)
                 .collect(Collectors.toSet());
     }
 

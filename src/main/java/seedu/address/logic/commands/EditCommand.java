@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -9,7 +10,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.Collections;
@@ -25,8 +25,8 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
@@ -47,13 +47,13 @@ public class EditCommand extends Command {
             + "by the index number used in the displayed person list.\n"
             + "Flags: -a for adding fields to existing values, -r for overwriting existing values.\n"
             + "By default existing values will be overwritten, unless -a is used as flag.\n"
-            + "Parameters: INDEX (must be a positive integer) [FLAG] "
+            + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_MAJOR + "MAJOR] "
-            + "[" + PREFIX_TIME + "AVAILABLE_HOURS] "
+            + "[" + PREFIX_AVAILABLE_HOURS + "AVAILABLE_HOURS] "
             + "[" + PREFIX_GROUP + "GROUP] "
             + "[" + PREFIX_POSITION + "POSITION] "
             + "[" + PREFIX_TAG + "TAG]...\n"
@@ -63,8 +63,7 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited Person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "The person with same "
-            + "name/email/phone number already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;
@@ -93,8 +92,7 @@ public class EditCommand extends Command {
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
-        System.out.println(personToEdit.isSamePerson(editedPerson));
-        if (!personToEdit.equals(editedPerson) && model.hasPerson(editedPerson)) {
+        if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
@@ -117,7 +115,7 @@ public class EditCommand extends Command {
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
-        Set<TimeSlot> updatedAvailableHours =
+        Set<AvailableHours> updatedAvailableHours =
                 editPersonDescriptor.getAvailableHours().orElse(personToEdit.getAvailableHours());
 
         final Set<Tag> updatedTags;
@@ -186,7 +184,7 @@ public class EditCommand extends Command {
         private Set<Major> majors;
         private Set<Position> positions;
         private Set<Group> groups;
-        private Set<TimeSlot> availableHours;
+        private Set<AvailableHours> availableHours;
         private EditFlag flag = EditFlag.NONE;
 
         public EditPersonDescriptor() {}
@@ -250,6 +248,10 @@ public class EditCommand extends Command {
 
         public void setEditFlag(EditFlag flag) {
             this.flag = flag;
+        }
+
+        public Optional<EditFlag> getEditFlag() {
+            return Optional.ofNullable(flag);
         }
 
         /**
@@ -324,7 +326,7 @@ public class EditCommand extends Command {
          * Sets {@code availableHours} to this object's {@code availableHours}.
          * A defensive copy of {@code availableHours} is used internally.
          */
-        public void setAvailableHours(Set<TimeSlot> availableHours) {
+        public void setAvailableHours(Set<AvailableHours> availableHours) {
             this.availableHours = (availableHours != null) ? new HashSet<>(availableHours) : null;
         }
 
@@ -333,7 +335,7 @@ public class EditCommand extends Command {
          * if modification is attempted.
          * Returns {@code Optional#empty()} if {@code availableHours} is null.
          */
-        public Optional<Set<TimeSlot>> getAvailableHours() {
+        public Optional<Set<AvailableHours>> getAvailableHours() {
             return (availableHours != null)
                     ? Optional.of(Collections.unmodifiableSet(availableHours))
                     : Optional.empty();
