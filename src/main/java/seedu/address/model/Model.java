@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
-import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
 
 /**
@@ -60,21 +59,10 @@ public interface Model {
     boolean hasPerson(Person person);
 
     /**
-     * Returns true if a meeting with the same identity as {@code meeting} exists in the address book.
-     */
-    boolean hasMeeting(Meeting meeting);
-
-    /**
      * Deletes the given person.
      * The person must exist in the address book.
      */
     void deletePerson(Person target);
-
-    /**
-     * Deletes the given meeting.
-     * The meeting must exist in the address book.
-     */
-    void deleteMeeting(Meeting target);
 
     /**
      * Adds the given person.
@@ -87,12 +75,6 @@ public interface Model {
      * {@code person} must not already exist in the address book.
      */
     void addPerson(int index, Person person);
-
-    /**
-     * Adds the given meeting.
-     * {@code meeting} must not already exist in the address book.
-     */
-    void addMeeting(Meeting meeting);
 
     /**
      * Replaces the given person {@code target} with {@code editedPerson}.

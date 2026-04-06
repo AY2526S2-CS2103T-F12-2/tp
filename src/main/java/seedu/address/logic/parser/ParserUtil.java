@@ -12,8 +12,8 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
@@ -213,30 +213,30 @@ public class ParserUtil {
     }
 
     /**
-     * Parses a {@code String timeSlot} into a {@code TimeSlot}.
+     * Parses a {@code String availableHour} into an {@code AvailableHour}.
      * Leading and trailing whitespaces will be trimmed.
      *
-     * @throws ParseException if the given {@code timeSlot} is invalid.
+     * @throws ParseException if the given {@code availableHour} is invalid.
      */
-    public static TimeSlot parseTimeSlot(String timeSlot) throws ParseException {
-        requireNonNull(timeSlot);
-        String trimmedTimeSlot = timeSlot.trim();
-        if (!TimeSlot.isValidTimeSlot(trimmedTimeSlot)) {
-            throw new ParseException(TimeSlot.MESSAGE_CONSTRAINTS);
+    public static AvailableHours parseAvailableHours(String availableHours) throws ParseException {
+        requireNonNull(availableHours);
+        String trimmedAvailableHour = availableHours.trim();
+        if (!AvailableHours.isValidAvailableHours(trimmedAvailableHour)) {
+            throw new ParseException(AvailableHours.MESSAGE_CONSTRAINTS);
         }
-        return new TimeSlot(trimmedTimeSlot);
+        return new AvailableHours(trimmedAvailableHour);
     }
 
     /**
-     * Parses {@code Collection<String> timeSlots} into a {@code Set<TimeSlot>}.
+     * Parses {@code Collection<String> availableHours} into a {@code Set<AvailableHour>}.
      */
-    public static Set<TimeSlot> parseTimeSlots(Collection<String> timeSlots) throws ParseException {
-        requireNonNull(timeSlots);
-        final Set<TimeSlot> timeSlotSet = new HashSet<>();
-        for (String timeSlotName : timeSlots) {
-            timeSlotSet.add(parseTimeSlot(timeSlotName));
+    public static Set<AvailableHours> parseAvailableHours(Collection<String> availableHours) throws ParseException {
+        requireNonNull(availableHours);
+        final Set<AvailableHours> availableHourSet = new HashSet<>();
+        for (String availableHourName : availableHours) {
+            availableHourSet.add(parseAvailableHours(availableHourName));
         }
-        return timeSlotSet;
+        return availableHourSet;
     }
 
     /**

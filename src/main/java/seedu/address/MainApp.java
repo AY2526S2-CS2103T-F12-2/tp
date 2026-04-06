@@ -47,7 +47,7 @@ import seedu.address.ui.UiManager;
  */
 public class MainApp extends Application {
 
-    public static final Version VERSION = new Version(1, 4, 0, true);
+    public static final Version VERSION = new Version(0, 2, 2, true);
     private static final int MAX_PASSWORD_ATTEMPTS = 3;
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);

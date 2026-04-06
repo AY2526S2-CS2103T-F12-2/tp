@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.FollowUp;
 import seedu.address.model.person.Group;
@@ -39,7 +39,7 @@ class JsonAdaptedPerson {
     private final List<JsonAdaptedPosition> positions = new ArrayList<>();
     private final List<JsonAdaptedMajor> majors = new ArrayList<>();
     private final List<JsonAdaptedGroup> groups = new ArrayList<>();
-    private final List<JsonAdaptedTimeSlot> availableHours = new ArrayList<>();
+    private final List<JsonAdaptedAvailableHours> availableHours = new ArrayList<>();
     private final boolean pinned;
 
     /**
@@ -54,7 +54,7 @@ class JsonAdaptedPerson {
                              @JsonProperty("positions") List<JsonAdaptedPosition> positions,
                              @JsonProperty("majors") List<JsonAdaptedMajor> majors,
                              @JsonProperty("groups") List<JsonAdaptedGroup> groups,
-                             @JsonProperty("timeSlot") List<JsonAdaptedTimeSlot> availableHours,
+                             @JsonProperty("availableHours") List<JsonAdaptedAvailableHours> availableHours,
                              @JsonProperty("pinned") Boolean pinned) {
         this.name = name;
         this.phone = phone;
@@ -86,7 +86,7 @@ class JsonAdaptedPerson {
     public JsonAdaptedPerson(String name, String phone, String email, String address,
                              List<JsonAdaptedTag> tags, List<JsonAdaptedPosition> positions,
                              List<JsonAdaptedMajor> majors, List<JsonAdaptedGroup> groups,
-                             List<JsonAdaptedTimeSlot> availableHours) {
+                             List<JsonAdaptedAvailableHours> availableHours) {
         this(name, phone, email, address, "", "", tags, positions, majors, groups, availableHours, false);
     }
 
@@ -114,7 +114,7 @@ class JsonAdaptedPerson {
                 .map(JsonAdaptedGroup::new)
                 .collect(Collectors.toList()));
         availableHours.addAll(source.getAvailableHours().stream()
-                .map(JsonAdaptedTimeSlot::new)
+                .map(JsonAdaptedAvailableHours::new)
                 .collect(Collectors.toList()));
     }
 
@@ -144,9 +144,9 @@ class JsonAdaptedPerson {
             personGroups.add(group.toModelType());
         }
 
-        final List<TimeSlot> personTimeSlots = new ArrayList<>();
-        for (JsonAdaptedTimeSlot personTimeSlot : availableHours) {
-            personTimeSlots.add(personTimeSlot.toModelType());
+        final List<AvailableHours> personAvailableHours = new ArrayList<>();
+        for (JsonAdaptedAvailableHours availableHour : availableHours) {
+            personAvailableHours.add(availableHour.toModelType());
         }
 
         if (name == null) {
@@ -185,7 +185,7 @@ class JsonAdaptedPerson {
         final Set<Position> modelPositions = new HashSet<>(personPositions);
         final Set<Major> modelMajors = new HashSet<>(personMajors);
         final Set<Group> modelGroups = new HashSet<>(personGroups);
-        final Set<TimeSlot> modelTimeSlots = new HashSet<>(personTimeSlots);
+        final Set<AvailableHours> modelAvailableHours = new HashSet<>(personAvailableHours);
 
         final FollowUp modelFollowUp;
         if (followUp != null && !followUp.isEmpty()) {
@@ -198,7 +198,7 @@ class JsonAdaptedPerson {
         }
 
         return new Person(modelName, modelPhone, modelEmail, modelAddress,
-                modelTags, modelPositions, modelMajors, modelGroups, modelTimeSlots,
+                modelTags, modelPositions, modelMajors, modelGroups, modelAvailableHours,
                 modelFollowUp,
                 profilePicturePath, pinned);
     }

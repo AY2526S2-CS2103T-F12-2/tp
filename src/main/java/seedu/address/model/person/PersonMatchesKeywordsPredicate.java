@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import seedu.address.commons.util.StringUtil;
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.TimeSlot;
 
 /**
  * Tests that a {@code Person}'s fields match any of the provided keywords.
@@ -28,8 +27,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     private final List<String> optionalPositionKeywords;
     private final List<String> compulsoryGroupKeywords;
     private final List<String> optionalGroupKeywords;
-    private final List<String> compulsoryTimeSlotKeywords;
-    private final List<String> optionalTimeSlotKeywords;
+    private final List<String> compulsoryAvailableHoursKeywords;
+    private final List<String> optionalAvailableHoursKeywords;
     private final boolean areAllOptionalKeywordsEmpty;
     private final boolean areAllCompulsoryKeywordsEmpty;
 
@@ -53,8 +52,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * @param optionalPositionKeywords The optional position keywords.
      * @param compulsoryGroupKeywords The compulsory group keywords.
      * @param optionalGroupKeywords The optional group keywords.
-     * @param compulsoryTimeSlotKeywords The compulsory time slot keywords.
-     * @param optionalTimeSlotKeywords The optional time slot keywords.
+     * @param compulsoryAvailableHoursKeywords The compulsory available hours keywords.
+     * @param optionalAvailableHoursKeywords The optional available hours keywords.
      */
     public PersonMatchesKeywordsPredicate(
             List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
@@ -65,7 +64,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords) {
+            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
         this.compulsoryNameKeywords = compulsoryNameKeywords;
         this.optionalNameKeywords = optionalNameKeywords;
         this.compulsoryAddressKeywords = compulsoryAddressKeywords;
@@ -82,10 +81,11 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         this.optionalPositionKeywords = optionalPositionKeywords;
         this.compulsoryGroupKeywords = compulsoryGroupKeywords;
         this.optionalGroupKeywords = optionalGroupKeywords;
-        this.compulsoryTimeSlotKeywords = compulsoryTimeSlotKeywords;
-        this.optionalTimeSlotKeywords = optionalTimeSlotKeywords;
+        this.compulsoryAvailableHoursKeywords = compulsoryAvailableHoursKeywords;
+        this.optionalAvailableHoursKeywords = optionalAvailableHoursKeywords;
         this.areAllOptionalKeywordsEmpty = areAllOptionalKeywordsEmpty();
         this.areAllCompulsoryKeywordsEmpty = areAllCompulsoryKeywordsEmpty();
+        assert !(areAllOptionalKeywordsEmpty && areAllCompulsoryKeywordsEmpty) : "Empty input found for FindCommand!";
     }
 
     /**
@@ -94,7 +94,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     @Override
     public boolean test(Person person) {
         if (areAllCompulsoryKeywordsEmpty && areAllOptionalKeywordsEmpty) {
-            return true; // No keywords means all persons match.
+            return false;
         }
 
         return testCompulsory(person) && testOptional(person);
@@ -109,7 +109,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && matchesTags(person, true)
                 && matchesPositions(person, true)
                 && matchesGroups(person, true)
-                && matchesTimeSlot(person, true);
+                && matchesAvailableHours(person, true);
     }
 
     private boolean testOptional(Person person) {
@@ -125,7 +125,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 || matchesTags(person, false)
                 || matchesPositions(person, false)
                 || matchesGroups(person, false)
-                || matchesTimeSlot(person, false);
+                || matchesAvailableHours(person, false);
     }
 
     /**
@@ -221,22 +221,22 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     /**
-     * Returns true if any time/slot keyword matches the person's time slots.
+     * Returns true if any time/slot keyword matches the person's available hours.
      */
-    private boolean matchesTimeSlot(Person person, boolean isCompulsory) {
-        List<String> keywords = isCompulsory ? compulsoryTimeSlotKeywords : optionalTimeSlotKeywords;
+    private boolean matchesAvailableHours(Person person, boolean isCompulsory) {
+        List<String> keywords = isCompulsory ? compulsoryAvailableHoursKeywords : optionalAvailableHoursKeywords;
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
         if (person.getAvailableHours().isEmpty()) {
-            return true; // If person has no available hours, they are always free by default.
+            return false;
         }
 
         return person.getAvailableHours().stream()
                 .anyMatch(duration -> keywords.stream()
-                        .anyMatch(keyword -> TimeSlot.isValidTimeSlot(keyword)
-                                ? TimeSlot.isSlotWithinTimeSlot(new TimeSlot(keyword), duration)
-                                : TimeSlot.isTimeWithinTimeSlot(TimeSlot.stringToTime(keyword), duration)));
+                        .anyMatch(keyword -> AvailableHours.isValidAvailableHours(keyword)
+                                ? AvailableHours.isSlotWithinDuration(new AvailableHours(keyword), duration)
+                                : AvailableHours.isTimeWithinDuration(AvailableHours.stringToTime(keyword), duration)));
     }
 
     /**
@@ -255,7 +255,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && optionalTagKeywords.isEmpty()
                 && optionalPositionKeywords.isEmpty()
                 && optionalGroupKeywords.isEmpty()
-                && optionalTimeSlotKeywords.isEmpty();
+                && optionalAvailableHoursKeywords.isEmpty();
     }
 
     private boolean areAllCompulsoryKeywordsEmpty() {
@@ -267,7 +267,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && compulsoryTagKeywords.isEmpty()
                 && compulsoryPositionKeywords.isEmpty()
                 && compulsoryGroupKeywords.isEmpty()
-                && compulsoryTimeSlotKeywords.isEmpty();
+                && compulsoryAvailableHoursKeywords.isEmpty();
     }
 
     /**
@@ -300,8 +300,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 && optionalPositionKeywords.equals(otherPredicate.optionalPositionKeywords)
                 && compulsoryGroupKeywords.equals(otherPredicate.compulsoryGroupKeywords)
                 && optionalGroupKeywords.equals(otherPredicate.optionalGroupKeywords)
-                && compulsoryTimeSlotKeywords.equals(otherPredicate.compulsoryTimeSlotKeywords)
-                && optionalTimeSlotKeywords.equals(otherPredicate.optionalTimeSlotKeywords);
+                && compulsoryAvailableHoursKeywords.equals(otherPredicate.compulsoryAvailableHoursKeywords)
+                && optionalAvailableHoursKeywords.equals(otherPredicate.optionalAvailableHoursKeywords);
     }
 
     /**
@@ -326,8 +326,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                 .add("optionalPositionKeywords", optionalPositionKeywords)
                 .add("compulsoryGroupKeywords", compulsoryGroupKeywords)
                 .add("optionalGroupKeywords", optionalGroupKeywords)
-                .add("compulsoryTimeSlotKeywords", compulsoryTimeSlotKeywords)
-                .add("optionalTimeSlotKeywords", optionalTimeSlotKeywords)
+                .add("compulsoryAvailableHoursKeywords", compulsoryAvailableHoursKeywords)
+                .add("optionalAvailableHoursKeywords", optionalAvailableHoursKeywords)
                 .toString();
     }
 }

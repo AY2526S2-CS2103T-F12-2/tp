@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -31,7 +30,7 @@ public class Person {
     private final Set<Tag> tags = new HashSet<>();
     private final Set<Group> groups = new HashSet<>();
     // We ensure availableHours only ever contains 0 or 1 object.
-    private final Set<TimeSlot> availableHours = new HashSet<>();
+    private final Set<AvailableHours> availableHours = new HashSet<>();
 
     // Optional profile picture (file path), empty string if not set
     private String profilePicturePath;
@@ -45,7 +44,7 @@ public class Person {
      * Every field must be present and not null.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours) {
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours) {
         this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY, "", false);
     }
 
@@ -53,7 +52,7 @@ public class Person {
      * Constructor with optional profile picture path (no follow-up).
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours,
                   String profilePicturePath) {
         this(name, phone, email, address, tags, positions, majors, groups, availableHours, FollowUp.EMPTY,
                 profilePicturePath, false);
@@ -63,7 +62,7 @@ public class Person {
      * Constructor including follow-up note and profile picture path.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours, FollowUp followUp,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
                   String profilePicturePath) {
         this(name, phone, email, address, tags, positions, majors, groups, availableHours, followUp,
                 profilePicturePath, false);
@@ -73,7 +72,7 @@ public class Person {
      * Full constructor including follow-up note, profile picture path, and pinned status.
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
-                  Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours, FollowUp followUp,
+                  Set<Major> majors, Set<Group> groups, Set<AvailableHours> availableHours, FollowUp followUp,
                   String profilePicturePath, boolean pinned) {
         requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours, followUp);
         this.name = name;
@@ -139,10 +138,10 @@ public class Person {
     }
 
     /**
-     * Returns an immutable {@code Set<TimeSlot>}, which throws {@code UnsupportedOperationException}
+     * Returns an immutable {@code Set<AvailableHours>}, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
-    public Set<TimeSlot> getAvailableHours() {
+    public Set<AvailableHours> getAvailableHours() {
         return Collections.unmodifiableSet(availableHours);
     }
 
