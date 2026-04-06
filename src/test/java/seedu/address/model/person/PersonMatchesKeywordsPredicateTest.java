@@ -26,7 +26,7 @@ public class PersonMatchesKeywordsPredicateTest {
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
+            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords) {
         return new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
                 compulsoryAddressKeywords, optionalAddressKeywords,
@@ -36,7 +36,7 @@ public class PersonMatchesKeywordsPredicateTest {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
+                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
     }
 
     /**
@@ -204,8 +204,8 @@ public class PersonMatchesKeywordsPredicateTest {
                 + ", optionalPositionKeywords=[]"
                 + ", compulsoryGroupKeywords=[]"
                 + ", optionalGroupKeywords=" + List.of("CS")
-                + ", compulsoryAvailableHoursKeywords=[]"
-                + ", optionalAvailableHoursKeywords=[]}";
+                + ", compulsoryTimeSlotKeywords=[]"
+                + ", optionalTimeSlotKeywords=[]}";
         assertEquals(expected, predicate.toString());
     }
 }

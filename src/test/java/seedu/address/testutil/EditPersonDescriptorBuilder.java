@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Address;
-import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
@@ -120,14 +120,14 @@ public class EditPersonDescriptorBuilder {
     }
 
     /**
-     * Parses the {@code availableHours} into a {@code Set<AvailableHour>} and set it to the
+     * Parses the {@code timeSlots} into a {@code Set<TimeSlot>} and set it to the
      * {@code EditPersonDescriptor} that we are building.
      */
-    public EditPersonDescriptorBuilder withAvailableHours(String... availableHours) {
-        Set<AvailableHours> availableHourSet = Stream.of(availableHours)
-                .map(AvailableHours::new)
+    public EditPersonDescriptorBuilder withAvailableHours(String... timeSlots) {
+        Set<TimeSlot> timeSlotSet = Stream.of(timeSlots)
+                .map(TimeSlot::new)
                 .collect(Collectors.toSet());
-        descriptor.setAvailableHours(availableHourSet);
+        descriptor.setAvailableHours(timeSlotSet);
         return this;
     }
 
