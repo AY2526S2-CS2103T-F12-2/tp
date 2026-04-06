@@ -108,7 +108,7 @@ public class LogicManager implements Logic {
         Person updated = new Person(original.getName(), original.getPhone(), original.getEmail(),
                 original.getAddress(), original.getTags(), original.getPositions(),
                 original.getMajors(), original.getGroups(), original.getAvailableHours(),
-                original.getFollowUp(), picturePath);
+                original.getFollowUp(), picturePath, original.isPinned());
         model.setPerson(original, updated);
         try {
             storage.saveAddressBook(model.getAddressBook());

@@ -1,10 +1,13 @@
 package seedu.address.ui;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -77,6 +80,17 @@ public class ContactDetailPanel extends UiPart<Region> {
     @FXML
     private Label positions;
 
+    private Consumer<Integer> onDelete;
+    private Consumer<String> onEdit;
+    private Person currentPerson;
+    private int currentIndex;
+
+    @FXML
+    private Button editButton;
+
+    @FXML
+    private Button deleteButton;
+
     /**
      * Creates a {@code ContactDetailPanel}.
      */
@@ -89,11 +103,15 @@ public class ContactDetailPanel extends UiPart<Region> {
      * Updates the detailed view to show the given person.
      * If the person is null, shows the empty state.
      */
-    public void updatePerson(Person person) {
+    public void updatePerson(Person person, int index) {
         if (person == null) {
+            this.currentPerson = null;
             showEmptyState();
             return;
         }
+
+        this.currentPerson = person;
+        this.currentIndex = index;
 
         showContentState();
 
@@ -191,5 +209,47 @@ public class ContactDetailPanel extends UiPart<Region> {
         }
         emptyPlaceholder.setVisible(false);
         emptyPlaceholder.setManaged(false);
+    }
+
+    @FXML
+    private void handleDelete() {
+        if (onDelete != null && currentPerson != null) {
+            onDelete.accept(currentIndex);
+        }
+    }
+
+    @FXML
+    private void handleEdit() {
+        if (onEdit == null || currentPerson == null) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("edit ").append(currentIndex);
+        sb.append(" n/").append(currentPerson.getName().fullName);
+        sb.append(" p/").append(currentPerson.getPhone().value);
+        sb.append(" e/").append(currentPerson.getEmail().value);
+        sb.append(" a/").append(currentPerson.getAddress().value);
+
+        for (var tag : currentPerson.getTags()) {
+            sb.append(" t/").append(tag.tagName);
+        }
+        for (var position : currentPerson.getPositions()) {
+            sb.append(" po/").append(position.value);
+        }
+        for (var major : currentPerson.getMajors()) {
+            sb.append(" m/").append(major.value);
+        }
+        for (var group : currentPerson.getGroups()) {
+            sb.append(" g/").append(group.value);
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HHmm");
+        for (var ah : currentPerson.getAvailableHours()) {
+            sb.append(" h/").append(ah.startTime.format(fmt))
+            .append("-").append(ah.endTime.format(fmt));
+        }
+
+        onEdit.accept(sb.toString());
     }
 }
