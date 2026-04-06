@@ -38,8 +38,14 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
-        sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> Boolean.compare(
-                p2.isPinned(), p1.isPinned()));
+        sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> {
+            int pinCompare = Boolean.compare(p2.isPinned(), p1.isPinned());
+            if (pinCompare != 0) {
+                return pinCompare;
+            }
+            // Stable tiebreaker: preserve the original order in the source list
+            return Integer.compare(filteredPersons.indexOf(p1), filteredPersons.indexOf(p2));
+        });
     }
 
     public ModelManager() {
