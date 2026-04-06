@@ -241,8 +241,8 @@ public class EditCommandTest {
                 "createEditedPerson", Person.class, EditPersonDescriptor.class);
         createEditedPerson.setAccessible(true);
 
-        InvocationTargetException thrown = assertThrows(InvocationTargetException.class,
-                () -> createEditedPerson.invoke(null, null, descriptor));
+        InvocationTargetException thrown =
+                assertThrows(InvocationTargetException.class, () -> createEditedPerson.invoke(null, null, descriptor));
         assertTrue(thrown.getCause() instanceof AssertionError);
     }
 

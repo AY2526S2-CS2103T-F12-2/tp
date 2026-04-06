@@ -186,7 +186,7 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     @Test
-    public void test_optionalTimeKeyword_personWithoutAvailability_returnsTrue() {
+    public void test_optionalTimeKeyword_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
                         List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
@@ -195,7 +195,7 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     @Test
-    public void test_optionalTimeKeyword_exactTimeMatch_returnsTrue() {
+    public void test_exactTimeMatch_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
                         List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
@@ -204,7 +204,7 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     @Test
-    public void test_optionalTimeKeyword_slotWithinAvailability_returnsTrue() {
+    public void test_slotWithinAvailability_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
                         List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
@@ -213,7 +213,7 @@ public class PersonMatchesKeywordsPredicateTest {
     }
 
     @Test
-    public void test_compulsoryTimeKeyword_noMatch_returnsFalse() {
+    public void test_compulsoryTimeKeyword_returnsFalse() {
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
                         List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
