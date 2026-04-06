@@ -17,11 +17,13 @@ public class SetPasswordCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Sets a password to protect the address book. "
-            + "Parameters: " + PREFIX_PASSWORD + "PASSWORD\n"
+            + "Parameters: " + PREFIX_PASSWORD + "PASSWORD (no spaces allowed)\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_PASSWORD + "mySecretPass123";
 
     public static final String MESSAGE_SUCCESS = "Password has been set successfully! "
             + "You will be prompted for this password the next time you start the app.";
+
+    public static final String MESSAGE_PASSWORD_CONSTRAINTS = "Password must not contain spaces.";
 
     private final String password;
 
