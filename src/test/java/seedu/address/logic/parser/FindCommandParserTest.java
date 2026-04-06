@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 public class FindCommandParserTest {
@@ -150,6 +151,11 @@ public class FindCommandParserTest {
         assertParseFailure(parser, " a/", FindCommand.MESSAGE_INVALID_KEYWORD);
     }
 
+    @Test
+    public void parse_flagOnlyInput_throwsParseException() {
+        assertParseFailure(parser, "-c", String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
+    }
+
     /**
      * Ensures tag and position search return a FindCommand.
      */
@@ -167,6 +173,79 @@ public class FindCommandParserTest {
                         List.of(), List.of(),
                         List.of(), List.of()));
         assertParseSuccess(parser, " t/friends po/Teaching Assistant", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_compulsoryAndOptionalSegments_success() {
+        FindCommand expectedFindCommand =
+                new FindCommand(new PersonMatchesKeywordsPredicate(
+                        List.of("Alice"), List.of("Bob"),
+                        List.of(), List.of("Jurong"),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of()));
+
+        assertParseSuccess(parser, " -c n/Alice -o n/Bob a/Jurong", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_multipleFlagTransitions_success() {
+        FindCommand expectedFindCommand =
+                new FindCommand(new PersonMatchesKeywordsPredicate(
+                        List.of("Alice"), List.of("Bob", "Carl"),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of()));
+
+        assertParseSuccess(parser, " -o n/Bob -c n/Alice -o n/Carl", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_flagLikeKeywordToken_success() {
+        FindCommand expectedFindCommand =
+                new FindCommand(new PersonMatchesKeywordsPredicate(
+                        List.of(), List.of("-o"),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of()));
+
+        assertParseSuccess(parser, " n/-o", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_invalidTimeKeyword_failure() {
+        assertParseFailure(parser, " h/24AA", TimeSlot.MESSAGE_TIME_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_timePointAndTimeSlot_success() {
+        FindCommand expectedFindCommand =
+                new FindCommand(new PersonMatchesKeywordsPredicate(
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of(),
+                        List.of(), List.of("0900", "1000-1200")));
+
+        assertParseSuccess(parser, " h/0900 h/1000-1200", expectedFindCommand);
     }
 
 }
