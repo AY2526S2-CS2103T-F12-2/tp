@@ -110,6 +110,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public boolean hasPersonExcept(Person person, Person except) {
+        requireAllNonNull(person, except);
+        return addressBook.hasPersonExcept(person, except);
+    }
+
+    @Override
     public boolean hasMeeting(Meeting meeting) {
         requireNonNull(meeting);
         return addressBook.hasMeeting(meeting);
