@@ -1,13 +1,10 @@
 package seedu.address.ui;
 
 import java.io.File;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,6 +12,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import seedu.address.model.person.AvailableHours;
 import seedu.address.model.person.Person;
 
@@ -35,8 +33,6 @@ public class PersonCard extends UiPart<Region> {
 
     public final Person person;
 
-    private final Runnable onDelete;
-    private final Consumer<String> onEdit;
     private final Runnable onPicUpload;
     private final int displayedIndex;
 
@@ -55,8 +51,6 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private FlowPane tags;
     @FXML
-    private Button deleteButton;
-    @FXML
     private Label majors;
     @FXML
     private Label availableHours;
@@ -69,21 +63,16 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private ImageView profilePicView;
     @FXML
-    private Button uploadPicButton;
-    @FXML
-    private StackPane profilePicPane;
+    private StackPane avatarCircle;
     @FXML
     private Label pinIcon;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
      */
-    public PersonCard(Person person, int displayedIndex, Runnable onDelete, Consumer<String> onEdit,
-                      Runnable onPicUpload) {
+    public PersonCard(Person person, int displayedIndex, Runnable onPicUpload) {
         super(FXML);
         this.person = person;
-        this.onDelete = onDelete;
-        this.onEdit = onEdit;
         this.onPicUpload = onPicUpload;
         this.displayedIndex = displayedIndex;
         id.setText(displayedIndex + ". ");
@@ -111,20 +100,22 @@ public class PersonCard extends UiPart<Region> {
     }
 
     private void updateProfilePicture(String picPath) {
+        // Apply circular clip so the image fills the avatar circle neatly
+        double radius = 27.5;
+        Circle clip = new Circle(radius, radius, radius);
+        profilePicView.setClip(clip);
+
         if (picPath != null && !picPath.isEmpty()) {
             File f = new File(picPath);
             if (f.exists()) {
                 profilePicView.setImage(new Image(f.toURI().toString()));
                 profilePicView.setVisible(true);
-                profilePicView.setStyle("-fx-cursor: hand;");
-                profilePicView.setOnMouseClicked(e -> onPicUpload.run());
-                uploadPicButton.setVisible(false);
+                avatarInitial.setVisible(false);
                 return;
             }
         }
         profilePicView.setVisible(false);
-        profilePicView.setOnMouseClicked(null);
-        uploadPicButton.setVisible(true);
+        avatarInitial.setVisible(true);
     }
 
     /**
@@ -146,47 +137,8 @@ public class PersonCard extends UiPart<Region> {
                 });
     }
 
-    /**
-     * Handles delete button clicks for this card.
-     */
-    @FXML
-    private void handleDelete() {
-        onDelete.run();
-    }
-
     @FXML
     private void handleUploadPic() {
         onPicUpload.run();
-    }
-
-    @FXML
-    private void handleEdit() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("edit ").append(displayedIndex);
-        sb.append(" n/").append(person.getName().fullName);
-        sb.append(" p/").append(person.getPhone().value);
-        sb.append(" e/").append(person.getEmail().value);
-        sb.append(" a/").append(person.getAddress().value);
-
-        for (var tag : person.getTags()) {
-            sb.append(" t/").append(tag.tagName);
-        }
-        for (var position : person.getPositions()) {
-            sb.append(" po/").append(position.value);
-        }
-        for (var major : person.getMajors()) {
-            sb.append(" m/").append(major.value);
-        }
-        for (var group : person.getGroups()) {
-            sb.append(" g/").append(group.value);
-        }
-
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HHmm");
-        for (var ah : person.getAvailableHours()) {
-            sb.append(" h/").append(ah.startTime.format(fmt))
-            .append("-").append(ah.endTime.format(fmt));
-        }
-
-        onEdit.accept(sb.toString());
     }
 }
