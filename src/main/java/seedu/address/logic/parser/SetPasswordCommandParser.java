@@ -24,6 +24,9 @@ public class SetPasswordCommandParser implements Parser<SetPasswordCommand> {
         if (password.isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, SetPasswordCommand.MESSAGE_USAGE));
         }
+        if (password.matches(".*\\s.*")) {
+            throw new ParseException(SetPasswordCommand.MESSAGE_PASSWORD_CONSTRAINTS);
+        }
 
         return new SetPasswordCommand(password);
     }

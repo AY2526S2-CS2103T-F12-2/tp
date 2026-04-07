@@ -2,15 +2,18 @@ package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_PERSONS_LISTED_OVERVIEW;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.CARL;
+import static seedu.address.testutil.TypicalPersons.DANIEL;
 import static seedu.address.testutil.TypicalPersons.ELLE;
 import static seedu.address.testutil.TypicalPersons.FIONA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+import static seedu.address.testutil.TypicalPersons.getTypicalPersons;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,7 +42,7 @@ public class FindCommandTest {
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-            List<String> compulsoryAvailableHoursKeywords, List<String> optionalAvailableHoursKeywords) {
+            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords) {
         return new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
                 compulsoryAddressKeywords, optionalAddressKeywords,
@@ -49,7 +52,7 @@ public class FindCommandTest {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryAvailableHoursKeywords, optionalAvailableHoursKeywords);
+                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
     }
 
     /**
@@ -99,16 +102,34 @@ public class FindCommandTest {
     }
 
     /**
-     * Ensures multiple keywords return the matching persons.
+     * A single keyword that appears in multiple persons' names returns all of them,
+     * including fuzzy matches (ELLE's "Meyer" is distance 1 from "Meier").
      */
     @Test
-    public void execute_multipleKeywords_multiplePersonsFound() {
+    public void execute_singleKeyword_multiplePersonsFound() {
+        // "Meier" exactly matches BENSON and DANIEL; fuzzy-matches ELLE's "Meyer" (dist 1).
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate("Kurz Elle Kunz");
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Meier");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
+        // BENSON and DANIEL have distance 0 (exact); ELLE has distance 1 — sorted accordingly.
+        assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
+    }
+
+    /**
+     * Multiple keywords for the same field (AND semantics) narrows results to persons
+     * whose name contains ALL keywords.
+     */
+    @Test
+    public void execute_multipleKeywords_andSemantics_singlePersonFound() {
+        // "Carl" AND "Kurz" must both be in the name — only CARL matches.
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Carl Kurz");
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(Collections.singletonList(CARL), model.getDisplayedPersonList());
     }
 
     /**
@@ -198,13 +219,14 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalNameKeyword_multiplePersonsFound() {
+    public void execute_optionalNameKeyword_caseInsensitive_multiplePersonsFound() {
+        // "mEiEr" case-insensitively matches BENSON and DANIEL exactly, and ELLE's "Meyer" fuzzily (dist 1).
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate("kUrZ eLlE kUnZ");
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("mEiEr");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
+        assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
     }
 
     @Test
@@ -379,6 +401,34 @@ public class FindCommandTest {
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(Collections.singletonList(ELLE), model.getDisplayedPersonList());
+    }
+
+    @Test
+    public void execute_allKeywordListsEmpty_allPersonsFound() {
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, getTypicalPersons().size());
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(getTypicalPersons(), model.getDisplayedPersonList());
+    }
+
+    @Test
+    public void execute_nullModel_throwsNullPointerException() {
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Alice");
+        FindCommand command = new FindCommand(predicate);
+
+        assertThrows(NullPointerException.class, () -> command.execute(null));
     }
 
     /**

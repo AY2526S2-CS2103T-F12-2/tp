@@ -1,7 +1,6 @@
 package seedu.address.testutil;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -9,12 +8,13 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 
 import java.util.Set;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Group;
 import seedu.address.model.person.Major;
 import seedu.address.model.person.Person;
@@ -55,7 +55,7 @@ public class PersonUtil {
                 s -> sb.append(PREFIX_POSITION + s.value + " ")
         );
         person.getAvailableHours().stream().forEach(
-                s -> sb.append(PREFIX_AVAILABLE_HOURS + s.toOriginalString() + " ")
+                s -> sb.append(PREFIX_TIME + s.toOriginalString() + " ")
         );
         return sb.toString();
     }
@@ -104,11 +104,11 @@ public class PersonUtil {
         }
 
         if (descriptor.getAvailableHours().isPresent()) {
-            Set<AvailableHours> availableHours = descriptor.getAvailableHours().get();
-            if (availableHours.isEmpty()) {
-                sb.append(PREFIX_AVAILABLE_HOURS);
+            Set<TimeSlot> timeSlots = descriptor.getAvailableHours().get();
+            if (timeSlots.isEmpty()) {
+                sb.append(PREFIX_TIME);
             } else {
-                availableHours.forEach(s -> sb.append(PREFIX_AVAILABLE_HOURS)
+                timeSlots.forEach(s -> sb.append(PREFIX_TIME)
                         .append(s.toOriginalString()).append(" "));
             }
         }

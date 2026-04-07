@@ -16,24 +16,6 @@ public enum FindFlag {
     }
 
     /**
-     * Returns the regex capture-group value associated with this flag.
-     *
-     * @return The regex capture-group value.
-     */
-    public String getRegexGroup() {
-        return regexGroup;
-    }
-
-    /**
-     * Returns the literal token associated with this flag.
-     *
-     * @return The literal token.
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
      * Returns the {@code FindFlag} corresponding to the given regex capture-group value.
      *
      * @param group The regex capture-group value.

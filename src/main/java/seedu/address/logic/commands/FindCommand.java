@@ -12,7 +12,7 @@ import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
  * Finds and lists all persons in address book whose fields contain any of the argument keywords.
- * Keyword matching is case insensitive and available hours match if time slot fits.
+ * Keyword matching is case-insensitive and available hours match if time slot fits.
  */
 public class FindCommand extends Command {
 
@@ -23,7 +23,7 @@ public class FindCommand extends Command {
             + "Flags: -c to show the following fields are compulsory, -o to show following fields are optional, "
             + "by default all fields are optional (and contacts found should match at least 1 field).\n"
             + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
-            + "[t/TAG]... [po/POSITION]... [g/GROUP]\n"
+            + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/AVAILABLE_HOURS]\n"
             + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
             + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
             + "Example: " + COMMAND_WORD + " g/CS2103T\n"

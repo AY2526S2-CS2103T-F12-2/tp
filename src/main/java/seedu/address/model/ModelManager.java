@@ -13,6 +13,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
 
 /**
@@ -37,8 +38,14 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
-        sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> Boolean.compare(
-                p2.isPinned(), p1.isPinned()));
+        sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> {
+            int pinCompare = Boolean.compare(p2.isPinned(), p1.isPinned());
+            if (pinCompare != 0) {
+                return pinCompare;
+            }
+            // Stable tiebreaker: preserve the original order in the source list
+            return Integer.compare(filteredPersons.indexOf(p1), filteredPersons.indexOf(p2));
+        });
     }
 
     public ModelManager() {
@@ -109,9 +116,27 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public boolean hasPersonExcept(Person person, Person except) {
+        requireAllNonNull(person, except);
+        return addressBook.hasPersonExcept(person, except);
+    }
+
+    @Override
+    public boolean hasMeeting(Meeting meeting) {
+        requireNonNull(meeting);
+        return addressBook.hasMeeting(meeting);
+    }
+
+    @Override
     public void deletePerson(Person target) {
         requireNonNull(target);
         addressBook.removePerson(target);
+    }
+
+    @Override
+    public void deleteMeeting(Meeting target) {
+        requireNonNull(target);
+        addressBook.removeMeeting(target);
     }
 
     @Override
@@ -126,6 +151,12 @@ public class ModelManager implements Model {
         requireNonNull(person);
         addressBook.addPerson(index, person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+    }
+
+    @Override
+    public void addMeeting(Meeting meeting) {
+        requireNonNull(meeting);
+        addressBook.addMeeting(meeting);
     }
 
     @Override
