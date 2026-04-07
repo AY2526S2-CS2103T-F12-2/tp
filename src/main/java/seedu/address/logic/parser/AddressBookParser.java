@@ -1,5 +1,6 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_COMMAND_LENGTH_EXCEEDED;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 
@@ -41,6 +42,7 @@ public class AddressBookParser {
      */
     private static final Pattern BASIC_COMMAND_FORMAT = Pattern.compile("(?<commandWord>\\S+)(?<arguments>.*)");
     private static final Logger logger = LogsCenter.getLogger(AddressBookParser.class);
+    private static final int MAX_COMMAND_LENGTH = 1000;
 
     /**
      * Parses user input into command for execution.
@@ -50,7 +52,11 @@ public class AddressBookParser {
      * @throws ParseException if the user input does not conform the expected format
      */
     public Command parseCommand(String userInput) throws ParseException {
-        final Matcher matcher = BASIC_COMMAND_FORMAT.matcher(userInput.trim());
+        String trimmedUserInput = userInput.trim();
+        final Matcher matcher = BASIC_COMMAND_FORMAT.matcher(trimmedUserInput);
+        if (trimmedUserInput.length() > MAX_COMMAND_LENGTH) {
+            throw new ParseException(String.format(MESSAGE_COMMAND_LENGTH_EXCEEDED, MAX_COMMAND_LENGTH));
+        }
         if (!matcher.matches()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
