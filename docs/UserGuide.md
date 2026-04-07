@@ -221,35 +221,22 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 
 **Searches your contact list and shows only matching results.**
 
-Use this when you want to quickly locate a specific person or a group of people — for example, all contacts in a particular class or everyone named "Alex". You can search across multiple fields at once and combine required and optional search terms.
-Finds persons whose fields match **all** of the given keywords for each field.
+Use this when you want to quickly locate a specific person or a group of people. You can search across multiple fields at once and control whether multiple keywords for the same field must **all** match or whether **any one** of them is enough.
 
 Format: `find [[FLAG] PREFIX/KEYWORD]…`
 
-**Arguments:**
-* The search is case-insensitive. e.g `hans` will match `Hans`. Keywords themselves have no restriction, but they must be nonempty when leading and trailing spaces are trimmed (i.e., "n/Al?ce" is allowed but "n/[SPACE]" is not).
-* Multiple keywords for the **same field** must **all** match. e.g. `n/John n/Doe` only returns contacts whose name matches both `John` and `Doe` (such as `John Doe`).
-* User supplies at least one of search keywords, all of which should be preceded by corresponding prefix (e.g., n/).
-* User can use flags: "-o" for optional fields, "-c" for compulsory fields. All keywords following a certain flag will be processed according to that flag. By default (no flag) fields are all optional.
-* Flags should be preceded and followed by one space each. Where a part of input can be interpreted as both flag and keyword, it will be treated as a flag.
-* When more than two flags exist, keywords will be processed according to the last flag before it. E.g., for "-c -o n/James -c po/Principal", parse result will be an optional name "James" and a compulsory position "Principal".
-* Persons matching all compulsory fields (if any) AND, when optional keywords exist, at least one optional field having all its keywords matched, will be returned (i.e., for "-c n/James -o po/Principal", find result will contain everyone who is both named "James" and has position "Principal").
-
-**Fuzzy search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
-* Minor typos are tolerated. A keyword matches a field if it is within **2 edits** (insertions, deletions, or substitutions) of any word in that field. For example, `n/Yeaa` will still match `Alex Yeoh` because `Yeaa` is 2 edits away from `Yeoh`.
-* A keyword with spaces (e.g. `n/Alex Yeaa`) is split into parts; every part must independently fuzzy-match some word in the field.
-* Exact matches always take priority. Results are sorted so that **closer matches appear first** — a contact whose name differs by 0 edits ranks above one that differs by 1 or 2 edits.
-* Fields not listed above (tag `t/`, major `m/`, position `po/`, group `g/`, available hours `h/`) use exact substring matching only and are not affected by the fuzzy sort.
-
-Examples:
-* `find n/John` returns `john` and `John Doe`
-* `find n/John n/Doe` returns only contacts whose name matches **both** `John` and `Doe`, e.g. `John Doe`
-* `find n/alex n/david` returns contacts whose name matches both `alex` and `david` (e.g. someone named `Alex David`); to find `Alex Yeoh` **or** `David Li`, use separate `find` commands or use different prefixes<br>
 | Argument | Description |
 |---|---|
 | `PREFIX/KEYWORD` | What to search for. Use `n/` for name, `p/` for phone, `e/` for email, `a/` for address, `g/` for group, `po/` for position, `m/` for major, `t/` for tag, `h/` for available hours. |
-| `-c` (flag) | Makes the following keywords **compulsory** — only contacts matching all `-c` fields are shown. |
-| `-o` (flag) | Makes the following keywords **optional** — contacts matching at least one `-o` field are shown. |
+| `-c` (flag) | **Compulsory / all-match** — ALL keywords under `-c` must match their respective fields. |
+| `-o` (flag) | **Optional / any-match** — ANY one keyword under `-o` matching its field is sufficient. |
+
+**Arguments:**
+* At least one keyword must be supplied, each preceded by its prefix (e.g., `n/`).
+* Flags control matching behaviour for the keywords that follow them. By default (no flag) keywords are treated as `-o` (any-match).
+* Flags must be surrounded by spaces. Where input can be read as both a flag and a keyword, it is treated as a flag.
+* When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
+* A contact is returned when **all** `-c` conditions are satisfied **AND** (if `-o` keywords exist) at least one `-o` field has a matching keyword.
 
 **How matching works:**
 * Search is case-insensitive — `hans` matches `Hans`.
@@ -262,6 +249,14 @@ Examples:
 * Repeated flags with no meaningful content between them are allowed. Blank space and intermediate chunks without any prefixes are ignored by later parsing.
 * A valid flag marks the end of the previous flagged segment. Once a valid flag appears, subsequent text is interpreted under the new flag.
 * Search input is intentionally permissive. The parser does not restrict what kind of value may be entered under each prefix. For example, searching for phone number `xyz` is permitted.
+* Under `-c`: **all** keywords for the same field must match (AND semantics). e.g. `-c n/John n/Doe` only returns contacts whose name matches both `John` **and** `Doe`.
+* Under `-o`: **any** keyword for the same field matching is enough (OR semantics). e.g. `-o n/Alex n/David` returns contacts whose name contains `Alex` **or** `David`.
+* No flag is equivalent to `-o`.
+
+**Fuzzy search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
+* Minor typos are tolerated. A keyword matches a field if it is within **2 edits** (insertions, deletions, or substitutions) of any word in that field. For example, `n/Yeaa` will still match `Alex Yeoh` because `Yeaa` is 2 edits away from `Yeoh`.
+* Exact matches always take priority. Results are sorted so that **closer matches appear first**.
+* Fields not listed above (tag `t/`, major `m/`, position `po/`, group `g/`, available hours `h/`) use exact substring matching only.
 
 **Examples:**
 
@@ -269,14 +264,21 @@ Examples:
   ```
   find n/John
   ```
-  *Outcome: Shows all contacts whose name contains the word "John" (e.g. `John Doe`, `John Smith`).*
+  *Outcome: Shows all contacts whose name contains "John" (e.g. `John Doe`, `John Smith`).*
 
-* Find contacts named Alex or David:
+* Find contacts named Alex **or** David (any-match, default):
   ```
   find n/Alex n/David
   ```
   *Outcome: Shows `Alex Yeoh`, `David Li`, and anyone else named Alex or David.*
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+
+* Find contacts named both "John" **and** "Doe" (all-match):
+  ```
+  find -c n/John n/Doe
+  ```
+  *Outcome: Shows only contacts whose name contains both `John` and `Doe`, e.g. `John Doe`.*
+
 * `find n/Alex Yeaa` returns `Alex Yeoh` (2 edits: `Yeaa` → `Yeoh`)
 
 * Find contacts in the CS2103T group, with the optional tag `project` or `friend`, but with typos in between:

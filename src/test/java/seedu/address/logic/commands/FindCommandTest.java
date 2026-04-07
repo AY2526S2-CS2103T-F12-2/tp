@@ -118,14 +118,49 @@ public class FindCommandTest {
     }
 
     /**
-     * Multiple keywords for the same field (AND semantics) narrows results to persons
-     * whose name contains ALL keywords.
+     * Optional (-o) multi-word keyword: any space-separated part matching is sufficient.
+     * Mirrors the bug scenario: {@code find -o n/Alice OOO} should match ALICE because
+     * "Alice" matches even though "OOO" does not.
+     */
+    @Test
+    public void execute_optionalMultiwordKeyword_partialPartMatches() {
+        // Single keyword "Alice OOO" — "Alice" matches ALICE; "OOO" matches nobody.
+        // With -o any-match semantics, ALICE should still be found.
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(Collections.emptyList(), Collections.singletonList("Alice OOO"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(Collections.singletonList(ALICE), model.getDisplayedPersonList());
+    }
+
+    /**
+     * Compulsory (-c) keywords use all-match (AND) semantics — only persons whose name
+     * contains ALL keywords are returned.
      */
     @Test
     public void execute_andSemanticsKeywords_singlePersonFound() {
-        // "Carl" AND "Kurz" must both be in the name — only CARL matches.
+        // Compulsory "Carl" AND "Kurz" must both be in the name — only CARL matches.
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate("Carl Kurz");
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(Arrays.asList("Carl", "Kurz"), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
