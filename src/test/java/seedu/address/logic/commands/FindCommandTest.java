@@ -122,7 +122,7 @@ public class FindCommandTest {
      * whose name contains ALL keywords.
      */
     @Test
-    public void execute_multipleKeywords_andSemantics_singlePersonFound() {
+    public void execute_andSemanticsKeywords_singlePersonFound() {
         // "Carl" AND "Kurz" must both be in the name — only CARL matches.
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("Carl Kurz");
@@ -219,7 +219,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalNameKeyword_caseInsensitive_multiplePersonsFound() {
+    public void execute_optionalNameKeyword_caseInsensitive() {
         // "mEiEr" case-insensitively matches BENSON and DANIEL exactly, and ELLE's "Meyer" fuzzily (dist 1).
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
         PersonMatchesKeywordsPredicate predicate = preparePredicate("mEiEr");
