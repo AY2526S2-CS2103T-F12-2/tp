@@ -252,13 +252,28 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
   ```
   *Outcome: Shows `Alex Yeoh`, `David Li`, and anyone else named Alex or David.*
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+--------------------------------------------------------------------------------------------------------------------
 
-* Find contacts who are compulsorily named James and optionally hold the position of Principal:
-  ```
-  find -c n/James -o po/Principal
-  ```
-  *Outcome: Shows only contacts named James who are also Principals.*
+### Scheduling a meeting : `meet`
 
+Creates a meeting at a specific time with contacts who satisfy your filters and are available in that time slot.
+
+Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
+
+* `DESCRIPTION` is required and must come first as plain text (without a prefix).
+* `h/START-END` is required and must appear exactly once.
+* `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, today's date is used.
+* `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
+* If no filters are provided, all contacts are checked for availability.
+* Time format must be valid (e.g., `0900-1000`). Date format must be valid (e.g., `2026-04-01`).
+* Empty keywords are not allowed (e.g., `n/` is invalid).
+* If a contact has no available hours set, they are treated as available by default.
+* The command fails if no available contacts match the filters.
+* The command also fails if an identical meeting already exists.
+
+Examples:
+* `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
+* `meet Daily standup h/0900-1000`
 --------------------------------------------------------------------------------------------------------------------
 
 ### Deleting a contact : `delete`
@@ -669,6 +684,7 @@ Action | Format, Examples
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
 **Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
+**Meet** | `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
 **Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
 **Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`
 **Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
