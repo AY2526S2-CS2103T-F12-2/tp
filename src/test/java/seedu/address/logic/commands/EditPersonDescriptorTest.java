@@ -55,6 +55,43 @@ public class EditPersonDescriptorTest {
         // different tags -> returns false
         editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different positions -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withPositions("Mentor").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different majors -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withMajors("ComputerScience").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different groups -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withGroups("CS2103").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different available hours -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).withAvailableHours("0900-1000").build();
+        assertFalse(DESC_AMY.equals(editedAmy));
+
+        // different flags -> returns false
+        editedAmy = new EditPersonDescriptorBuilder(DESC_AMY).build();
+        editedAmy.setEditFlag(EditFlag.APPEND);
+        assertFalse(DESC_AMY.equals(editedAmy));
+    }
+
+    @Test
+    public void isAnyFieldEdited() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptor();
+        assertFalse(descriptor.isAnyFieldEdited());
+
+        descriptor.setEditFlag(EditFlag.APPEND);
+        assertFalse(descriptor.isAnyFieldEdited());
+
+        descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();
+        assertTrue(descriptor.isAnyFieldEdited());
+
+        // Empty tag set is used to reset tags, so this should still count as edited.
+        descriptor = new EditPersonDescriptorBuilder().withTags().build();
+        assertTrue(descriptor.isAnyFieldEdited());
     }
 
     @Test

@@ -2,7 +2,9 @@ package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
@@ -14,6 +16,9 @@ import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +37,12 @@ import seedu.address.testutil.PersonBuilder;
  * Contains integration tests (interaction with the Model) and unit tests for EditCommand.
  */
 public class EditCommandTest {
+
+    private static final String APPEND_TAG = "teammate";
+    private static final String APPEND_POSITION = "Mentor";
+    private static final String APPEND_MAJOR = "ComputerScience";
+    private static final String APPEND_GROUP = "CS2103";
+    private static final String APPEND_TIME_SLOT = "1400-1600";
 
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
@@ -78,6 +89,81 @@ public class EditCommandTest {
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_appendFlagCollectionsSpecifiedUnfilteredList_success() {
+        Person personToEdit = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withTags(APPEND_TAG)
+                .withPositions(APPEND_POSITION)
+                .withMajors(APPEND_MAJOR)
+                .withGroups(APPEND_GROUP)
+                .withAvailableHours(APPEND_TIME_SLOT)
+                .build();
+        descriptor.setEditFlag(EditFlag.APPEND);
+
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        Person editedPerson = new PersonBuilder(personToEdit)
+                .withTags("friends", APPEND_TAG)
+                .withPositions(APPEND_POSITION)
+                .withMajors(APPEND_MAJOR)
+                .withGroups("bestie", APPEND_GROUP)
+                .withAvailableHours(APPEND_TIME_SLOT)
+                .build();
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personToEdit, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_appendFlagWithoutCollectionsUnfilteredList_success() {
+        Person personToEdit = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withName(VALID_NAME_BOB)
+                .build();
+        descriptor.setEditFlag(EditFlag.APPEND);
+
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        Person editedPerson = new PersonBuilder(personToEdit).withName(VALID_NAME_BOB).build();
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personToEdit, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_resetFlagCollectionsSpecifiedUnfilteredList_success() {
+        Person personToEdit = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        System.out.println(personToEdit);
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withTags(APPEND_TAG)
+                .withGroups(APPEND_GROUP)
+                .build();
+        descriptor.setEditFlag(EditFlag.RESET);
+
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        Person editedPerson = new PersonBuilder(personToEdit)
+                .withTags(APPEND_TAG)
+                .withGroups(APPEND_GROUP)
+                .build();
+
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        expectedModel.setPerson(personToEdit, editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -144,6 +230,20 @@ public class EditCommandTest {
                 new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build());
 
         assertCommandFailure(editCommand, model, Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void createEditedPerson_nullPerson_assertionFailure() throws Exception {
+        assumeTrue(EditCommand.class.desiredAssertionStatus());
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();
+        Method createEditedPerson = EditCommand.class.getDeclaredMethod(
+                "createEditedPerson", Person.class, EditPersonDescriptor.class);
+        createEditedPerson.setAccessible(true);
+
+        InvocationTargetException thrown =
+                assertThrows(InvocationTargetException.class, () -> createEditedPerson.invoke(null, null, descriptor));
+        assertTrue(thrown.getCause() instanceof AssertionError);
     }
 
     @Test
