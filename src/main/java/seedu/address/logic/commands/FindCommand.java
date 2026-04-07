@@ -2,9 +2,12 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Comparator;
+
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.model.Model;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
@@ -38,12 +41,16 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Executes the find command and updates the filtered list.
+     * Executes the find command, updates the filtered list, and sorts results by fuzzy distance.
      */
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
         model.updateFilteredPersonList(predicate);
+        Comparator<Person> fuzzyComparator = Comparator
+                .comparing((Person p) -> !p.isPinned())
+                .thenComparingInt(predicate::computeFuzzyScore);
+        model.updateSortComparator(fuzzyComparator);
         return new CommandResult(
                 String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, model.getDisplayedPersonList().size()));
     }

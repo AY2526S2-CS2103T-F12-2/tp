@@ -1,5 +1,6 @@
 package seedu.address.commons.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -121,6 +122,144 @@ public class StringUtilTest {
 
         // Matches multiple words in sentence
         assertTrue(StringUtil.containsWordIgnoreCase("AAA bBb ccc  bbb", "bbB"));
+    }
+
+    //---------------- Tests for levenshteinDistance --------------------------------------
+
+    @Test
+    public void levenshteinDistance_nullInputs_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> StringUtil.levenshteinDistance(null, "abc"));
+        assertThrows(NullPointerException.class, () -> StringUtil.levenshteinDistance("abc", null));
+    }
+
+    @Test
+    public void levenshteinDistance_identicalStrings_returnsZero() {
+        assertEquals(0, StringUtil.levenshteinDistance("", ""));
+        assertEquals(0, StringUtil.levenshteinDistance("abc", "abc"));
+        assertEquals(0, StringUtil.levenshteinDistance("ABC", "abc")); // case-insensitive
+    }
+
+    @Test
+    public void levenshteinDistance_oneEmpty_returnsLengthOfOther() {
+        assertEquals(3, StringUtil.levenshteinDistance("abc", ""));
+        assertEquals(3, StringUtil.levenshteinDistance("", "abc"));
+    }
+
+    @Test
+    public void levenshteinDistance_substitution_returnsCorrectCount() {
+        assertEquals(1, StringUtil.levenshteinDistance("abc", "axc")); // 1 substitution
+        assertEquals(2, StringUtil.levenshteinDistance("abc", "xxc")); // 2 substitutions
+    }
+
+    @Test
+    public void levenshteinDistance_insertionDeletion_returnsCorrectCount() {
+        assertEquals(1, StringUtil.levenshteinDistance("abc", "ab")); // 1 deletion
+        assertEquals(1, StringUtil.levenshteinDistance("ab", "abc")); // 1 insertion
+        assertEquals(2, StringUtil.levenshteinDistance("abc", "a")); // 2 deletions
+    }
+
+    //---------------- Tests for fuzzyMatchesWord --------------------------------------
+
+    @Test
+    public void fuzzyMatchesWord_nullInputs_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> StringUtil.fuzzyMatchesWord(null, "abc", 2));
+        assertThrows(NullPointerException.class, () -> StringUtil.fuzzyMatchesWord("abc", null, 2));
+    }
+
+    @Test
+    public void fuzzyMatchesWord_emptyKeyword_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> StringUtil.fuzzyMatchesWord("abc", "  ", 2));
+    }
+
+    @Test
+    public void fuzzyMatchesWord_emptyText_returnsFalse() {
+        assertFalse(StringUtil.fuzzyMatchesWord("", "abc", 2));
+        assertFalse(StringUtil.fuzzyMatchesWord("   ", "abc", 2));
+    }
+
+    @Test
+    public void fuzzyMatchesWord_exactMatch_returnsTrue() {
+        assertTrue(StringUtil.fuzzyMatchesWord("Alice", "Alice", 2));
+        assertTrue(StringUtil.fuzzyMatchesWord("Alice Bob", "bob", 2)); // case-insensitive
+    }
+
+    @Test
+    public void fuzzyMatchesWord_withinDistance_returnsTrue() {
+        // 1 typo in "Alce" vs "Alice" -> distance 1
+        assertTrue(StringUtil.fuzzyMatchesWord("Alce", "Alice", 2));
+        // 2 typos in "Alce Bob" keyword "Alc" -> "Alce" has distance 1
+        assertTrue(StringUtil.fuzzyMatchesWord("Alice Bob", "Alce", 2));
+        // keyword "Benson" vs text token "Bnson" -> distance 1
+        assertTrue(StringUtil.fuzzyMatchesWord("Bnson Meier", "Benson", 2));
+    }
+
+    @Test
+    public void fuzzyMatchesWord_beyondDistance_returnsFalse() {
+        // "xyz" vs "Alice" -> large distance
+        assertFalse(StringUtil.fuzzyMatchesWord("Alice", "xyz", 2));
+        // "Alicexx" vs "Alice" -> distance 2, should match
+        assertTrue(StringUtil.fuzzyMatchesWord("Alicexx", "Alice", 2));
+        // "Alicexxx" vs "Alice" -> distance 3, beyond max
+        assertFalse(StringUtil.fuzzyMatchesWord("Alicexxx", "Alice", 2));
+    }
+
+    @Test
+    public void fuzzyMatchesWord_multiWordKeyword_allPartsMustMatch() {
+        // "Alex Yeaa" -> parts ["Alex","Yeaa"]; text "Alex Yeoh" -> tokens ["Alex","Yeoh"]
+        // "Alex" matches "Alex" (dist 0), "Yeaa" matches "Yeoh" (dist 2) -> true
+        assertTrue(StringUtil.fuzzyMatchesWord("Alex Yeoh", "Alex Yeaa", 2));
+
+        // "Alex Zzzzz" -> "Zzzzz" vs any token in "Alex Yeoh" exceeds distance 2 -> false
+        assertFalse(StringUtil.fuzzyMatchesWord("Alex Yeoh", "Alex Zzzzz", 2));
+
+        // Single-part keyword still works as before
+        assertTrue(StringUtil.fuzzyMatchesWord("Alex Yeoh", "Yeaa", 2));
+    }
+
+    @Test
+    public void minFuzzyDistance_multiWordKeyword_returnsMaxPartDist() {
+        // "Alex Yeaa" vs "Alex Yeoh": "Alex"->dist 0, "Yeaa"->"Yeoh" dist 2 -> max = 2
+        assertEquals(2, StringUtil.minFuzzyDistance("Alex Yeoh", "Alex Yeaa"));
+        // exact multi-word substring -> 0
+        assertEquals(0, StringUtil.minFuzzyDistance("Alex Yeoh", "Alex Yeoh"));
+    }
+
+    //---------------- Tests for minFuzzyDistance --------------------------------------
+
+    @Test
+    public void minFuzzyDistance_nullInputs_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> StringUtil.minFuzzyDistance(null, "abc"));
+        assertThrows(NullPointerException.class, () -> StringUtil.minFuzzyDistance("abc", null));
+    }
+
+    @Test
+    public void minFuzzyDistance_substringMatch_returnsZero() {
+        // exact substring => distance 0
+        assertEquals(0, StringUtil.minFuzzyDistance("Alice Bob", "Alice"));
+        assertEquals(0, StringUtil.minFuzzyDistance("wall street", "wall"));
+        assertEquals(0, StringUtil.minFuzzyDistance("94351253", "9435")); // phone prefix
+        assertEquals(0, StringUtil.minFuzzyDistance("Werner", "ern")); // partial word
+    }
+
+    @Test
+    public void minFuzzyDistance_exactWordMatch_returnsZero() {
+        // exact word (which is also exact substring) => 0
+        assertEquals(0, StringUtil.minFuzzyDistance("Alice Bob", "Bob"));
+    }
+
+    @Test
+    public void minFuzzyDistance_fuzzyTokenMatch_returnsDistance() {
+        // "Alce" vs "Alice" => distance 1
+        assertEquals(1, StringUtil.minFuzzyDistance("Alce Bob", "Alice"));
+        // "Kunz" vs "Kurz" => distance 1
+        assertEquals(1, StringUtil.minFuzzyDistance("Carl Kurz", "Kunz"));
+    }
+
+    @Test
+    public void minFuzzyDistance_noMatch_returnsLargeValue() {
+        // "xyz" very different from "Alice" or "Bob"
+        int dist = StringUtil.minFuzzyDistance("Alice Bob", "xyz");
+        assertTrue(dist > 2);
     }
 
     //---------------- Tests for getDetails --------------------------------------

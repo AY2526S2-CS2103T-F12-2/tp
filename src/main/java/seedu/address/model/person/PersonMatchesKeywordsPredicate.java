@@ -2,14 +2,17 @@ package seedu.address.model.person;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.OptionalInt;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import seedu.address.commons.util.StringUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.TimeSlot;
 
 /**
- * Tests that a {@code Person}'s fields match any of the provided keywords.
+ * Tests that a {@code Person}'s fields match all of the provided keywords.
  */
 public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     private final List<String> compulsoryNameKeywords;
@@ -89,7 +92,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     /**
-     * Returns true if all compulsory fields are matched, and at least some optional fields are matched.
+     * Returns true if all compulsory-field keywords are matched, and (when optional keywords exist)
+     * at least one optional field has all its keywords matched.
      */
     @Override
     public boolean test(Person person) {
@@ -129,99 +133,106 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     /**
-     * Returns true if any name keyword matches the person's name.
+     * Returns true if all name keywords match the person's name (exact or fuzzy).
      */
     private boolean matchesName(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryNameKeywords : optionalNameKeywords;
         return keywords.isEmpty()
                 ? isCompulsory // For empty compulsory fields they are matched by default.
                 : keywords.stream()
-                .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword));
+                .allMatch(keyword -> StringUtil.fuzzyMatchesWord(person.getName().fullName, keyword,
+                        StringUtil.FUZZY_MATCH_MAX_DISTANCE));
     }
 
     /**
-     * Returns true if any address keyword matches the person's address.
+     * Returns true if all address keywords match the person's address (exact or fuzzy).
      */
     private boolean matchesAddress(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryAddressKeywords : optionalAddressKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
                 : keywords.stream()
-                .anyMatch(keyword -> containsIgnoreCase(person.getAddress().value, keyword));
+                .allMatch(keyword -> containsIgnoreCase(person.getAddress().value, keyword)
+                        || StringUtil.fuzzyMatchesWord(person.getAddress().value, keyword,
+                                StringUtil.FUZZY_MATCH_MAX_DISTANCE));
     }
 
     /**
-     * Returns true if any phone keyword matches the person's phone.
+     * Returns true if all phone keywords match the person's phone (exact or fuzzy).
      */
     private boolean matchesPhone(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryPhoneKeywords : optionalPhoneKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
                 : keywords.stream()
-                .anyMatch(keyword -> containsIgnoreCase(person.getPhone().value, keyword));
+                .allMatch(keyword -> containsIgnoreCase(person.getPhone().value, keyword)
+                        || StringUtil.fuzzyMatchesWord(person.getPhone().value, keyword,
+                                StringUtil.FUZZY_MATCH_MAX_DISTANCE));
     }
 
     /**
-     * Returns true if any major keyword matches the person's majors.
+     * Returns true if all major keywords each match at least one of the person's majors.
      */
     private boolean matchesMajor(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryMajorKeywords : optionalMajorKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
-                : person.getMajors().stream()
-                .anyMatch(major -> keywords.stream()
-                        .anyMatch(keyword -> containsIgnoreCase(major.value, keyword)));
+                : keywords.stream()
+                .allMatch(keyword -> person.getMajors().stream()
+                        .anyMatch(major -> containsIgnoreCase(major.value, keyword)));
     }
 
     /**
-     * Returns true if any email keyword matches the person's email.
+     * Returns true if all email keywords match the person's email (exact or fuzzy).
      */
     private boolean matchesEmail(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryEmailKeywords : optionalEmailKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
                 : keywords.stream()
-                .anyMatch(keyword -> containsIgnoreCase(person.getEmail().value, keyword));
+                .allMatch(keyword -> containsIgnoreCase(person.getEmail().value, keyword)
+                        || StringUtil.fuzzyMatchesWord(person.getEmail().value, keyword,
+                                StringUtil.FUZZY_MATCH_MAX_DISTANCE));
     }
 
     /**
-     * Returns true if any tag keyword matches the person's tags.
+     * Returns true if all tag keywords each match at least one of the person's tags (exact substring only).
      */
     private boolean matchesTags(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryTagKeywords : optionalTagKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
-                : person.getTags().stream()
-                .anyMatch(tag -> keywords.stream()
-                        .anyMatch(keyword -> containsIgnoreCase(tag.tagName, keyword)));
+                : keywords.stream()
+                .allMatch(keyword -> person.getTags().stream()
+                        .anyMatch(tag -> containsIgnoreCase(tag.tagName, keyword)));
     }
 
     /**
-     * Returns true if any position keyword matches the person's positions.
+     * Returns true if all position keywords each match at least one of the person's positions.
      */
     private boolean matchesPositions(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryPositionKeywords : optionalPositionKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
-                : person.getPositions().stream()
-                .anyMatch(position -> keywords.stream()
-                        .anyMatch(keyword -> containsIgnoreCase(position.value, keyword)));
+                : keywords.stream()
+                .allMatch(keyword -> person.getPositions().stream()
+                        .anyMatch(position -> containsIgnoreCase(position.value, keyword)));
     }
 
     /**
-     * Returns true if any group keyword matches the person's groups.
+     * Returns true if all group keywords each match at least one of the person's groups.
      */
     private boolean matchesGroups(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryGroupKeywords : optionalGroupKeywords;
         return keywords.isEmpty()
                 ? isCompulsory
-                : person.getGroups().stream()
-                .anyMatch(group -> keywords.stream()
-                        .anyMatch(keyword -> containsIgnoreCase(group.value, keyword)));
+                : keywords.stream()
+                .allMatch(keyword -> person.getGroups().stream()
+                        .anyMatch(group -> containsIgnoreCase(group.value, keyword)));
     }
 
     /**
-     * Returns true if any time/slot keyword matches the person's time slots.
+     * Returns true if all time/slot keywords each match at least one of the person's available hours.
      */
     private boolean matchesTimeSlot(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory ? compulsoryTimeSlotKeywords : optionalTimeSlotKeywords;
@@ -232,18 +243,52 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return true; // If person has no available hours, they are always free by default.
         }
 
-        return person.getAvailableHours().stream()
-                .anyMatch(duration -> keywords.stream()
-                        .anyMatch(keyword -> TimeSlot.isValidTimeSlot(keyword)
+        return keywords.stream()
+                .allMatch(keyword -> person.getAvailableHours().stream()
+                        .anyMatch(duration -> TimeSlot.isValidTimeSlot(keyword)
                                 ? TimeSlot.isSlotWithinTimeSlot(new TimeSlot(keyword), duration)
                                 : TimeSlot.isTimeWithinTimeSlot(TimeSlot.stringToTime(keyword), duration)));
     }
 
     /**
-     * Returns true if {@code sentence} contains {@code keyword}, ignoring case.
+     * Returns true if {@code sentence} contains {@code keyword} as a case-insensitive substring.
      */
     private boolean containsIgnoreCase(String sentence, String keyword) {
         return sentence.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Computes a fuzzy relevance score for {@code person} against name, phone, address, and email keywords.
+     * Returns the minimum Levenshtein distance across all those keyword-field pairs.
+     * An exact substring match scores 0; fuzzy matches score their edit distance.
+     * Returns 0 if there are no fuzzy-relevant keywords.
+     */
+    public int computeFuzzyScore(Person person) {
+        boolean hasFuzzyKeywords = !compulsoryNameKeywords.isEmpty() || !optionalNameKeywords.isEmpty()
+                || !compulsoryPhoneKeywords.isEmpty() || !optionalPhoneKeywords.isEmpty()
+                || !compulsoryAddressKeywords.isEmpty() || !optionalAddressKeywords.isEmpty()
+                || !compulsoryEmailKeywords.isEmpty() || !optionalEmailKeywords.isEmpty();
+        if (!hasFuzzyKeywords) {
+            return 0;
+        }
+        OptionalInt nameMin = Stream.concat(compulsoryNameKeywords.stream(), optionalNameKeywords.stream())
+                .mapToInt(kw -> StringUtil.minFuzzyDistance(person.getName().fullName, kw))
+                .min();
+        OptionalInt phoneMin = Stream.concat(compulsoryPhoneKeywords.stream(), optionalPhoneKeywords.stream())
+                .mapToInt(kw -> StringUtil.minFuzzyDistance(person.getPhone().value, kw))
+                .min();
+        OptionalInt addressMin = Stream.concat(compulsoryAddressKeywords.stream(), optionalAddressKeywords.stream())
+                .mapToInt(kw -> StringUtil.minFuzzyDistance(person.getAddress().value, kw))
+                .min();
+        OptionalInt emailMin = Stream.concat(compulsoryEmailKeywords.stream(), optionalEmailKeywords.stream())
+                .mapToInt(kw -> StringUtil.minFuzzyDistance(person.getEmail().value, kw))
+                .min();
+        return IntStream.of(
+                nameMin.orElse(Integer.MAX_VALUE),
+                phoneMin.orElse(Integer.MAX_VALUE),
+                addressMin.orElse(Integer.MAX_VALUE),
+                emailMin.orElse(Integer.MAX_VALUE))
+                .min().getAsInt();
     }
 
     private boolean areAllOptionalKeywordsEmpty() {
