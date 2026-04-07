@@ -59,7 +59,6 @@ public class MeetCommandTest {
     @Test
     public void execute_noMatchingAttendees_throwsCommandException() {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-
         MeetCommand meetCommand = new MeetCommand(
                 "Project sync",
                 new Date("2026-04-01"),
@@ -79,7 +78,6 @@ public class MeetCommandTest {
     @Test
     public void execute_duplicateMeeting_throwsCommandException() {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-
         String description = "Project sync";
         Date date = new Date("2026-04-01");
         TimeSlot slot = new TimeSlot("1000-1100");

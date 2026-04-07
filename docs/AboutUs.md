@@ -17,7 +17,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 * Role: Developer
 
-### Zheng Junwei 
+### Zheng Junwei
 
 <img src="images/junwezheng.png" width="200px">
 

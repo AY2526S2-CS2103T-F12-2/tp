@@ -60,6 +60,12 @@ public interface Model {
     boolean hasPerson(Person person);
 
     /**
+     * Returns true if a person with the same identity as {@code person} exists in the address book,
+     * excluding {@code except}.
+     */
+    boolean hasPersonExcept(Person person, Person except);
+
+    /**
      * Returns true if a meeting with the same identity as {@code meeting} exists in the address book.
      */
     boolean hasMeeting(Meeting meeting);
