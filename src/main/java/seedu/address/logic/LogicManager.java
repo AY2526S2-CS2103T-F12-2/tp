@@ -51,12 +51,10 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         CommandResult commandResult;
-        boolean shouldAutoSave = true;
         Command command = addressBookParser.parseCommand(commandText);
         if (command instanceof StorageCommand) {
             StorageCommand storageCommand = (StorageCommand) command;
             commandResult = storageCommand.execute(model, storage);
-            shouldAutoSave = storageCommand.shouldAutoSaveAddressBook();
         } else {
             commandResult = command.execute(model);
         }
