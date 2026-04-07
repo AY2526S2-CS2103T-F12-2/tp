@@ -151,6 +151,7 @@ CampusLink automatically detects duplicate contacts. A contact is considered a d
   *Outcome: Betsy Crowe is added with two tags (`friend`, `criminal`) and her major set to `Law`.*
 
 ![Ui](images/features/addResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Listing all contacts : `list`
@@ -213,6 +214,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
   ```
   *Outcome: All tags are cleared from the 3rd contact.*
 ![Ui](images/features/editResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Finding contacts : `find`
@@ -252,6 +254,7 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
   ```
   *Outcome: Shows `Alex Yeoh`, `David Li`, and anyone else named Alex or David.*
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Scheduling a meeting : `meet`
@@ -274,6 +277,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 Examples:
 * `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
 * `meet Daily standup h/0900-1000`
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Deleting a contact : `delete`
@@ -309,6 +313,7 @@ Deletion is permanent. There is no undo. If you are unsure, consider using `find
   ```
   *Outcome: Searches for "Betsy", then deletes the 1st result (the first contact named Betsy).*
 ![Ui](images/features/deleteResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Pinning a contact : `pin`
@@ -344,6 +349,7 @@ Format: `pin INDEX`
   ```
   *Outcome: The 📌 icon is removed and the contact returns to their normal position in the list.*
 ![Ui](images/features/pinResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Sorting contacts : `sort`
@@ -387,6 +393,7 @@ Format: `sort CONDITION ORDER`
   ```
   *Outcome: The most recently added or imported contacts appear at the top.*
 ![Ui](images/features/sortResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Setting a profile picture : `pic`
@@ -435,6 +442,7 @@ Format: `toggle color mode`
 **What happens:** The entire app switches colour theme instantly. Your preference is saved and applied the next time you open CampusLink.
 ![Ui](images/features/darkMode.png)
 ![Ui](images/features/lightMode.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Clearing all contacts : `clear`
@@ -451,6 +459,7 @@ This action is permanent and cannot be undone. All contacts will be lost. Consid
 
 **What happens:** Every contact is deleted. The contact list becomes empty. No contacts can be recovered after this command.
 ![Ui](images/features/clearResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Setting a password : `setpassword`
@@ -483,6 +492,7 @@ If you enter the wrong password **3 times** on startup, **all contacts will be p
   *Outcome: The next time you open CampusLink, you will be prompted to enter `mySecret123` before the app loads.*
 ![Ui](images/features/passwordProtection.png)
 ![Ui](images/features/setPasswordProtection.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Removing password protection : `removepassword`
@@ -497,6 +507,7 @@ Format: `removepassword`
 
 * If no password is currently set, a message is shown and no changes are made.
 ![Ui](images/features/removePasswordProtection.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Exporting contacts : `export`
@@ -530,6 +541,7 @@ Format: `export fp/FILE_PATH`
   ```
   *Outcome: A file named `team_contacts.json` is created inside the `data` folder.*
 ![Ui](images/features/exportResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Importing contacts : `import`
@@ -569,6 +581,7 @@ Use `export` on one computer and `import` on another to transfer your contacts e
   ```
   *Outcome: Contacts from `team_contacts.json` inside the `data` folder are merged into your contact list.*
 ![Ui](images/features/importResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Setting a follow-up reminder : `followup`
@@ -604,6 +617,7 @@ Format: `followup INDEX f/NOTE`
   *Outcome: Any existing reminder on the 3rd contact is replaced with the new note.*
 ![Ui](images/features/setFollowupResult.png)
 ![Ui](images/features/followupResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Clearing a follow-up reminder : `clearfollowup`
