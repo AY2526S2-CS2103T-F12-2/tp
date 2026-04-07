@@ -29,7 +29,7 @@ import seedu.address.model.person.exceptions.WrongTimeFormatException;
  */
 public class FindCommandParser implements Parser<FindCommand> {
 
-    private static final Pattern FLAG_PATTERN = Pattern.compile("(?<= )-(c|o)(?= )");
+    private static final Pattern FLAG_PATTERN = Pattern.compile("(?:^| )-(c|o)(?= |$)");
 
     /**
      * Parses the given {@code String} of arguments in the context of the FindCommand
@@ -37,7 +37,6 @@ public class FindCommandParser implements Parser<FindCommand> {
      * @throws ParseException if the user input does not conform the expected format
      */
     public FindCommand parse(String args) throws ParseException {
-        args = " " + args;
         List<String> compulsoryNameKeywords = new ArrayList<>();
         List<String> compulsoryGroupKeywords = new ArrayList<>();
         List<String> compulsoryAddressKeywords = new ArrayList<>();

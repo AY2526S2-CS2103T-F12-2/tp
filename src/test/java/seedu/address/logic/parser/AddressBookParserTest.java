@@ -22,6 +22,7 @@ import seedu.address.logic.commands.ClearFollowUpCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditFlag;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.FindCommand;
@@ -84,6 +85,15 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_editWithResetFlag() throws Exception {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withTags("friend").build();
+        descriptor.setEditFlag(EditFlag.RESET);
+        EditCommand command = (EditCommand) parser.parseCommand(EditCommand.COMMAND_WORD + " -r "
+                + INDEX_FIRST_PERSON.getOneBased() + " t/friend");
+        assertEquals(new EditCommand(INDEX_FIRST_PERSON, descriptor), command);
+    }
+
+    @Test
     public void parseCommand_exit() throws Exception {
         assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD) instanceof ExitCommand);
         assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD + " 3") instanceof ExitCommand);
@@ -105,6 +115,22 @@ public class AddressBookParserTest {
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of())), command);
+    }
+
+    @Test
+    public void parseCommand_findWithFlagsAndTime() throws Exception {
+        FindCommand command = (FindCommand) parser.parseCommand(
+                FindCommand.COMMAND_WORD + " -c n/alice -o h/0900 h/1000-1100");
+        assertEquals(new FindCommand(new PersonMatchesKeywordsPredicate(
+                List.of("alice"), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of("0900", "1000-1100"))), command);
     }
 
     @Test

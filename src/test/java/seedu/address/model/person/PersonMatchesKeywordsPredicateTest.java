@@ -176,6 +176,51 @@ public class PersonMatchesKeywordsPredicateTest {
                 .withPhone("123456").withEmail("bob@example.com").withMajors("Math").withGroups("MA1521").build()));
     }
 
+    @Test
+    public void test_allKeywordListsEmpty_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().build()));
+    }
+
+    @Test
+    public void test_optionalTimeKeyword_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of("0900"));
+        assertTrue(predicate.test(new PersonBuilder().build()));
+    }
+
+    @Test
+    public void test_exactTimeMatch_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of("1000"));
+        assertTrue(predicate.test(new PersonBuilder().withAvailableHours("0900-1200").build()));
+    }
+
+    @Test
+    public void test_slotWithinAvailability_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of("1000-1100"));
+        assertTrue(predicate.test(new PersonBuilder().withAvailableHours("0900-1200").build()));
+    }
+
+    @Test
+    public void test_compulsoryTimeKeyword_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of("1300"), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withAvailableHours("0900-1200").build()));
+    }
+
     /**
      * Ensures the toString method formats all keyword lists.
      */
