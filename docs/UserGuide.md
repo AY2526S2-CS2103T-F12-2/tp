@@ -254,10 +254,14 @@ Examples:
 **How matching works:**
 * Search is case-insensitive — `hans` matches `Hans`.
 * For names, only full words match — `Han` does **not** match `Hans`.
-* Keywords for other fields (email, phone, etc.) are partial matches.
-* Multiple keywords for the **same prefix** must **all** match — `n/John n/Doe` requires both words to be present in the name.
-* When both `-c` and `-o` flags are used, a contact must satisfy **all** compulsory conditions **and at least one** optional field (with all its keywords matched) to appear in the results.
+* Keywords for other fields (email, phone, etc.) are partial matches. Note that space characters are included in the keyword, except for leading and trailing spaces.
+* When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
+* If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * If no flag is given, all keywords are treated as optional.
+* Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
+* Repeated flags with no meaningful content between them are allowed. Blank space and intermediate chunks without any prefixes are ignored by later parsing.
+* A valid flag marks the end of the previous flagged segment. Once a valid flag appears, subsequent text is interpreted under the new flag.
+* Search input is intentionally permissive. The parser does not restrict what kind of value may be entered under each prefix. For example, searching for phone number `xyz` is permitted.
 
 **Examples:**
 
@@ -274,6 +278,12 @@ Examples:
   *Outcome: Shows `Alex Yeoh`, `David Li`, and anyone else named Alex or David.*
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 * `find n/Alex Yeaa` returns `Alex Yeoh` (2 edits: `Yeaa` → `Yeoh`)
+
+* Find contacts in the CS2103T group, with the optional tag `project` or `friend`, but with typos in between:
+  ```
+  find -c g/CS2103T -o t/project t/friend -c -otypo
+  ```
+  *Outcome: Shows contacts who are in the `CS2103T` group **and** have at least one of `project` or `friend` tag.*
 
 --------------------------------------------------------------------------------------------------------------------
 
