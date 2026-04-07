@@ -11,24 +11,28 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
- * Finds and lists all persons in address book whose fields contain any of the argument keywords.
- * Keyword matching is case-insensitive and available hours match if time slot fits.
+ * Finds and lists all persons in address book whose fields match the given keywords.
+ * Keywords under -c (compulsory) use all-match (AND) semantics; under -o (optional) use any-match (OR) semantics.
+ * Matching is case-insensitive; name, phone, address and email also support fuzzy matching.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all persons whose names contain any of "
-            + "the specified keywords (case-insensitive), or whose groups match the provided group keyword.\n"
-            + "Flags: -c to show the following fields are compulsory, -o to show following fields are optional, "
-            + "by default all fields are optional (and contacts found should match at least 1 field).\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds persons whose fields match the given keywords.\n"
+            + "Flags:\n"
+            + "  -c (compulsory / all-match): ALL keywords under -c must match their respective fields.\n"
+            + "  -o (optional / any-match):   ANY keyword under -o matching its field is sufficient.\n"
+            + "  No flag defaults to -o (any-match).\n"
+            + "A contact is returned when all -c conditions are satisfied AND "
+            + "(if -o keywords exist) at least one -o field matches.\n"
             + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
             + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/AVAILABLE_HOURS]\n"
             + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
+            + "Example: " + COMMAND_WORD + " -c n/alice n/bob\n"
             + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
             + "Example: " + COMMAND_WORD + " g/CS2103T\n"
-            + "Note that [ -c/o ] pattern will be recognized to flags first, even if it is intended to be used"
-            + " as a search field.";
+            + "Note: [ -c ] and [ -o ] tokens are recognized as flags first.";
     public static final String MESSAGE_INVALID_KEYWORD = "Keywords should be nonempty.";
 
     private final PersonMatchesKeywordsPredicate predicate;
