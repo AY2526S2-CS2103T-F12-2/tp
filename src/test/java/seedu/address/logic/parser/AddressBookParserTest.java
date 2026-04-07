@@ -191,7 +191,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_inputExceedsMaxLength_throwsParseException() {
-        String tooLong = "a" + "b".repeat(1000);
+        String tooLong = "add n/" + "A".repeat(960) + " p/91234567 e/john@example.com a/123 Main Street";
+        assertTrue(tooLong.length() > 1000);
         assertThrows(ParseException.class, String.format(MESSAGE_COMMAND_LENGTH_EXCEEDED, 1000), () ->
                 parser.parseCommand(tooLong));
     }
