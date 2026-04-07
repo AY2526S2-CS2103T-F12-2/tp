@@ -9,6 +9,7 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.CARL;
+import static seedu.address.testutil.TypicalPersons.DANIEL;
 import static seedu.address.testutil.TypicalPersons.ELLE;
 import static seedu.address.testutil.TypicalPersons.FIONA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -101,16 +102,34 @@ public class FindCommandTest {
     }
 
     /**
-     * Ensures multiple keywords return the matching persons.
+     * A single keyword that appears in multiple persons' names returns all of them,
+     * including fuzzy matches (ELLE's "Meyer" is distance 1 from "Meier").
      */
     @Test
-    public void execute_multipleKeywords_multiplePersonsFound() {
+    public void execute_singleKeyword_multiplePersonsFound() {
+        // "Meier" exactly matches BENSON and DANIEL; fuzzy-matches ELLE's "Meyer" (dist 1).
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate("Kurz Elle Kunz");
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Meier");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
+        // BENSON and DANIEL have distance 0 (exact); ELLE has distance 1 — sorted accordingly.
+        assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
+    }
+
+    /**
+     * Multiple keywords for the same field (AND semantics) narrows results to persons
+     * whose name contains ALL keywords.
+     */
+    @Test
+    public void execute_andSemanticsKeywords_singlePersonFound() {
+        // "Carl" AND "Kurz" must both be in the name — only CARL matches.
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Carl Kurz");
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(Collections.singletonList(CARL), model.getDisplayedPersonList());
     }
 
     /**
@@ -200,13 +219,14 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_optionalNameKeyword_multiplePersonsFound() {
+    public void execute_optionalNameKeyword_caseInsensitive() {
+        // "mEiEr" case-insensitively matches BENSON and DANIEL exactly, and ELLE's "Meyer" fuzzily (dist 1).
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
-        PersonMatchesKeywordsPredicate predicate = preparePredicate("kUrZ eLlE kUnZ");
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("mEiEr");
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
+        assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
     }
 
     @Test
@@ -225,7 +245,8 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(BENSON, CARL), model.getDisplayedPersonList());
+        // CARL has address "wall street" (exact match, distance 0); BENSON matched via major only (distance > 0)
+        assertEquals(Arrays.asList(CARL, BENSON), model.getDisplayedPersonList());
     }
 
     @Test
@@ -249,7 +270,8 @@ public class FindCommandTest {
 
     @Test
     public void execute_compulsoryNameKeyword_singlePersonsFound() {
-        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1);
+        // "Kunz" also fuzzy-matches "Kurz" (Carl) with Levenshtein distance 1
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 2);
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(Collections.singletonList("Kunz"), Collections.emptyList(),
                         Collections.emptyList(), Collections.emptyList(),
@@ -263,7 +285,8 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(Arrays.asList(FIONA), model.getDisplayedPersonList());
+        // FIONA "Fiona Kunz" exact match (distance 0) comes before CARL "Carl Kurz" (distance 1)
+        assertEquals(Arrays.asList(FIONA, CARL), model.getDisplayedPersonList());
     }
 
     @Test
@@ -406,6 +429,29 @@ public class FindCommandTest {
         FindCommand command = new FindCommand(predicate);
 
         assertThrows(NullPointerException.class, () -> command.execute(null));
+    }
+
+    /**
+     * Ensures fuzzy search results are sorted by ascending Levenshtein distance.
+     */
+    @Test
+    public void execute_fuzzySearch_sortedByDistance() {
+        // "Kunz" exactly matches FIONA "Fiona Kunz" (distance 0)
+        // and fuzzily matches CARL "Carl Kurz" (distance 1, r->n substitution)
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), Collections.singletonList("Kunz"),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList(),
+                        Collections.emptyList(), Collections.emptyList());
+        FindCommand command = new FindCommand(predicate);
+        command.execute(model);
+        // closest match first: FIONA (distance 0) before CARL (distance 1)
+        assertEquals(Arrays.asList(FIONA, CARL), model.getDisplayedPersonList());
     }
 
     /**
