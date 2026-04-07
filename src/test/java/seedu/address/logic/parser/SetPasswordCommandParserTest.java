@@ -24,9 +24,21 @@ public class SetPasswordCommandParserTest {
     }
 
     @Test
-    public void parse_passwordWithSpaces_trimmed() {
+    public void parse_leadingTrailingSpacesTrimmed() {
         assertParseSuccess(parser, " " + PREFIX_PASSWORD + "  trimmed  ",
                 new SetPasswordCommand("trimmed"));
+    }
+
+    @Test
+    public void parse_passwordWithInternalSpaces_throwsParseException() {
+        assertParseFailure(parser, " " + PREFIX_PASSWORD + "12 n/",
+                SetPasswordCommand.MESSAGE_PASSWORD_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_passwordWithTabCharacter_throwsParseException() {
+        assertParseFailure(parser, " " + PREFIX_PASSWORD + "pass\tword",
+                SetPasswordCommand.MESSAGE_PASSWORD_CONSTRAINTS);
     }
 
     @Test
