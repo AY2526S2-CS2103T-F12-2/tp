@@ -3,7 +3,6 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_AVAILABLE_HOURS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -11,6 +10,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.FindFlag;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
@@ -29,7 +29,7 @@ import seedu.address.model.person.exceptions.WrongTimeFormatException;
  */
 public class FindCommandParser implements Parser<FindCommand> {
 
-    private static final Pattern FLAG_PATTERN = Pattern.compile("(?<= )-(c|o)(?= )");
+    private static final Pattern FLAG_PATTERN = Pattern.compile("(?:^| )-(c|o)(?= |$)");
 
     /**
      * Parses the given {@code String} of arguments in the context of the FindCommand
@@ -37,7 +37,6 @@ public class FindCommandParser implements Parser<FindCommand> {
      * @throws ParseException if the user input does not conform the expected format
      */
     public FindCommand parse(String args) throws ParseException {
-        args = " " + args;
         List<String> compulsoryNameKeywords = new ArrayList<>();
         List<String> compulsoryGroupKeywords = new ArrayList<>();
         List<String> compulsoryAddressKeywords = new ArrayList<>();
@@ -63,7 +62,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         for (FlaggedSegment segment : segments) {
             ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(
                     " " + segment.content(), PREFIX_NAME, PREFIX_GROUP, PREFIX_ADDRESS, PREFIX_PHONE,
-                    PREFIX_MAJOR, PREFIX_EMAIL, PREFIX_TAG, PREFIX_POSITION, PREFIX_AVAILABLE_HOURS);
+                    PREFIX_MAJOR, PREFIX_EMAIL, PREFIX_TAG, PREFIX_POSITION, PREFIX_TIME);
 
             if (segment.flag() == FindFlag.COMPULSORY) {
                 extractAllKeywords(compulsoryNameKeywords, compulsoryGroupKeywords, compulsoryAddressKeywords,
@@ -113,7 +112,7 @@ public class FindCommandParser implements Parser<FindCommand> {
         emailKeywords.addAll(argMultimap.getAllValues(PREFIX_EMAIL));
         tagKeywords.addAll(argMultimap.getAllValues(PREFIX_TAG));
         positionKeywords.addAll(argMultimap.getAllValues(PREFIX_POSITION));
-        availableHoursKeywords.addAll(argMultimap.getAllValues(PREFIX_AVAILABLE_HOURS));
+        availableHoursKeywords.addAll(argMultimap.getAllValues(PREFIX_TIME));
     }
 
     /**
@@ -164,11 +163,11 @@ public class FindCommandParser implements Parser<FindCommand> {
 
     private static void verifyValidAvailableHours(List<String> keywords) throws ParseException {
         for (String keyword : keywords) {
-            if (AvailableHours.isValidAvailableHours(keyword)) {
+            if (TimeSlot.isValidTimeSlot(keyword)) {
                 continue;
             }
             try {
-                AvailableHours.stringToTime(keyword);
+                TimeSlot.stringToTime(keyword);
             } catch (WrongTimeFormatException e) {
                 throw new ParseException(e.getMessage());
             }

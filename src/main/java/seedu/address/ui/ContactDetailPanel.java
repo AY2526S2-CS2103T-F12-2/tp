@@ -16,7 +16,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import seedu.address.model.person.AvailableHours;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
 
 /**
@@ -153,7 +153,7 @@ public class ContactDetailPanel extends UiPart<Region> {
 
         // Available Hours
         String availableHoursText = person.getAvailableHours().stream()
-                .map(AvailableHours::toString).collect(Collectors.joining(", "));
+                .map(TimeSlot::toString).collect(Collectors.joining(", "));
         availableHours.setText(availableHoursText.isEmpty() ? "N/A" : availableHoursText);
 
         // Positions

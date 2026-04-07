@@ -39,6 +39,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditFlag;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -207,5 +208,27 @@ public class EditCommandParserTest {
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
         assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_resetFlag_success() {
+        Index targetIndex = INDEX_FIRST_PERSON;
+        String userInput = "-r " + targetIndex.getOneBased() + TAG_DESC_FRIEND;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withTags(VALID_TAG_FRIEND).build();
+        descriptor.setEditFlag(EditFlag.RESET);
+        EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
+
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_invalidFlag_failure() {
+        assertParseFailure(parser, "-x 1" + NAME_DESC_AMY, MESSAGE_INVALID_FLAG_FORMAT);
+    }
+
+    @Test
+    public void parse_resetFlagWithoutEditFields_failure() {
+        assertParseFailure(parser, "-r 1", EditCommand.MESSAGE_NOT_EDITED);
     }
 }
