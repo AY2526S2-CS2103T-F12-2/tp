@@ -69,11 +69,11 @@
         </VBox>
 
         <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
-          <VBox fx:id="personList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+          <VBox fx:id="personList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500" minWidth="0">
             <padding>
               <Insets top="10" right="10" bottom="10" left="25" />
             </padding>
-            <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+            <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" maxWidth="Infinity" minWidth="0"/>
           </VBox>
 
           <StackPane fx:id="contactDetailPanelPlaceholder" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
