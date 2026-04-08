@@ -92,28 +92,12 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         FindKeywords findKeywords = FindKeywords.withMutableBuckets();
 
         // Meet filters are optional for textual fields.
-        findKeywords.addAllKeywords(false,
-                nameKeywords,
-                groupKeywords,
-                List.of(),
-                List.of(),
-                majorKeywords,
-                List.of(),
-                tagKeywords,
-                positionKeywords,
-                List.of());
+        findKeywords.addAllKeywords(false, nameKeywords, groupKeywords, List.of(), List.of(),
+                majorKeywords, List.of(), tagKeywords, positionKeywords, List.of());
 
         // Keep time as compulsory filter to preserve existing matching behavior.
-        findKeywords.addAllKeywords(true,
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)));
+        findKeywords.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)));
 
         return findKeywords;
     }

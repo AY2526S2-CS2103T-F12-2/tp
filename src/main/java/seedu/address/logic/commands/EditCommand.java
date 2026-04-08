@@ -57,7 +57,8 @@ public class EditCommand extends Command {
             + "[" + PREFIX_GROUP + "GROUP] "
             + "[" + PREFIX_POSITION + "POSITION] "
             + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Example: " + COMMAND_WORD + " 1 "
+            + "Note that no other non-blank content should precede the index or flag.\n"
+            + "Example: " + COMMAND_WORD + " -r 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
 

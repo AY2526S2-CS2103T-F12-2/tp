@@ -109,4 +109,17 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getAvailableHours().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
     }
+
+    @Test
+    public void copyConstructor_withAvailableHours_copiesAvailableHours() {
+        EditPersonDescriptor original = new EditPersonDescriptorBuilder()
+                .withAvailableHours("0900-1000")
+                .build();
+
+        EditPersonDescriptor copy = new EditPersonDescriptor(original);
+
+        assertEquals(original, copy);
+        assertTrue(copy.getAvailableHours().isPresent());
+        assertEquals(original.getAvailableHours().get(), copy.getAvailableHours().get());
+    }
 }
