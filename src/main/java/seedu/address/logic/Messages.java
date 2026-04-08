@@ -20,6 +20,7 @@ public class Messages {
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
     public static final String MESSAGE_INVALID_FLAG = "Wrong flag format! \n%1$s";
+    public static final String MESSAGE_COMMAND_LENGTH_EXCEEDED = "Command input cannot exceed %1$d characters.";
 
     /**
      * Returns an error message indicating the duplicate prefixes.
