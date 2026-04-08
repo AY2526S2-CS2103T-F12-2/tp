@@ -99,11 +99,6 @@ public class ContactDetailPanel extends UiPart<Region> {
         showEmptyState();
     }
 
-    public void setHandlers(Consumer<Integer> onDelete, Consumer<String> onEdit) {
-        this.onDelete = onDelete;
-        this.onEdit = onEdit;
-    }
-
     /**
      * Updates the detailed view to show the given person.
      * If the person is null, shows the empty state.

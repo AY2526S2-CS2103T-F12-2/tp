@@ -29,13 +29,30 @@ public class PersonListPanel extends UiPart<Region> {
      * Creates a {@code PersonListPanel} with the given {@code ObservableList}.
      */
     public PersonListPanel(ObservableList<Person> personList, Consumer<Integer> onDelete,
-                           Consumer<String> onEdit, Consumer<Integer> onPicUpload) {
+                           Consumer<String> onEdit, Consumer<Integer> onPicUpload, Consumer<Person> onSelectionChange) {
         super(FXML);
         this.onDelete = onDelete;
         this.onEdit = onEdit;
         this.onPicUpload = onPicUpload;
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+
+        personListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (onSelectionChange != null) {
+                onSelectionChange.accept(newValue);
+            }
+        });
+    }
+
+    /**
+     * Selects the first item in the list if available.
+     */
+    public void selectFirstIfAvailable() {
+        if (!personListView.getItems().isEmpty()) {
+            personListView.getSelectionModel().selectFirst();
+        } else {
+            personListView.getSelectionModel().clearSelection();
+        }
     }
 
     /**

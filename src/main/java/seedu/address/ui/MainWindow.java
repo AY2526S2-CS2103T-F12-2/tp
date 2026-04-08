@@ -57,6 +57,9 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane personListPanelPlaceholder;
 
     @FXML
+    private StackPane contactDetailPanelPlaceholder;
+
+    @FXML
     private StackPane resultDisplayPlaceholder;
 
     @FXML
@@ -125,6 +128,9 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
+        ContactDetailPanel contactDetailPanel = new ContactDetailPanel();
+        contactDetailPanelPlaceholder.getChildren().add(contactDetailPanel.getRoot());
+
         personListPanel = new PersonListPanel(logic.getDisplayedPersonList(), index -> {
             try {
                 executeCommand("delete " + index);
@@ -132,9 +138,22 @@ public class MainWindow extends UiPart<Stage> {
                 // error shown in resultDisplay
             }
         }, text -> commandBox.setCommandTextField(text),
-                index -> handlePicUpload(Index.fromOneBased(index)));
+                index -> handlePicUpload(Index.fromOneBased(index)),
+                person -> contactDetailPanel.updatePerson(person, logic.getDisplayedPersonList().indexOf(person) + 1));
 
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+
+        // Select first by default
+        personListPanel.selectFirstIfAvailable();
+
+        // Listen to changes in the list to re-select if needed
+        logic.getDisplayedPersonList().addListener((javafx.collections.ListChangeListener<Person>) c -> {
+            // Only force selection if nothing is selected or if we just started
+            if (personListPanel.getRoot().getScene() != null
+                    && getPersonListPanel().getRoot().lookup(".list-view").isFocused() == false) {
+                personListPanel.selectFirstIfAvailable();
+            }
+        });
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());

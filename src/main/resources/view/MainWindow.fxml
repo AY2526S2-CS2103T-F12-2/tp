@@ -68,12 +68,20 @@
           </StackPane>
         </VBox>
 
-        <VBox fx:id="personList" styleClass="pane-with-border" minWidth="340" prefWidth="340" VBox.vgrow="ALWAYS">
-          <padding>
-            <Insets top="10" right="25" bottom="10" left="25" />
-          </padding>
-          <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
-        </VBox>
+        <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+          <VBox fx:id="personList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+            <padding>
+              <Insets top="10" right="10" bottom="10" left="25" />
+            </padding>
+            <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+          </VBox>
+
+          <StackPane fx:id="contactDetailPanelPlaceholder" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+            <padding>
+              <Insets top="10" right="25" bottom="10" left="10" />
+            </padding>
+          </StackPane>
+        </HBox>
 
         <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
       </VBox>
