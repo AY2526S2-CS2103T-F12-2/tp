@@ -19,7 +19,7 @@
     <Label fx:id="pinIcon" text="📌" visible="false" StackPane.alignment="TOP_LEFT"
            style="-fx-font-size: 14px; -fx-translate-x: -8; -fx-translate-y: -8;"/>
   </StackPane>
-  
+
   <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS" minWidth="0" prefWidth="150" maxWidth="Infinity">
     <HBox spacing="5" alignment="CENTER_LEFT" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS">
       <Label fx:id="id" styleClass="cell_big_label" minWidth="0" HBox.hgrow="NEVER">
@@ -32,7 +32,7 @@
 
     <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" wrapText="true" minWidth="0" prefWidth="150" maxWidth="Infinity" />
     <FlowPane fx:id="tags" hgap="4" vgap="4" minWidth="0" prefWidth="150" maxWidth="Infinity" />
-    
+  
     <HBox spacing="4" alignment="CENTER_LEFT" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS">
       <Label text="Group:" styleClass="cell_small_label" style="-fx-opacity: 0.7;" minWidth="0" HBox.hgrow="NEVER">
         <minWidth>
