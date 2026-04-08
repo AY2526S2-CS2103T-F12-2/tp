@@ -118,6 +118,19 @@ public class FindCommandTest {
     }
 
     /**
+     * Ensures multiple keywords return the matching persons.
+     */
+    @Test
+    public void execute_multipleKeywords_multiplePersonsFound() {
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Kurz Elle Kunz");
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(Arrays.asList(CARL, ELLE, FIONA), model.getDisplayedPersonList());
+    }
+
+    /**
      * Optional (-o) multi-word keyword: any space-separated part matching is sufficient.
      * Mirrors the bug scenario: {@code find -o n/Alice OOO} should match ALICE because
      * "Alice" matches even though "OOO" does not.
