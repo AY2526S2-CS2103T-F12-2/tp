@@ -114,15 +114,18 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Replaces the given person {@code target} in the list with {@code editedPerson}.
      */
     public void setPerson(Person target, Person editedPerson) {
-        requireNonNull(editedPerson);
+        requireAllNonNull(target, editedPerson);
         persons.setPerson(target, editedPerson);
+        meetings.replaceAttendeeInMeetings(target, editedPerson);
     }
 
     /**
      * Removes {@code key} from this {@code AddressBook}.
      */
     public void removePerson(Person key) {
+        requireNonNull(key);
         persons.remove(key);
+        meetings.removeAttendeeFromMeetings(key);
     }
 
     /**

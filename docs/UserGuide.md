@@ -338,6 +338,10 @@ Format: `delete INDEX`
 |---|---|
 | `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
 
+* If the deleted contact appears in any meeting attendees list, they are removed from those meetings automatically.
+* If a meeting has no attendees left after removal, that meeting is deleted automatically.
+* Remaining meetings are reindexed to stay contiguous (1, 2, 3, ...), so there are no blank meeting numbers.
+ 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 Deletion is permanent. There is no undo. If you are unsure, consider using `find` first to confirm you have the right contact before deleting.
 </div>
@@ -501,7 +505,7 @@ Format: `clear`
 This action is permanent and cannot be undone. All contacts will be lost. Consider using `export` to save a backup first if you may need the data later.
 </div>
 
-**What happens:** Every contact is deleted. The contact list becomes empty. No contacts can be recovered after this command.
+**What happens:** Every contact and every meeting is deleted. Both lists become empty. No data can be recovered after this command.
 ![Ui](images/features/clearResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
