@@ -117,9 +117,9 @@ public class FindCommandTest {
         assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
     }
 
-        /**
-         * Ensures multiple keywords return the matching persons.
-         */
+    /**
+     * Ensures multiple keywords return the matching persons.
+     */
     @Test
     public void execute_multipleKeywords_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
