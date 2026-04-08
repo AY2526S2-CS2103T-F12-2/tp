@@ -85,6 +85,7 @@ public class Person {
         this.tags.addAll(tags);
         this.groups.addAll(groups);
         this.availableHours.addAll(availableHours);
+        assert this.availableHours.size() <= 1 : "A person should have at most one available hours.";
         this.followUp = followUp;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
         this.pinned = pinned;

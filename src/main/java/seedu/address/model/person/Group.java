@@ -37,7 +37,7 @@ public class Group {
 
     @Override
     public String toString() {
-        return value;
+        return '[' + value + ']';
     }
 
     @Override

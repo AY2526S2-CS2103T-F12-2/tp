@@ -6,6 +6,7 @@ import java.util.List;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.autocomplete.CommandSuggestion;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -59,4 +60,9 @@ public interface Logic {
      * Returns all persons in the address book that have a non-empty follow-up note.
      */
     List<Person> getPersonsWithFollowUp();
+
+    /**
+     * Returns command autocomplete suggestions for the current command-field text.
+     */
+    List<CommandSuggestion> getCommandAutocompleteSuggestions(String userInput);
 }

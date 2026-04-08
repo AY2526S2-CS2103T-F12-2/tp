@@ -83,6 +83,25 @@ The `UI` component,
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
 * depends on some classes in the `Model` component, as it displays `Person` object residing in the `Model`.
 
+#### CommandBox and autocomplete
+
+`CommandBox` wraps a JavaFX `TextField` and manages a `Popup` overlay for command autocompletion. The key internal members are:
+
+* `autocompletePopup` — a `Popup` that appears directly below the command field.
+* `suggestionListView` — a `ListView<CommandSuggestion>` inside the popup; each cell renders as `matchKey - description`.
+* `skipNextTextFieldAction` — set to `true` after a template is inserted so the next `onAction` event from the `TextField` does not execute the template text as a command.
+* `applyingAutocompleteTemplate` — set to `true` during `setText` calls made by the autocomplete system, preventing the text-change listener from clearing `skipNextTextFieldAction` prematurely.
+
+**Text-change listener:** Whenever the text field content changes, `updateAutocompletePopup(newText)` calls `Logic#getCommandAutocompleteSuggestions(String)` and either shows the popup (if suggestions exist) or hides it. The popup only appears while the user is still typing the command word — once a space is present, `CommandAutocomplete` returns an empty list and the popup is hidden.
+
+**Key-press filter:** `handleAutocompleteKeyPress` intercepts `↑`, `↓`, `Enter`, and `Esc` while the popup is showing:
+* `↑` / `↓` — move selection in the suggestion list.
+* `Enter` (current text matches the selected suggestion's `insertText` exactly) — hide the popup and execute the command via `handleCommandEntered()`.
+* `Enter` (current text does not match) — call `applySelectedSuggestion(true)`, which inserts the full `insertText` template into the field and sets `skipNextTextFieldAction = true` so the template is not immediately executed as a command.
+* `Esc` — hide the popup without applying a suggestion.
+
+**`handleCommandEntered`:** Fired by the FXML `onAction` binding when the user presses Enter with the popup closed. Checks `skipNextTextFieldAction`; if `true`, clears the flag and returns (a template was just inserted and the user still needs to fill it in). Otherwise, passes the command text to `commandExecutor`.
+
 ### Logic component
 
 **API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
@@ -503,6 +522,47 @@ The class diagram below shows the key classes involved:
 * If a picture is already set, the image is displayed (120×120 px); clicking the image replaces it.
 * The picture path is stored in the JSON data file and loaded on every subsequent launch.
 
+### Command autocomplete feature
+
+#### Overview
+
+As the user types in the command box, a dropdown popup displays matching command templates. This lets users discover available commands and their parameter formats without consulting the User Guide.
+
+#### Implementation
+
+The feature spans three classes:
+
+| Class | Package | Responsibility |
+|---|---|---|
+| `CommandSuggestion` | `logic.autocomplete` | Immutable value object holding `matchKey`, `description`, and `insertText` |
+| `CommandAutocomplete` | `logic.autocomplete` | Static catalog of all command templates; filters by prefix match |
+| `CommandBox` | `ui` | Manages the popup lifecycle and keyboard interactions |
+
+**`CommandSuggestion`** stores three strings:
+* `matchKey` — the command word used for prefix-matching (e.g. `"sort"`).
+* `description` — a short parameter summary displayed in the dropdown (e.g. `"CONDITION ORDER (e.g. firstname a)"`).
+* `insertText` — the full string inserted into the command field when the suggestion is applied (e.g. `"sort firstname a"`).
+
+**`CommandAutocomplete.getSuggestions(String userInput)`** filters the static `CATALOG`:
+1. Returns an empty list if `userInput` is `null`.
+2. Strips leading whitespace from the input.
+3. Returns an empty list if the stripped input contains a space — the popup is only relevant while the user is still typing the command word.
+4. Returns all catalog entries whose `matchKey` starts with the input prefix (case-insensitive), sorted alphabetically.
+
+**Popup lifecycle in `CommandBox`:**
+
+The sequence below shows the flow for a user typing `so` and pressing `Enter` to accept the `sort firstname a` suggestion:
+
+1. User types `s` → text listener → `updateAutocompletePopup("s")` → suggestions include `sort` and `setpassword` → popup shown.
+2. User types `o` → same flow → suggestions narrow to `sort` only.
+3. User presses `Enter` → `handleAutocompleteKeyPress` fires:
+   * Current text `"so"` ≠ `"sort firstname a"` (insertText) → `applySelectedSuggestion(true)` is called.
+   * `applyingAutocompleteTemplate` is set to `true`, the text field is set to `"sort firstname a"`, flag cleared. Popup hidden. `skipNextTextFieldAction = true`.
+4. Text listener fires with `"sort firstname a"` — because `applyingAutocompleteTemplate` was `true` during the `setText` call, `skipNextTextFieldAction` is **not** cleared.
+5. User edits the field (e.g. changes to `"sort lastname d"`). First keystroke → text listener → `applyingAutocompleteTemplate` is `false` → `skipNextTextFieldAction` reset to `false`. Input contains a space → no suggestions → popup stays hidden.
+6. User presses `Enter` → popup not showing → `handleAutocompleteKeyPress` returns early → FXML `onAction` fires `handleCommandEntered` → `skipNextTextFieldAction` is `false` → command is executed.
+
+For no-argument commands (e.g. `list`, `clear`), the `insertText` equals the `matchKey`. At step 3, the text already matches the suggestion exactly, so the command executes immediately on the first `Enter`.
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, configuration, dev-ops**

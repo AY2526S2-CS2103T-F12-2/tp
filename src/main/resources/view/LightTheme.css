@@ -345,6 +345,33 @@
     -fx-padding: 10 15;
 }
 
+.command-autocomplete-list {
+    -fx-background-color: #eeeeee;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+    -fx-font-family: "Segoe UI Light";
+    -fx-font-size: 11pt;
+}
+
+.command-autocomplete-list .list-cell {
+    -fx-background-color: #eeeeee;
+    -fx-text-fill: #111111;
+    -fx-padding: 4 8 4 8;
+}
+
+.command-autocomplete-list .list-cell:filled:selected,
+.command-autocomplete-list .list-cell:filled:selected:focused {
+    -fx-background-color: #2980b9;
+    -fx-text-fill: white;
+}
+
+.command-autocomplete-list .list-cell:filled:hover {
+    -fx-background-color: derive(#2980b9, 35%);
+}
+
 .logo-label {
     -fx-font-family: "Segoe UI Semibold";
     -fx-font-size: 32px;

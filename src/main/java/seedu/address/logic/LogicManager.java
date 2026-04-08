@@ -11,6 +11,8 @@ import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.autocomplete.CommandAutocomplete;
+import seedu.address.logic.autocomplete.CommandSuggestion;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.StorageCommand;
@@ -120,5 +122,10 @@ public class LogicManager implements Logic {
         return model.getAddressBook().getPersonList().stream()
                 .filter(p -> !p.getFollowUp().isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommandSuggestion> getCommandAutocompleteSuggestions(String userInput) {
+        return CommandAutocomplete.getSuggestions(userInput);
     }
 }
