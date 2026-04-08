@@ -37,7 +37,7 @@ public class Major {
 
     @Override
     public String toString() {
-        return value;
+        return '[' + value + ']';
     }
 
     @Override

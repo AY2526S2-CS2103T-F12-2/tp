@@ -233,30 +233,33 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
 
 **Arguments:**
 * At least one keyword must be supplied, each preceded by its prefix (e.g., `n/`).
-* Flags control matching behaviour for the keywords that follow them. By default (no flag) keywords are treated as `-o` (any-match).
+* Flags control matching behavior for the keywords that follow them. By default (no flag) keywords are treated as `-o` (any-match).
 * Flags must be surrounded by spaces. Where input can be read as both a flag and a keyword, it is treated as a flag.
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
-* A contact is returned when **all** `-c` conditions are satisfied **AND** (if `-o` keywords exist) at least one `-o` field has a matching keyword.
 
 **How matching works:**
 * Search is case-insensitive — `hans` matches `Hans`.
-* For names, only full words match — `Han` does **not** match `Hans`.
+* For names, only full words match — `H` does **not** match `Hans` (but typo is permitted, refer to **fuzzy search** below).
 * Keywords for other fields (email, phone, etc.) are partial matches. Note that space characters are included in the keyword, except for leading and trailing spaces.
 * When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
-* If no flag is given, all keywords are treated as optional.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
 * Repeated flags with no meaningful content between them are allowed. Blank space and intermediate chunks without any prefixes are ignored by later parsing.
 * A valid flag marks the end of the previous flagged segment. Once a valid flag appears, subsequent text is interpreted under the new flag.
 * Search input is intentionally permissive. The parser does not restrict what kind of value may be entered under each prefix. For example, searching for phone number `xyz` is permitted.
 * Under `-c`: **all** keywords for the same field must match (AND semantics). e.g. `-c n/John n/Doe` only returns contacts whose name matches both `John` **and** `Doe`.
 * Under `-o`: **any** keyword for the same field matching is enough (OR semantics). e.g. `-o n/Alex n/David` returns contacts whose name contains `Alex` **or** `David`.
-* No flag is equivalent to `-o`.
 
 **Fuzzy search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
-* Minor typos are tolerated. A keyword matches a field if it is within **2 edits** (insertions, deletions, or substitutions) of any word in that field. For example, `n/Yeaa` will still match `Alex Yeoh` because `Yeaa` is 2 edits away from `Yeoh`.
-* Exact matches always take priority. Results are sorted so that **closer matches appear first**.
-* Fields not listed above (tag `t/`, major `m/`, position `po/`, group `g/`, available hours `h/`) use exact substring matching only.
+
+*Implementation details (exact behavior):*
+* Fuzzy matching allows up to **2 edits** (insert, delete, substitute).
+* Matching is token-based: both the field value and keyword are split by spaces first.
+* For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
+* For name keyword (`n/`), only full-word fuzzy matches are considered. For other fields, substring matches are allowed (e.g. `p/123` matches `91234567`).
+* For `a/`, `p/`, `e/`, exact case-insensitive substring matches are also accepted, then fuzzy match is applied if exact match fails.
+* Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching.
+* Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
 **Examples:**
 
@@ -265,6 +268,12 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
   find n/John
   ```
   *Outcome: Shows all contacts whose name contains "John" (e.g. `John Doe`, `John Smith`).*
+
+* Find contacts with a typo in name (fuzzy search):
+  ```
+  find n/Alxe
+  ```
+  *Outcome: Still matches contacts like `Alex Yeoh` because `Alxe` is within the fuzzy match threshold.*
 
 * Find contacts named Alex **or** David (any-match, default):
   ```
@@ -699,7 +708,7 @@ CampusLink saves your data automatically to the hard disk after every command th
 Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users are welcome to edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If the data file is edited incorrectly and becomes invalid, CampusLink will discard all data and start with an empty contact list on the next run. It is strongly recommended to keep a backup copy of the file before making any direct edits. Editing the file incorrectly may also cause unexpected behaviour even if the file appears valid.
+If the data file is edited incorrectly and becomes invalid, CampusLink will discard all data and start with an empty contact list on the next run. It is strongly recommended to keep a backup copy of the file before making any direct edits. Editing the file incorrectly may also cause unexpected behavior even if the file appears valid.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------

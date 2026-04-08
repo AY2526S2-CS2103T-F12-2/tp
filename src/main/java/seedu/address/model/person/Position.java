@@ -37,7 +37,7 @@ public class Position {
 
     @Override
     public String toString() {
-        return value;
+        return '[' + value + ']';
     }
 
     @Override

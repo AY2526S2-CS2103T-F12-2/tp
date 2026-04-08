@@ -1,5 +1,6 @@
 package seedu.address.logic;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,18 +46,22 @@ public class Messages {
                 .append("; Email: ")
                 .append(person.getEmail())
                 .append("; Address: ")
-                .append(person.getAddress())
-                .append("; Majors: ")
-                .append(person.getMajors())
-                .append("; Available Hours: ")
-                .append(person.getAvailableHours())
-                .append("; Group: ")
-                .append(person.getGroups())
-                .append("; Position: ")
-                .append(person.getPositions())
-                .append("; Tags: ");
-        person.getTags().forEach(builder::append);
+                .append(person.getAddress());
+
+        appendFieldIfNotEmpty(builder, "; Majors: ", person.getMajors());
+        appendFieldIfNotEmpty(builder, "; Available Hours: ", person.getAvailableHours());
+        appendFieldIfNotEmpty(builder, "; Group: ", person.getGroups());
+        appendFieldIfNotEmpty(builder, "; Position: ", person.getPositions());
+        appendFieldIfNotEmpty(builder, "; Tags: ", person.getTags());
         return builder.toString();
+    }
+
+    private static void appendFieldIfNotEmpty(StringBuilder builder, String label, Collection<?> values) {
+        if (values.isEmpty()) {
+            return;
+        }
+        builder.append(label);
+        values.forEach(builder::append);
     }
 
 }
