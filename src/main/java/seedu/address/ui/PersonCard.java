@@ -1,19 +1,14 @@
 package seedu.address.ui;
 
-import java.io.File;
 import java.util.Comparator;
-import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
 
 /**
@@ -45,19 +40,9 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label phone;
     @FXML
-    private Label address;
-    @FXML
-    private Label email;
-    @FXML
     private FlowPane tags;
     @FXML
-    private Label majors;
-    @FXML
-    private Label timeSlot;
-    @FXML
     private FlowPane groups;
-    @FXML
-    private Label positions;
     @FXML
     private Label avatarInitial;
     @FXML
@@ -81,16 +66,6 @@ public class PersonCard extends UiPart<Region> {
         String initials = fullName.isEmpty() ? "" : fullName.substring(0, 1).toUpperCase();
         avatarInitial.setText(initials);
         phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
-        email.setText(person.getEmail().value);
-        String majorsText = person.getMajors().stream().map(m -> m.value).collect(Collectors.joining(", "));
-        majors.setText("Major: " + (majorsText.isEmpty() ? EMPTY_FIELD_MESSAGE : majorsText));
-        String timeSlotText = person.getAvailableHours().stream()
-                .map(TimeSlot::toString).collect(Collectors.joining(", "));
-        timeSlot.setText("Available hours: "
-                + (timeSlotText.isEmpty() ? EMPTY_FIELD_MESSAGE : timeSlotText));
-        String positionsText = person.getPositions().stream().map(p -> p.value).collect(Collectors.joining(", "));
-        positions.setText("Position: " + (positionsText.isEmpty() ? EMPTY_FIELD_MESSAGE : positionsText));
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
@@ -100,22 +75,7 @@ public class PersonCard extends UiPart<Region> {
     }
 
     private void updateProfilePicture(String picPath) {
-        // Apply circular clip so the image fills the avatar circle neatly
-        double radius = 27.5;
-        Circle clip = new Circle(radius, radius, radius);
-        profilePicView.setClip(clip);
-
-        if (picPath != null && !picPath.isEmpty()) {
-            File f = new File(picPath);
-            if (f.exists()) {
-                profilePicView.setImage(new Image(f.toURI().toString()));
-                profilePicView.setVisible(true);
-                avatarInitial.setVisible(false);
-                return;
-            }
-        }
-        profilePicView.setVisible(false);
-        avatarInitial.setVisible(true);
+        ProfilePictureUtil.setProfilePicture(picPath, profilePicView, avatarInitial);
     }
 
     /**

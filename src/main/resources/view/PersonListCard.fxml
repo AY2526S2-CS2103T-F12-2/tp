@@ -3,57 +3,44 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="TOP_LEFT" spacing="15">
+<HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" spacing="15" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS">
   <padding>
-    <Insets top="15" right="15" bottom="15" left="15"/>
+    <Insets top="10" right="15" bottom="10" left="15"/>
   </padding>
-  <StackPane fx:id="avatarCircle" styleClass="avatar-circle" prefWidth="55" prefHeight="55" minWidth="55" minHeight="55" maxWidth="55" maxHeight="55" onMouseClicked="#handleUploadPic" style="-fx-cursor: hand;">
+  <StackPane fx:id="avatarCircle" styleClass="avatar-circle" prefWidth="55" prefHeight="55" minWidth="55" minHeight="55" maxWidth="55" maxHeight="55" onMouseClicked="#handleUploadPic" style="-fx-cursor: hand;" HBox.hgrow="NEVER">
     <ImageView fx:id="profilePicView" fitWidth="55" fitHeight="55" preserveRatio="false" visible="false" styleClass="profile-pic-view"/>
     <Label fx:id="avatarInitial" styleClass="avatar-label"/>
     <Label fx:id="pinIcon" text="📌" visible="false" StackPane.alignment="TOP_LEFT"
            style="-fx-font-size: 14px; -fx-translate-x: -8; -fx-translate-y: -8;"/>
   </StackPane>
-  <GridPane HBox.hgrow="ALWAYS">
-    <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
-    </columnConstraints>
-    <VBox alignment="TOP_LEFT" minHeight="105" GridPane.columnIndex="0">
-      <HBox spacing="5" alignment="CENTER_LEFT">
-        <Label fx:id="id" styleClass="cell_big_label">
-          <minWidth>
-            <Region fx:constant="USE_PREF_SIZE" />
-          </minWidth>
-        </Label>
-        <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
-      </HBox>
-      <FlowPane fx:id="tags">
-        <VBox.margin>
-          <Insets top="5" bottom="5"/>
-        </VBox.margin>
-      </FlowPane>
-      <HBox spacing="4" alignment="CENTER_LEFT">
-        <Label text="Group:" styleClass="cell_small_label">
-          <minWidth>
-            <Region fx:constant="USE_PREF_SIZE" />
-          </minWidth>
-        </Label>
-        <FlowPane fx:id="groups" hgap="6" vgap="4" />
-      </HBox>
-      <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
-      <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
-      <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
-      <Label fx:id="majors" styleClass="cell_small_label" text="\$majors" />
-      <Label fx:id="timeSlot" styleClass="cell_small_label" text="\$timeSlot" />
-      <Label fx:id="positions" styleClass="cell_small_label" text="\$positions" />
-    </VBox>
-  </GridPane>
+
+  <VBox alignment="CENTER_LEFT" spacing="5" HBox.hgrow="ALWAYS" minWidth="0" prefWidth="150" maxWidth="Infinity">
+    <HBox spacing="5" alignment="CENTER_LEFT" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+      <Label fx:id="id" styleClass="cell_big_label" minWidth="0" HBox.hgrow="NEVER">
+        <minWidth>
+          <Region fx:constant="USE_PREF_SIZE" />
+        </minWidth>
+      </Label>
+      <Label fx:id="name" text="\$first" styleClass="cell_big_label" wrapText="true" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" wrapText="true" minWidth="0" prefWidth="150" maxWidth="Infinity" />
+    <FlowPane fx:id="tags" hgap="4" vgap="4" minWidth="0" prefWidth="150" maxWidth="Infinity" />
+
+    <HBox spacing="4" alignment="CENTER_LEFT" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS">
+      <Label text="Group:" styleClass="cell_small_label" style="-fx-opacity: 0.7;" minWidth="0" HBox.hgrow="NEVER">
+        <minWidth>
+          <Region fx:constant="USE_PREF_SIZE" />
+        </minWidth>
+      </Label>
+      <FlowPane fx:id="groups" hgap="4" vgap="4" minWidth="0" prefWidth="150" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+    </HBox>
+  </VBox>
 
 </HBox>

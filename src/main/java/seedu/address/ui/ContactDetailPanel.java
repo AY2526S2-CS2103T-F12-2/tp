@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
-import java.io.File;
+// @@author Spchdt
+
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -10,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
@@ -99,6 +99,14 @@ public class ContactDetailPanel extends UiPart<Region> {
         showEmptyState();
     }
 
+    public void setOnDelete(Consumer<Integer> onDelete) {
+        this.onDelete = onDelete;
+    }
+
+    public void setOnEdit(Consumer<String> onEdit) {
+        this.onEdit = onEdit;
+    }
+
     /**
      * Updates the detailed view to show the given person.
      * If the person is null, shows the empty state.
@@ -174,21 +182,7 @@ public class ContactDetailPanel extends UiPart<Region> {
 
         // Load profile picture if available
         String picPath = person.getProfilePicturePath();
-        if (picPath != null && !picPath.isEmpty()) {
-            File imgFile = new File(picPath);
-            if (imgFile.exists()) {
-                Image image = new Image(imgFile.toURI().toString());
-                profilePicView.setImage(image);
-                profilePicView.setVisible(true);
-                avatarInitial.setVisible(false);
-            } else {
-                profilePicView.setVisible(false);
-                avatarInitial.setVisible(true);
-            }
-        } else {
-            profilePicView.setVisible(false);
-            avatarInitial.setVisible(true);
-        }
+        ProfilePictureUtil.setProfilePicture(picPath, profilePicView, avatarInitial);
 
         // Optional logic for randomizing avatar color could go here, or we can use CSS
     }
