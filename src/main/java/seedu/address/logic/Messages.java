@@ -52,7 +52,7 @@ public class Messages {
         appendFieldIfNotEmpty(builder, "; Available Hours: ", person.getAvailableHours());
         appendFieldIfNotEmpty(builder, "; Group: ", person.getGroups());
         appendFieldIfNotEmpty(builder, "; Position: ", person.getPositions());
-        appendFieldIfNotEmpty(builder, "; Tags: ", person.getTags());
+        appendFieldIfNotEmpty(builder, "; Tag: ", person.getTags());
         return builder.toString();
     }
 
