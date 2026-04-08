@@ -26,21 +26,21 @@
           <!-- Date -->
           <VBox spacing="5">
             <Label text="date" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
-            <Label fx:id="date" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+            <Label fx:id="date" styleClass="cell_big_label" style="-fx-font-size: 16px;"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Time -->
           <VBox spacing="5">
             <Label text="time" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
-            <Label fx:id="time" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+            <Label fx:id="time" styleClass="cell_big_label" style="-fx-font-size: 16px;"/>
           </VBox>
           <Region prefHeight="1" styleClass="divider" />
 
           <!-- Attendees -->
           <VBox spacing="5">
             <Label text="attendees" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
-            <Label fx:id="attendees" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
+            <Label fx:id="attendees" styleClass="cell_big_label" style="-fx-font-size: 16px;" wrapText="true"/>
           </VBox>
         </VBox>
       </VBox>
