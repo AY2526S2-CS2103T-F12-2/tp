@@ -234,7 +234,7 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
 **Arguments:**
 * At least one keyword must be supplied, each preceded by its prefix (e.g., `n/`).
 * Flags control matching behavior for the keywords that follow them. By default (no flag) keywords are treated as `-o` (any-match).
-* Flags must be surrounded by spaces. Where input can be read as both a flag and a keyword, it is treated as a flag.
+* Flags must be surrounded by spaces (but flag at the very end of a command does not require trailing space). Where input can be read as both a flag and a keyword, it is treated as a flag.
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
 
 **How matching works:**

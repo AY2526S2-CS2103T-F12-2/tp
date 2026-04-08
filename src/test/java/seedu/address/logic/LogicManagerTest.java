@@ -178,8 +178,8 @@ public class LogicManagerTest {
                 weirdTimeResult.getFeedbackToUser());
 
         List<Person> beforeInvalidPin = new ArrayList<>(logic.getDisplayedPersonList());
-        assertThrows(CommandException.class, MESSAGE_INVALID_PERSON_DISPLAYED_INDEX,
-                () -> logic.execute(PinCommand.COMMAND_WORD + " 99"));
+        assertThrows(CommandException.class,
+                MESSAGE_INVALID_PERSON_DISPLAYED_INDEX, () -> logic.execute(PinCommand.COMMAND_WORD + " 99"));
         assertEquals(beforeInvalidPin, logic.getDisplayedPersonList());
     }
 

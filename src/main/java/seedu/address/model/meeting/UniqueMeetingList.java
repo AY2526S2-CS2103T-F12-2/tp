@@ -41,7 +41,7 @@ public class UniqueMeetingList implements Iterable<Meeting> {
     }
 
     /**
-     * Removes the equivalent meeting from the list and reassigns meeting indexes.
+     * Removes the meeting from the list and reassigns meeting indexes.
      * The meeting must exist in the list.
      */
     public void remove(Meeting toRemove) {

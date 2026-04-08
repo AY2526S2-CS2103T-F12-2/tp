@@ -71,7 +71,8 @@ public class FindCommandParser implements Parser<FindCommand> {
      * {@link FindFlag#OPTIONAL}.</p>
      *
      * <p>This method only treats exact substrings {@code " -c "} and {@code " -o "}
-     * as flags, meaning each must have exactly one space before and after it.</p>
+     * as flags, meaning each must have exactly one space before and after it, unless it is at the very
+     * end of a command (where trailing space is not required).</p>
      *
      * @param input The raw user input.
      * @return A list of parsed flagged segments in order.

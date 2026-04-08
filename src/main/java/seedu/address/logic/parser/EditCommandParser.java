@@ -29,8 +29,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class EditCommandParser implements Parser<EditCommand> {
 
-    private static final String APPEND_FLAG_STRING = "-a";
-    private static final String RESET_FLAG_STRING = "-r";
+    private static final String APPEND_FLAG_STRING_WITH_BLANK = "-a ";
+    private static final String RESET_FLAG_STRING_WITH_BLANK = "-r ";
     private static final String FLAG_PREFIX_STRING = "-";
     private static final int FLAG_LENGTH = 2;
 
@@ -97,9 +97,9 @@ public class EditCommandParser implements Parser<EditCommand> {
     }
 
     private EditFlag parseEditFlag(String args) throws ParseException {
-        if (args.startsWith(APPEND_FLAG_STRING)) {
+        if (args.startsWith(APPEND_FLAG_STRING_WITH_BLANK)) {
             return EditFlag.APPEND;
-        } else if (args.startsWith(RESET_FLAG_STRING)) {
+        } else if (args.startsWith(RESET_FLAG_STRING_WITH_BLANK)) {
             return EditFlag.RESET;
         } else {
             throw new ParseException(String.format(MESSAGE_INVALID_FLAG, EditCommand.MESSAGE_USAGE));

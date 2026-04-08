@@ -1,11 +1,11 @@
 package seedu.address.model.person;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.TimeSlot;
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Immutable container for all find command keyword buckets.
@@ -65,7 +65,11 @@ public record FindKeywords(List<String> compulsoryNameKeywords, List<String> opt
                                     List<String> compulsoryBucket,
                                     List<String> optionalBucket,
                                     List<String> incomingKeywords) {
-        (isCompulsory ? compulsoryBucket : optionalBucket).addAll(incomingKeywords);
+        if (isCompulsory) {
+            compulsoryBucket.addAll(incomingKeywords);
+        } else {
+            optionalBucket.addAll(incomingKeywords);
+        }
     }
 
     /**
@@ -99,7 +103,8 @@ public record FindKeywords(List<String> compulsoryNameKeywords, List<String> opt
         return areTimeKeywordsValid(compulsoryTimeKeywords)
                 && areTimeKeywordsValid(optionalTimeKeywords);
     }
-    
+
+
     private static boolean areNonTimeKeywordsValid(List<String> keywords) {
         return keywords.stream().noneMatch(String::isEmpty);
     }
