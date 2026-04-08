@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -64,9 +63,6 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane statusbarPlaceholder;
-
-    @FXML
-    private Button colorModeButton;
 
     /**
      * Creates a {@code MainWindow} with the given {@code Stage} and {@code Logic}.
@@ -129,6 +125,15 @@ public class MainWindow extends UiPart<Stage> {
      */
     void fillInnerParts() {
         ContactDetailPanel contactDetailPanel = new ContactDetailPanel();
+        contactDetailPanel.setOnDelete(index -> {
+            try {
+                executeCommand("delete " + index);
+            } catch (Exception e) {
+                // Ignore error if it fails (result display already shows it usually)
+            }
+        });
+        contactDetailPanel.setOnEdit(text -> commandBox.setCommandTextField(text));
+
         contactDetailPanelPlaceholder.getChildren().add(contactDetailPanel.getRoot());
 
         personListPanel = new PersonListPanel(logic.getDisplayedPersonList(), index -> {
@@ -240,11 +245,9 @@ public class MainWindow extends UiPart<Stage> {
         scene.getStylesheets().clear();
         if (isDarkMode) {
             scene.getStylesheets().add(getClass().getResource(LIGHT_THEME_CSS).toExternalForm());
-            colorModeButton.setText("🌙");
             isDarkMode = false;
         } else {
             scene.getStylesheets().add(getClass().getResource(DARK_THEME_CSS).toExternalForm());
-            colorModeButton.setText("☀");
             isDarkMode = true;
         }
         scene.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
