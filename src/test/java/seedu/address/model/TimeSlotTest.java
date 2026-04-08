@@ -18,42 +18,38 @@ import seedu.address.model.person.exceptions.WrongTimeFormatException;
 public class TimeSlotTest {
 
     @Test
-    public void constructor_string_null_throwsNullPointerException() {
+    public void constructor_nullString_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new TimeSlot(null));
     }
 
     @Test
-    public void constructor_string_invalid_throwsIllegalArgumentException() {
+    public void constructor_invalidString_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new TimeSlot("0900"));
         assertThrows(IllegalArgumentException.class, () -> new TimeSlot("1000-0900"));
         assertThrows(IllegalArgumentException.class, () -> new TimeSlot("2460-2500"));
     }
 
     @Test
-    public void constructor_string_valid_parsesCorrectly() {
+    public void constructor_validString_parsesCorrectly() {
         TimeSlot slot = new TimeSlot("0900-1200");
         assertEquals(LocalTime.of(9, 0), slot.getStartTime());
         assertEquals(LocalTime.of(12, 0), slot.getEndTime());
     }
 
     @Test
-    public void constructor_time_null_throwsNullPointerException() {
-        assertThrows(NullPointerException.class,
-                () -> new TimeSlot(null, LocalTime.of(10, 0)));
-        assertThrows(NullPointerException.class,
-                () -> new TimeSlot(LocalTime.of(9, 0), null));
+    public void constructor_nullTime_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new TimeSlot(null, LocalTime.of(10, 0)));
+        assertThrows(NullPointerException.class, () -> new TimeSlot(LocalTime.of(9, 0), null));
     }
 
     @Test
-    public void constructor_time_invalidRange_throwsWrongTimeFormatException() {
-        assertThrows(WrongTimeFormatException.class,
-                () -> new TimeSlot(LocalTime.of(9, 0), LocalTime.of(9, 0)));
-        assertThrows(WrongTimeFormatException.class,
-                () -> new TimeSlot(LocalTime.of(12, 0), LocalTime.of(9, 0)));
+    public void constructor_invalidTimeRange_throwsWrongTimeFormatException() {
+        assertThrows(WrongTimeFormatException.class, () -> new TimeSlot(LocalTime.of(9, 0), LocalTime.of(9, 0)));
+        assertThrows(WrongTimeFormatException.class, () -> new TimeSlot(LocalTime.of(12, 0), LocalTime.of(9, 0)));
     }
 
     @Test
-    public void constructor_time_valid_buildsSuccessfully() {
+    public void constructor_validTime_buildsSuccessfully() {
         TimeSlot slot = new TimeSlot(LocalTime.of(9, 0), LocalTime.of(10, 30));
         assertEquals(LocalTime.of(9, 0), slot.getStartTime());
         assertEquals(LocalTime.of(10, 30), slot.getEndTime());

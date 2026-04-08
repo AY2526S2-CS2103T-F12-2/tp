@@ -74,8 +74,8 @@ public class NameContainsKeywordsPredicateTest {
     public void test_blankKeyword_throwsIllegalArgumentException() {
         NameContainsKeywordsPredicate predicate =
                 new NameContainsKeywordsPredicate(Collections.singletonList("   "));
-        assertThrows(IllegalArgumentException.class,
-                () -> predicate.test(new PersonBuilder().withName("Alice Bob").build()));
+        assertThrows(IllegalArgumentException.class, () -> predicate
+                .test(new PersonBuilder().withName("Alice Bob").build()));
     }
 
     @Test
