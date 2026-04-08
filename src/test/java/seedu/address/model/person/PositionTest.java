@@ -61,6 +61,6 @@ public class PositionTest {
 
     @Test
     public void toStringMethod() {
-        assertEquals("Teaching Assistant", new Position("Teaching Assistant").toString());
+        assertEquals("[Teaching Assistant]", new Position("Teaching Assistant").toString());
     }
 }

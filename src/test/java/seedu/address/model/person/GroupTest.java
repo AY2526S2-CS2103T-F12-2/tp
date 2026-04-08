@@ -59,6 +59,6 @@ public class GroupTest {
 
     @Test
     public void toStringMethod() {
-        assertEquals("CS2103T", new Group("CS2103T").toString());
+        assertEquals("[CS2103T]", new Group("CS2103T").toString());
     }
 }

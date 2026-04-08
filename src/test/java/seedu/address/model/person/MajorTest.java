@@ -59,6 +59,6 @@ public class MajorTest {
 
     @Test
     public void toStringMethod() {
-        assertEquals("CS", new Major("CS").toString());
+        assertEquals("[CS]", new Major("CS").toString());
     }
 }
