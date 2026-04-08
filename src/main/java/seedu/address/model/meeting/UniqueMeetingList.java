@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.model.meeting.exceptions.DuplicateMeetingException;
 import seedu.address.model.meeting.exceptions.MeetingNotFoundException;
+import seedu.address.model.person.Person;
 
 /**
  * A list of meetings that enforces uniqueness between its elements and does not allow nulls.
@@ -124,5 +125,46 @@ public class UniqueMeetingList implements Iterable<Meeting> {
             internalList.set(i, internalList.get(i).withIndex(i + 1));
         }
     }
-}
 
+    /**
+     * Replaces attendee {@code target} with {@code editedPerson} across all meetings containing that attendee.
+     */
+    public void replaceAttendeeInMeetings(Person target, Person editedPerson) {
+        requireAllNonNull(target, editedPerson);
+        for (int i = 0; i < internalList.size(); i++) {
+            Meeting updatedMeeting = internalList.get(i).withUpdatedAttendee(target, editedPerson);
+            if (updatedMeeting != internalList.get(i)) {
+                internalList.set(i, updatedMeeting);
+            }
+        }
+    }
+
+    /**
+     * Removes attendee {@code target} from all meetings.
+     * Meetings that become empty are removed. Remaining meetings are reindexed if needed.
+     */
+    public void removeAttendeeFromMeetings(Person target) {
+        requireNonNull(target);
+
+        boolean hasStructureChanged = false;
+        for (int i = internalList.size() - 1; i >= 0; i--) {
+            Meeting currentMeeting = internalList.get(i);
+            java.util.Optional<Meeting> maybeUpdatedMeeting = currentMeeting.withoutAttendee(target);
+
+            if (maybeUpdatedMeeting.isEmpty()) {
+                internalList.remove(i);
+                hasStructureChanged = true;
+                continue;
+            }
+
+            Meeting updatedMeeting = maybeUpdatedMeeting.get();
+            if (updatedMeeting != currentMeeting) {
+                internalList.set(i, updatedMeeting);
+            }
+        }
+
+        if (hasStructureChanged) {
+            reindexMeetings();
+        }
+    }
+}

@@ -104,7 +104,6 @@ public class MeetCommandParser implements Parser<MeetCommand> {
     }
 
     private static void verifyValidKeywords(List<String> keywords) throws ParseException {
-        System.out.println(keywords);
         for (String keyword : keywords) {
             if (keyword.trim().isEmpty()) {
                 throw new ParseException(MESSAGE_EMPTY_KEYWORD);

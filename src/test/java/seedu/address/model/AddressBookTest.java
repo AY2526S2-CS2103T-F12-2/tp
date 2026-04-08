@@ -7,6 +7,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.Arrays;
@@ -83,6 +84,64 @@ public class AddressBookTest {
     @Test
     public void getPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> addressBook.getPersonList().remove(0));
+    }
+
+    @Test
+    public void setPerson_personInMeeting_updatesMeetingAttendee() {
+        addressBook.addPerson(ALICE);
+        Meeting meeting = new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE));
+        addressBook.addMeeting(meeting);
+
+        Person editedAlice = new PersonBuilder(ALICE).withName("Alicia Pauline").build();
+        addressBook.setPerson(ALICE, editedAlice);
+
+        Meeting updatedMeeting = addressBook.getMeetingList().get(0);
+        assertEquals(List.of(editedAlice), updatedMeeting.getAttendees());
+    }
+
+    @Test
+    public void setPerson_pinToggledPersonInMeeting_updatesMeetingAttendeePinnedState() {
+        addressBook.addPerson(ALICE);
+        Meeting meeting = new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE));
+        addressBook.addMeeting(meeting);
+
+        Person pinnedAlice = new Person(
+                ALICE.getName(), ALICE.getPhone(), ALICE.getEmail(), ALICE.getAddress(),
+                ALICE.getTags(), ALICE.getPositions(), ALICE.getMajors(), ALICE.getGroups(),
+                ALICE.getAvailableHours(), ALICE.getFollowUp(), ALICE.getProfilePicturePath(), true);
+        addressBook.setPerson(ALICE, pinnedAlice);
+
+        Meeting updatedMeeting = addressBook.getMeetingList().get(0);
+        assertTrue(updatedMeeting.getAttendees().get(0).isPinned());
+    }
+
+    @Test
+    public void removePerson_personInSharedMeeting_removesOnlyThatAttendee() {
+        addressBook.addPerson(ALICE);
+        addressBook.addPerson(BENSON);
+        Meeting meeting = new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE, BENSON));
+        addressBook.addMeeting(meeting);
+
+        addressBook.removePerson(ALICE);
+
+        Meeting updatedMeeting = addressBook.getMeetingList().get(0);
+        assertEquals(List.of(BENSON), updatedMeeting.getAttendees());
+    }
+
+    @Test
+    public void removePerson_lastAttendeeMeeting_removesMeetingAndReindexes() {
+        addressBook.addPerson(ALICE);
+        addressBook.addPerson(BENSON);
+        Meeting firstMeeting = new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE));
+        Meeting secondMeeting = new Meeting("Design review", new TimeSlot("1200-1300"), List.of(BENSON));
+        addressBook.addMeeting(firstMeeting);
+        addressBook.addMeeting(secondMeeting);
+
+        addressBook.removePerson(ALICE);
+
+        assertEquals(1, addressBook.getMeetingList().size());
+        assertEquals("Design review", addressBook.getMeetingList().get(0).getDescription());
+        assertEquals(1, addressBook.getMeetingList().get(0).getIndex());
     }
 
     @Test

@@ -11,6 +11,7 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -18,6 +19,10 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.TimeSlot;
+import seedu.address.model.meeting.Meeting;
+import seedu.address.model.person.Person;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAddressBookStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonAddressBookStorageTest");
@@ -106,5 +111,42 @@ public class JsonAddressBookStorageTest {
     @Test
     public void saveAddressBook_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveAddressBook(new AddressBook(), null));
+    }
+
+    @Test
+    public void saveAndReadAddressBook_editPerson_updatesMeetingAttendeePersisted() throws Exception {
+        Path filePath = testFolder.resolve("EditedAttendeeAddressBook.json");
+        AddressBook original = getTypicalAddressBook();
+        original.addMeeting(new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE)));
+
+        Person editedAlice = new PersonBuilder(ALICE).withName("Alicia Pauline").build();
+        original.setPerson(ALICE, editedAlice);
+
+        JsonAddressBookStorage jsonAddressBookStorage = new JsonAddressBookStorage(filePath);
+        jsonAddressBookStorage.saveAddressBook(original, filePath);
+        ReadOnlyAddressBook readBack = jsonAddressBookStorage.readAddressBook(filePath).get();
+
+        Meeting persistedMeeting = readBack.getMeetingList().get(0);
+        assertEquals(List.of(editedAlice), persistedMeeting.getAttendees());
+    }
+
+    @Test
+    public void saveAndReadAddressBook_pinPerson_updatesMeetingAttendeePersisted() throws Exception {
+        Path filePath = testFolder.resolve("PinnedAttendeeAddressBook.json");
+        AddressBook original = getTypicalAddressBook();
+        original.addMeeting(new Meeting("Project sync", new TimeSlot("1000-1100"), List.of(ALICE)));
+
+        Person pinnedAlice = new Person(
+                ALICE.getName(), ALICE.getPhone(), ALICE.getEmail(), ALICE.getAddress(),
+                ALICE.getTags(), ALICE.getPositions(), ALICE.getMajors(), ALICE.getGroups(),
+                ALICE.getAvailableHours(), ALICE.getFollowUp(), ALICE.getProfilePicturePath(), true);
+        original.setPerson(ALICE, pinnedAlice);
+
+        JsonAddressBookStorage jsonAddressBookStorage = new JsonAddressBookStorage(filePath);
+        jsonAddressBookStorage.saveAddressBook(original, filePath);
+        ReadOnlyAddressBook readBack = jsonAddressBookStorage.readAddressBook(filePath).get();
+
+        Meeting persistedMeeting = readBack.getMeetingList().get(0);
+        assertEquals(List.of(pinnedAlice), persistedMeeting.getAttendees());
     }
 }

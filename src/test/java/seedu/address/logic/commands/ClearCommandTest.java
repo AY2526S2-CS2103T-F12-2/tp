@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.TimeSlot;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.meeting.Meeting;
 
 public class ClearCommandTest {
 
@@ -23,6 +25,18 @@ public class ClearCommandTest {
     @Test
     public void execute_nonEmptyAddressBook_success() {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        expectedModel.setAddressBook(new AddressBook());
+
+        assertCommandSuccess(new ClearCommand(), model, ClearCommand.MESSAGE_SUCCESS, expectedModel);
+    }
+
+    @Test
+    public void execute_nonEmptyAddressBookWithMeetings_success() {
+        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        model.addMeeting(new Meeting("Project sync", new TimeSlot("1000-1100"),
+                java.util.List.of(model.getDisplayedPersonList().get(0))));
+
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.setAddressBook(new AddressBook());
 

@@ -3,8 +3,11 @@ package seedu.address.model.meeting;
 import static java.util.Objects.requireNonNull;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
@@ -88,6 +91,50 @@ public class Meeting {
      */
     public Meeting withIndex(int newIndex) {
         return new Meeting(newIndex, description, date, timeSlot, attendees);
+    }
+
+    /**
+     * Returns a copy of this meeting with attendee {@code target} replaced by {@code editedPerson} when present.
+     */
+    public Meeting withUpdatedAttendee(Person target, Person editedPerson) {
+        requireNonNull(target);
+        requireNonNull(editedPerson);
+
+        boolean hasUpdatedAttendee = false;
+        List<Person> updatedAttendees = new ArrayList<>(attendees.size());
+        for (Person attendee : attendees) {
+            if (attendee.equals(target)) {
+                updatedAttendees.add(editedPerson);
+                hasUpdatedAttendee = true;
+            } else {
+                updatedAttendees.add(attendee);
+            }
+        }
+
+        if (!hasUpdatedAttendee) {
+            return this;
+        }
+        return new Meeting(index, description, date, timeSlot, updatedAttendees);
+    }
+
+    /**
+     * Returns an updated meeting with attendee {@code target} removed, if present.
+     * Returns {@code Optional.empty()} when removing {@code target} would leave no attendees.
+     */
+    public Optional<Meeting> withoutAttendee(Person target) {
+        requireNonNull(target);
+        if (!attendees.contains(target)) {
+            return Optional.of(this);
+        }
+
+        List<Person> updatedAttendees = attendees.stream()
+                .filter(attendee -> !attendee.equals(target))
+                .collect(Collectors.toList());
+
+        if (updatedAttendees.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new Meeting(index, description, date, timeSlot, updatedAttendees));
     }
 
     /**
