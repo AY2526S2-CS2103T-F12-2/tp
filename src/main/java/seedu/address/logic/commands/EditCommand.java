@@ -47,7 +47,7 @@ public class EditCommand extends Command {
             + "by the index number used in the displayed person list.\n"
             + "Flags: -a for adding fields to existing values, -r for overwriting existing values.\n"
             + "By default existing values will be overwritten, unless -a is used as flag.\n"
-            + "Parameters: INDEX (must be a positive integer) [FLAG] "
+            + "Parameters: [FLAG] INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + "NAME] "
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "

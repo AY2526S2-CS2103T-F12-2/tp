@@ -22,7 +22,7 @@
         <!-- Profile picture or initial -->
         <StackPane fx:id="profilePicPane" styleClass="avatar-circle" prefWidth="120" prefHeight="120" minWidth="120" minHeight="120" maxWidth="120" maxHeight="120" style="-fx-background-radius: 60;">
           <Label fx:id="avatarInitial" style="-fx-font-size: 60px; -fx-text-fill: white; -fx-font-family: 'Segoe UI Semibold';"/>
-          <ImageView fx:id="profilePicView" fitWidth="120" fitHeight="120" preserveRatio="true" visible="false" styleClass="profile-pic-view"/>
+          <ImageView fx:id="profilePicView" fitWidth="120" fitHeight="120" preserveRatio="false" visible="false" styleClass="profile-pic-view"/>
         </StackPane>
 
         <!-- Name -->

@@ -16,6 +16,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import seedu.address.model.TimeSlot;
 import seedu.address.model.person.Person;
 
@@ -96,6 +97,8 @@ public class ContactDetailPanel extends UiPart<Region> {
      */
     public ContactDetailPanel() {
         super(FXML);
+        double radius = 60;
+        profilePicView.setClip(new Circle(radius, radius, radius));
         showEmptyState();
     }
 
