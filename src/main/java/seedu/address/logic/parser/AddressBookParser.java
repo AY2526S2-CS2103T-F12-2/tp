@@ -53,10 +53,10 @@ public class AddressBookParser {
      */
     public Command parseCommand(String userInput) throws ParseException {
         String trimmedUserInput = userInput.trim();
-        final Matcher matcher = BASIC_COMMAND_FORMAT.matcher(trimmedUserInput);
         if (trimmedUserInput.length() > MAX_COMMAND_LENGTH) {
             throw new ParseException(String.format(MESSAGE_COMMAND_LENGTH_EXCEEDED, MAX_COMMAND_LENGTH));
         }
+        final Matcher matcher = BASIC_COMMAND_FORMAT.matcher(trimmedUserInput);
         if (!matcher.matches()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }
