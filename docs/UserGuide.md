@@ -238,9 +238,11 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
 
 **How matching works:**
+* This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
-* For names, only full words match — `H` does **not** match `Hans` (but typo is permitted, refer to **fuzzy search** below).
-* Keywords for other fields (email, phone, etc.) are partial matches. Note that space characters are included in the keyword, except for leading and trailing spaces.
+* For names, only full words match — `H` does **not** match `Hans`.
+* Keywords for other fields (email, phone, etc.) are partial matches.
+* For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
 * When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
@@ -250,9 +252,9 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
 * Under `-c`: **all** keywords for the same field must match (AND semantics). e.g. `-c n/John n/Doe` only returns contacts whose name matches both `John` **and** `Doe`.
 * Under `-o`: **any** keyword for the same field matching is enough (OR semantics). e.g. `-o n/Alex n/David` returns contacts whose name contains `Alex` **or** `David`.
 
-**Fuzzy search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
+**Fuzzy Search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
 
-*Implementation details (exact behavior):*
+*Details and behavior:*
 * Fuzzy matching allows up to **2 edits** (insert, delete, substitute).
 * Matching is token-based: both the field value and keyword are split by spaces first.
 * For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
