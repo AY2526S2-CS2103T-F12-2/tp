@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_COMMAND_LENGTH_EXCEEDED;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
@@ -186,6 +187,14 @@ public class AddressBookParserTest {
         ClearFollowUpCommand command = (ClearFollowUpCommand) parser.parseCommand(
                 ClearFollowUpCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new ClearFollowUpCommand(INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_inputExceedsMaxLength_throwsParseException() {
+        String tooLong = "add n/" + "A".repeat(960) + " p/91234567 e/john@example.com a/123 Main Street";
+        assertTrue(tooLong.length() > 1000);
+        assertThrows(ParseException.class, String.format(MESSAGE_COMMAND_LENGTH_EXCEEDED, 1000), () ->
+                parser.parseCommand(tooLong));
     }
 
     @Test
