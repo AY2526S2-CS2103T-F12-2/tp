@@ -1,8 +1,10 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_PERSONS_LISTED_OVERVIEW;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
@@ -10,12 +12,18 @@ import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.AMY;
+import static seedu.address.testutil.TypicalPersons.CARL;
+import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+import static seedu.address.testutil.TypicalPersons.getTypicalPersons;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +31,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.PinCommand;
+import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.AddressBook;
@@ -128,6 +139,61 @@ public class LogicManagerTest {
         assertThrows(UnsupportedOperationException.class, () -> logic.getDisplayedPersonList().remove(0));
     }
 
+    @Test
+    public void execute_mixedCommandStressfulSequence_success() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        CommandResult firstResult = logic.execute("find -c a/wall -o n/Carl OOO p/95352563");
+        assertEquals(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1), firstResult.getFeedbackToUser());
+        assertEquals(1, logic.getDisplayedPersonList().size());
+        assertEquals(CARL, logic.getDisplayedPersonList().get(0));
+
+        CommandResult pinResult = logic.execute("find -o g/bestie");
+        assertEquals(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 1), pinResult.getFeedbackToUser());
+        assertEquals(ALICE, logic.getDisplayedPersonList().get(0));
+
+        CommandResult pinAliceResult = logic.execute(PinCommand.COMMAND_WORD + " 1");
+        assertTrue(pinAliceResult.getFeedbackToUser().startsWith("Pinned Person:"));
+
+        CommandResult sortResult = logic.execute(SortCommand.COMMAND_WORD + " lastname d");
+        assertEquals(String.format(SortCommand.MESSAGE_SORT_SUCCESS, "lastname", "descending"),
+                sortResult.getFeedbackToUser());
+
+        CommandResult secondResult = logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(ListCommand.MESSAGE_SUCCESS, secondResult.getFeedbackToUser());
+        assertEquals(getTypicalPersons().size(), logic.getDisplayedPersonList().size());
+        assertEquals(ALICE, logic.getDisplayedPersonList().get(0));
+
+        CommandResult deleteResult = logic.execute(DeleteCommand.COMMAND_WORD + " 1");
+        assertTrue(deleteResult.getFeedbackToUser().startsWith("Deleted Person:"));
+        assertEquals(getTypicalPersons().size() - 1, logic.getDisplayedPersonList().size());
+        assertFalse(logic.getDisplayedPersonList().contains(ALICE));
+
+        CommandResult thirdResult = logic.execute("find -c n/Meier -o g/bestie");
+        assertEquals(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 0), thirdResult.getFeedbackToUser());
+        assertTrue(logic.getDisplayedPersonList().isEmpty());
+
+        CommandResult weirdTimeResult = logic.execute("find -o h/1000-1100");
+        assertEquals(String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, getTypicalPersons().size() - 1),
+                weirdTimeResult.getFeedbackToUser());
+
+        List<Person> beforeInvalidPin = new ArrayList<>(logic.getDisplayedPersonList());
+        assertThrows(CommandException.class, MESSAGE_INVALID_PERSON_DISPLAYED_INDEX,
+                () -> logic.execute(PinCommand.COMMAND_WORD + " 99"));
+        assertEquals(beforeInvalidPin, logic.getDisplayedPersonList());
+    }
+
+    @Test
+    public void execute_findInvalidMidSequence_filteredListUnchangedAfterParseFailure() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        logic.execute("find -o n/Meier");
+        List<Person> beforeFailure = new ArrayList<>(logic.getDisplayedPersonList());
+
+        assertThrows(ParseException.class, () -> logic.execute("find -c a/ -o n/Alice"));
+        assertEquals(beforeFailure, logic.getDisplayedPersonList());
+    }
+
     /**
      * Executes the command and confirms that
      * - no exceptions are thrown <br>
@@ -212,5 +278,15 @@ public class LogicManagerTest {
         ModelManager expectedModel = new ModelManager();
         expectedModel.addPerson(expectedPerson);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
+    }
+
+    private void setUpWithTypicalAddressBook() {
+        model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("typicalAddressBook.json"));
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("typicalUserPrefs.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        logic = new LogicManager(model, storage);
     }
 }
