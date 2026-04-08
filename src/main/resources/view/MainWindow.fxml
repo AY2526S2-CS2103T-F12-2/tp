@@ -9,6 +9,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -68,20 +70,40 @@
           </StackPane>
         </VBox>
 
-        <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
-          <VBox fx:id="personList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500" minWidth="0">
-            <padding>
-              <Insets top="10" right="10" bottom="10" left="25" />
-            </padding>
-            <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" maxWidth="Infinity" minWidth="0"/>
-          </VBox>
+        <TabPane VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;" tabClosingPolicy="UNAVAILABLE">
+          <Tab text="Contacts">
+            <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+              <VBox fx:id="personList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+                <padding>
+                  <Insets top="10" right="10" bottom="10" left="25" />
+                </padding>
+                <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+              </VBox>
 
-          <StackPane fx:id="contactDetailPanelPlaceholder" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
-            <padding>
-              <Insets top="10" right="25" bottom="10" left="10" />
-            </padding>
-          </StackPane>
-        </HBox>
+              <StackPane fx:id="contactDetailPanelPlaceholder" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+                <padding>
+                  <Insets top="10" right="25" bottom="10" left="10" />
+                </padding>
+              </StackPane>
+            </HBox>
+          </Tab>
+          <Tab text="Meetings">
+            <HBox VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+              <VBox fx:id="meetingList" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+                <padding>
+                  <Insets top="10" right="10" bottom="10" left="25" />
+                </padding>
+                <StackPane fx:id="meetingListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+              </VBox>
+              <!-- Space holder for potential meeting details -->
+              <StackPane fx:id="meetingDetailPanelPlaceholder" styleClass="pane-with-border" HBox.hgrow="ALWAYS" maxWidth="Infinity" prefWidth="500">
+                <padding>
+                  <Insets top="10" right="25" bottom="10" left="10" />
+                </padding>
+              </StackPane>
+            </HBox>
+          </Tab>
+        </TabPane>
 
         <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
       </VBox>

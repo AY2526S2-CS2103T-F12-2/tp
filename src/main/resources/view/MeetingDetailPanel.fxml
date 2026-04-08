@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <ScrollPane fx:id="scrollPane" fitToWidth="true" styleClass="transparent-pane" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+    <StackPane>
+      <VBox fx:id="detailContainer" alignment="TOP_CENTER" spacing="20" StackPane.alignment="TOP_CENTER">
+        <padding>
+          <Insets top="60" right="20" bottom="20" left="20" />
+        </padding>
+
+        <!-- Description -->
+        <Label fx:id="description" style="-fx-font-size: 32px; -fx-font-family: 'Segoe UI Semibold';" wrapText="true" textAlignment="CENTER"/>
+
+        <VBox spacing="15" VBox.vgrow="ALWAYS" styleClass="pane-with-border">
+          <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+          </padding>
+
+          <!-- Date -->
+          <VBox spacing="5">
+            <Label text="date" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
+            <Label fx:id="date" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Time -->
+          <VBox spacing="5">
+            <Label text="time" styleClass="cell_small_label" style="-fx-opacity: 0.8;" />
+            <Label fx:id="time" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;"/>
+          </VBox>
+          <Region prefHeight="1" styleClass="divider" />
+
+          <!-- Attendees -->
+          <VBox spacing="5">
+            <Label text="attendees" styleClass="cell_small_label" style="-fx-opacity: 0.8;"/>
+            <Label fx:id="attendees" styleClass="cell_big_label" style="-fx-font-size: 16px; -fx-text-fill: white;" wrapText="true"/>
+          </VBox>
+        </VBox>
+      </VBox>
+    </StackPane>
+  </ScrollPane>
+
+  <!-- Placeholder for empty state -->
+  <VBox fx:id="emptyPlaceholder" alignment="CENTER" visible="false">
+    <Label text="No meeting selected" styleClass="cell_big_label" style="-fx-opacity: 0.5;"/>
+  </VBox>
+</StackPane>
