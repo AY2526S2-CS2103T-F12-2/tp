@@ -11,9 +11,12 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.model.TimeSlot;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 
 public class EditPersonDescriptorTest {
@@ -108,5 +111,19 @@ public class EditPersonDescriptorTest {
                 + editPersonDescriptor.getGroups().orElse(null) + ", available hours="
                 + editPersonDescriptor.getAvailableHours().orElse(null) + "}";
         assertEquals(expected, editPersonDescriptor.toString());
+    }
+
+    @Test
+    public void copyConstructor_withAvailableHours_makesDefensiveCopy() {
+        EditPersonDescriptor original = new EditPersonDescriptorBuilder()
+                .withAvailableHours("0900-1000")
+                .build();
+
+        EditPersonDescriptor copy = new EditPersonDescriptor(original);
+
+        original.setAvailableHours(Set.of(new TimeSlot("1000-1100")));
+
+        assertTrue(copy.getAvailableHours().isPresent());
+        assertEquals(Set.of(new TimeSlot("0900-1000")), copy.getAvailableHours().get());
     }
 }

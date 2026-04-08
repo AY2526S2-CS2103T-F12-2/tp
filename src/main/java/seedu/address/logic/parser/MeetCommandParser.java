@@ -1,7 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
+import static seedu.address.logic.commands.FindCommand.MESSAGE_EMPTY_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -17,6 +17,7 @@ import seedu.address.logic.commands.MeetCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.TimeSlot;
 import seedu.address.model.meeting.Date;
+import seedu.address.model.person.PersonKeywordSet;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
@@ -49,7 +50,19 @@ public class MeetCommandParser implements Parser<MeetCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, MeetCommand.MESSAGE_USAGE));
         }
 
-        // Parse optional meeting date (defaults to today when omitted)
+        Date meetingDate = parseMeetingDate(argMultimap);
+
+        // Parse the meeting time slot
+        TimeSlot meetingSlot = ParserUtil.parseTimeSlot(argMultimap.getValue(PREFIX_TIME).get());
+
+        PersonKeywordSet personKeywordSetForMeeting = createPersonKeywordSetForMeeting(argMultimap);
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(personKeywordSetForMeeting);
+
+        return new MeetCommand(description, meetingDate, meetingSlot, predicate);
+    }
+
+    private static Date parseMeetingDate(ArgumentMultimap argMultimap) throws ParseException {
+        // Date defaults to today when omitted.
         Date meetingDate = Date.today();
         if (argMultimap.getValue(PREFIX_DATE).isPresent()) {
             String dateValue = argMultimap.getValue(PREFIX_DATE).get();
@@ -59,10 +72,11 @@ public class MeetCommandParser implements Parser<MeetCommand> {
                 throw new ParseException(Date.MESSAGE_CONSTRAINTS);
             }
         }
+        return meetingDate;
+    }
 
-        // Parse the meeting time slot
-        TimeSlot meetingSlot = ParserUtil.parseTimeSlot(argMultimap.getValue(PREFIX_TIME).get());
-
+    private static PersonKeywordSet createPersonKeywordSetForMeeting(ArgumentMultimap argMultimap)
+            throws ParseException {
         // Extract optional filter keywords for attendees
         List<String> nameKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_NAME));
         List<String> groupKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_GROUP));
@@ -76,30 +90,24 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         verifyValidKeywords(positionKeywords);
         verifyValidKeywords(tagKeywords);
 
+        PersonKeywordSet personKeywordSet = PersonKeywordSet.withMutableBuckets();
 
-        // For MeetCommand, we use optional keywords only (no compulsory/optional distinction)
-        // Create empty compulsory lists (all criteria are optional in meet command)
-        List<String> emptyList = new ArrayList<>();
+        // Meet filters are optional for textual fields.
+        personKeywordSet.addAllKeywords(false, nameKeywords, groupKeywords, List.of(), List.of(),
+                majorKeywords, List.of(), tagKeywords, positionKeywords, List.of());
 
-        // Create predicate with optional filters for all criteria
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(
-                emptyList, nameKeywords,
-                emptyList, emptyList,
-                emptyList, emptyList,
-                emptyList, majorKeywords,
-                emptyList, emptyList,
-                emptyList, tagKeywords,
-                emptyList, positionKeywords,
-                emptyList, groupKeywords,
-                new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)), emptyList);
+        // Keep time as compulsory filter to preserve existing matching behavior.
+        personKeywordSet.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)));
 
-        return new MeetCommand(description, meetingDate, meetingSlot, predicate);
+        return personKeywordSet;
     }
 
     private static void verifyValidKeywords(List<String> keywords) throws ParseException {
+        System.out.println(keywords);
         for (String keyword : keywords) {
-            if (keyword.isEmpty()) {
-                throw new ParseException(MESSAGE_INVALID_KEYWORD);
+            if (keyword.trim().isEmpty()) {
+                throw new ParseException(MESSAGE_EMPTY_KEYWORD);
             }
         }
     }

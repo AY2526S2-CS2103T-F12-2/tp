@@ -333,6 +333,7 @@ public class PersonMatchesKeywordsPredicateTest {
                         List.of(), List.of("CS"), List.of(), List.of());
 
         String expected = PersonMatchesKeywordsPredicate.class.getCanonicalName()
+                + "{personKeywordSet=" + PersonKeywordSet.class.getCanonicalName()
                 + "{compulsoryNameKeywords=" + keywords
                 + ", optionalNameKeywords=[]"
                 + ", compulsoryAddressKeywords=[]"
@@ -349,8 +350,8 @@ public class PersonMatchesKeywordsPredicateTest {
                 + ", optionalPositionKeywords=[]"
                 + ", compulsoryGroupKeywords=[]"
                 + ", optionalGroupKeywords=" + List.of("CS")
-                + ", compulsoryTimeSlotKeywords=[]"
-                + ", optionalTimeSlotKeywords=[]}";
+                + ", compulsoryTimeKeywords=[]"
+                + ", optionalTimeKeywords=[]}}";
         assertEquals(expected, predicate.toString());
     }
 

@@ -225,6 +225,7 @@ public class EditCommandParserTest {
     @Test
     public void parse_invalidFlag_failure() {
         assertParseFailure(parser, "-x 1" + NAME_DESC_AMY, MESSAGE_INVALID_FLAG_FORMAT);
+        assertParseFailure(parser, "-abc 1" + NAME_DESC_AMY, MESSAGE_INVALID_FLAG_FORMAT);
     }
 
     @Test

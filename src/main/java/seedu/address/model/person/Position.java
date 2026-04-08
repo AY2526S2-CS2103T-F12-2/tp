@@ -24,6 +24,7 @@ public class Position {
      */
     public Position(String position) {
         requireNonNull(position);
+        position = position.trim();
         checkArgument(isValidPosition(position), MESSAGE_CONSTRAINTS);
         value = position;
     }
