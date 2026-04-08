@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import seedu.address.logic.commands.FindCommand;
-import seedu.address.model.TimeSlot;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 public class FindCommandParserTest {
@@ -152,7 +151,7 @@ public class FindCommandParserTest {
      */
     @Test
     public void parse_invalidAddressKeyword_throwsParseException() {
-        assertParseFailure(parser, " a/", FindCommand.MESSAGE_INVALID_KEYWORD);
+        assertParseFailure(parser, " a/", FindCommand.MESSAGE_EMPTY_KEYWORD);
     }
 
     @Test
@@ -300,7 +299,7 @@ public class FindCommandParserTest {
 
     @Test
     public void parse_invalidTimeKeyword_failure() {
-        assertParseFailure(parser, " h/24AA", TimeSlot.MESSAGE_TIME_CONSTRAINTS);
+        assertParseFailure(parser, " h/24AA", FindCommand.MESSAGE_INVALID_TIME_KEYWORD);
     }
 
     @Test
@@ -414,7 +413,7 @@ public class FindCommandParserTest {
             List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-            List<String> compulsoryTimeSlotKeywords, List<String> optionalTimeSlotKeywords) {
+            List<String> compulsoryTimeKeywords, List<String> optionalTimeKeywords) {
         return new PersonMatchesKeywordsPredicate(
                 compulsoryNameKeywords, optionalNameKeywords,
                 compulsoryAddressKeywords, optionalAddressKeywords,
@@ -424,7 +423,7 @@ public class FindCommandParserTest {
                 compulsoryTagKeywords, optionalTagKeywords,
                 compulsoryPositionKeywords, optionalPositionKeywords,
                 compulsoryGroupKeywords, optionalGroupKeywords,
-                compulsoryTimeSlotKeywords, optionalTimeSlotKeywords);
+                compulsoryTimeKeywords, optionalTimeKeywords);
     }
 
 }

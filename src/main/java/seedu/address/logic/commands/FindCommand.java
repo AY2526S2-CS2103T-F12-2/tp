@@ -27,13 +27,15 @@ public class FindCommand extends Command {
             + "A contact is returned when all -c conditions are satisfied AND "
             + "(if -o keywords exist) at least one -o field matches.\n"
             + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
-            + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/AVAILABLE_HOURS]\n"
+            + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/TIME_SLOT] OR [h/TIME]\n"
             + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
             + "Example: " + COMMAND_WORD + " -c n/alice n/bob\n"
             + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
             + "Example: " + COMMAND_WORD + " g/CS2103T\n"
             + "Note: [ -c ] and [ -o ] tokens are recognized as flags first.";
-    public static final String MESSAGE_INVALID_KEYWORD = "Keywords should be nonempty.";
+    public static final String MESSAGE_EMPTY_KEYWORD = "Keywords should be nonempty.";
+    public static final String MESSAGE_INVALID_TIME_KEYWORD =
+            "Time keywords should be nonempty and in the format HHMM/HHMM-HHMM, e.g. 1000 or 0900-1100.";
 
     private final PersonMatchesKeywordsPredicate predicate;
 

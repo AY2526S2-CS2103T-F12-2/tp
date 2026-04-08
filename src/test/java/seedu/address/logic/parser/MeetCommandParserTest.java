@@ -2,7 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.commands.FindCommand.MESSAGE_INVALID_KEYWORD;
+import static seedu.address.logic.commands.FindCommand.MESSAGE_EMPTY_KEYWORD;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
@@ -114,7 +114,7 @@ public class MeetCommandParserTest {
     public void parse_emptyKeyword_throwsParseException() {
         assertParseFailure(parser,
                 " Project sync h/1200-1300 n/",
-                MESSAGE_INVALID_KEYWORD);
+                MESSAGE_EMPTY_KEYWORD);
     }
 
     @Test

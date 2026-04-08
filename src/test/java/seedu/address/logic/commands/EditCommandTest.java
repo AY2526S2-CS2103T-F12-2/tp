@@ -147,7 +147,6 @@ public class EditCommandTest {
     @Test
     public void execute_resetFlagCollectionsSpecifiedUnfilteredList_success() {
         Person personToEdit = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
-        System.out.println(personToEdit);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
                 .withTags(APPEND_TAG)
                 .withGroups(APPEND_GROUP)

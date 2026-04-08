@@ -20,7 +20,7 @@ import seedu.address.model.person.exceptions.WrongTimeFormatException;
 public class TimeSlot {
 
     public static final String MESSAGE_CONSTRAINTS = "Time slot must follow HHMM-HHMM (24-hour clock) format, "
-            + "and start time must be before end time.\n"
+            + "and start time must be before end time (and both are interpreted to be in the same day).\n"
             + "Format: e.g., 0900-1800\n";
     public static final String MESSAGE_TIME_CONSTRAINTS = "Time should follow HHMM (24-hour clock) format.";
 
