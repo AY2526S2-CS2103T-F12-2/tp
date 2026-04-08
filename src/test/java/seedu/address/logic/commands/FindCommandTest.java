@@ -102,8 +102,24 @@ public class FindCommandTest {
     }
 
     /**
-     * Ensures multiple keywords return the matching persons.
+     * A single keyword that appears in multiple persons' names returns all of them,
+     * including fuzzy matches (ELLE's "Meyer" is distance 1 from "Meier").
      */
+    @Test
+    public void execute_singleKeyword_multiplePersonsFound() {
+        // "Meier" exactly matches BENSON and DANIEL; fuzzy-matches ELLE's "Meyer" (dist 1).
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
+        PersonMatchesKeywordsPredicate predicate = preparePredicate("Meier");
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        // BENSON and DANIEL have distance 0 (exact); ELLE has distance 1 — sorted accordingly.
+        assertEquals(Arrays.asList(BENSON, DANIEL, ELLE), model.getDisplayedPersonList());
+    }
+
+        /**
+         * Ensures multiple keywords return the matching persons.
+         */
     @Test
     public void execute_multipleKeywords_multiplePersonsFound() {
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 3);
