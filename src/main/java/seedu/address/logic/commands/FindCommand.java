@@ -1,6 +1,8 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FOLLOW_UP;
 
 import java.util.Comparator;
 
@@ -29,6 +31,7 @@ public class FindCommand extends Command {
             + "(if -o keywords exist) at least one -o field matches.\n"
             + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
             + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/TIME_SLOT] OR [h/TIME]\n"
+            + "Other prefixes (such as " + PREFIX_FOLLOW_UP + ") will be treated as normal text input.\n"
             + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
             + "Example: " + COMMAND_WORD + " -c n/alice n/bob\n"
             + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
