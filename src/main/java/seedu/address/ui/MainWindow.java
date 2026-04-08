@@ -42,6 +42,7 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private MeetingListPanel meetingListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
     private CommandBox commandBox;
@@ -54,6 +55,12 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane personListPanelPlaceholder;
+
+    @FXML
+    private StackPane meetingListPanelPlaceholder;
+
+    @FXML
+    private StackPane meetingDetailPanelPlaceholder;
 
     @FXML
     private StackPane contactDetailPanelPlaceholder;
@@ -148,8 +155,17 @@ public class MainWindow extends UiPart<Stage> {
 
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
+        MeetingDetailPanel meetingDetailPanel = new MeetingDetailPanel();
+        meetingDetailPanelPlaceholder.getChildren().add(meetingDetailPanel.getRoot());
+
+        meetingListPanel = new MeetingListPanel(logic.getAddressBook().getMeetingList(),
+                meeting -> meetingDetailPanel.updateMeeting(meeting,
+                        logic.getAddressBook().getMeetingList().indexOf(meeting) + 1));
+        meetingListPanelPlaceholder.getChildren().add(meetingListPanel.getRoot());
+
         // Select first by default
         personListPanel.selectFirstIfAvailable();
+        meetingListPanel.selectFirstIfAvailable();
 
         // Listen to changes in the list to re-select if needed
         logic.getDisplayedPersonList().addListener((javafx.collections.ListChangeListener<Person>) c -> {
