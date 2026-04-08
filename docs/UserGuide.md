@@ -310,6 +310,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * `h/START-END` is required and must appear exactly once.
 * `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, today's date is used.
 * `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
+* Prefixes not listed above (for example `a/`) are treated as plain description text instead of attendee filters.
 * If no filters are provided, all contacts are checked for availability.
 * Time format must be valid (e.g., `0900-1000`). Date format must be valid (e.g., `2026-04-01`).
 * Empty keywords are not allowed (e.g., `n/` is invalid).

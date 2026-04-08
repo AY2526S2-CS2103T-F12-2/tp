@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.FindFlag;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.FindKeywords;
+import seedu.address.model.person.PersonKeywordSet;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
@@ -37,7 +37,7 @@ public class FindCommandParser implements Parser<FindCommand> {
      * @throws ParseException if the user input does not conform the expected format
      */
     public FindCommand parse(String args) throws ParseException {
-        FindKeywords findKeywords = FindKeywords.withMutableBuckets();
+        PersonKeywordSet personKeywordSet = PersonKeywordSet.withMutableBuckets();
         List<FlaggedSegment> segments = splitByFindFlags(args);
 
         for (FlaggedSegment segment : segments) {
@@ -46,7 +46,7 @@ public class FindCommandParser implements Parser<FindCommand> {
                     PREFIX_MAJOR, PREFIX_EMAIL, PREFIX_TAG, PREFIX_POSITION, PREFIX_TIME);
 
             boolean isCompulsory = segment.flag() == FindFlag.COMPULSORY;
-            findKeywords.addAllKeywords(isCompulsory,
+            personKeywordSet.addAllKeywords(isCompulsory,
                     argMultimap.getAllValues(PREFIX_NAME),
                     argMultimap.getAllValues(PREFIX_GROUP),
                     argMultimap.getAllValues(PREFIX_ADDRESS),
@@ -58,9 +58,9 @@ public class FindCommandParser implements Parser<FindCommand> {
                     argMultimap.getAllValues(PREFIX_TIME));
         }
 
-        validateAllKeywords(findKeywords);
+        validateAllKeywords(personKeywordSet);
 
-        return new FindCommand(new PersonMatchesKeywordsPredicate(findKeywords));
+        return new FindCommand(new PersonMatchesKeywordsPredicate(personKeywordSet));
     }
 
     /**
@@ -103,16 +103,16 @@ public class FindCommandParser implements Parser<FindCommand> {
     }
 
 
-    private void validateAllKeywords(FindKeywords findKeywords) throws ParseException {
-        if (findKeywords.areAllCompulsoryKeywordsEmpty() && findKeywords.areAllOptionalKeywordsEmpty()) {
+    private void validateAllKeywords(PersonKeywordSet personKeywordSet) throws ParseException {
+        if (personKeywordSet.areAllCompulsoryKeywordsEmpty() && personKeywordSet.areAllOptionalKeywordsEmpty()) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
 
-        if (!findKeywords.areAllNonTimeKeywordsValid()) {
+        if (!personKeywordSet.areAllNonTimeKeywordsValid()) {
             throw new ParseException(MESSAGE_EMPTY_KEYWORD);
         }
-        if (!findKeywords.areAllTimeKeywordsValid()) {
+        if (!personKeywordSet.areAllTimeKeywordsValid()) {
             throw new ParseException(MESSAGE_INVALID_TIME_KEYWORD);
         }
     }

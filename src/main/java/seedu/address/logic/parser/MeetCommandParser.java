@@ -17,7 +17,7 @@ import seedu.address.logic.commands.MeetCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.TimeSlot;
 import seedu.address.model.meeting.Date;
-import seedu.address.model.person.FindKeywords;
+import seedu.address.model.person.PersonKeywordSet;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 /**
@@ -55,8 +55,8 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         // Parse the meeting time slot
         TimeSlot meetingSlot = ParserUtil.parseTimeSlot(argMultimap.getValue(PREFIX_TIME).get());
 
-        FindKeywords findKeywordsForMeeting = createFindKeywordsForMeeting(argMultimap);
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(findKeywordsForMeeting);
+        PersonKeywordSet personKeywordSetForMeeting = createPersonKeywordSetForMeeting(argMultimap);
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(personKeywordSetForMeeting);
 
         return new MeetCommand(description, meetingDate, meetingSlot, predicate);
     }
@@ -75,7 +75,8 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         return meetingDate;
     }
 
-    private static FindKeywords createFindKeywordsForMeeting(ArgumentMultimap argMultimap) throws ParseException {
+    private static PersonKeywordSet createPersonKeywordSetForMeeting(ArgumentMultimap argMultimap)
+            throws ParseException {
         // Extract optional filter keywords for attendees
         List<String> nameKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_NAME));
         List<String> groupKeywords = new ArrayList<>(argMultimap.getAllValues(PREFIX_GROUP));
@@ -89,22 +90,23 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         verifyValidKeywords(positionKeywords);
         verifyValidKeywords(tagKeywords);
 
-        FindKeywords findKeywords = FindKeywords.withMutableBuckets();
+        PersonKeywordSet personKeywordSet = PersonKeywordSet.withMutableBuckets();
 
         // Meet filters are optional for textual fields.
-        findKeywords.addAllKeywords(false, nameKeywords, groupKeywords, List.of(), List.of(),
+        personKeywordSet.addAllKeywords(false, nameKeywords, groupKeywords, List.of(), List.of(),
                 majorKeywords, List.of(), tagKeywords, positionKeywords, List.of());
 
         // Keep time as compulsory filter to preserve existing matching behavior.
-        findKeywords.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+        personKeywordSet.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
                 List.of(), List.of(), List.of(), new ArrayList<>(argMultimap.getAllValues(PREFIX_TIME)));
 
-        return findKeywords;
+        return personKeywordSet;
     }
 
     private static void verifyValidKeywords(List<String> keywords) throws ParseException {
+        System.out.println(keywords);
         for (String keyword : keywords) {
-            if (keyword.isEmpty()) {
+            if (keyword.trim().isEmpty()) {
                 throw new ParseException(MESSAGE_EMPTY_KEYWORD);
             }
         }

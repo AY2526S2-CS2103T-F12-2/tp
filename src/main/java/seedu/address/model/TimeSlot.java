@@ -41,7 +41,7 @@ public class TimeSlot {
         requireNonNull(timeSlot);
         checkArgument(isValidTimeSlot(timeSlot), MESSAGE_CONSTRAINTS);
 
-        LocalTime[] hours = timeParser(timeSlot);
+        LocalTime[] hours = parseTime(timeSlot);
         this.startTime = hours[0];
         this.endTime = hours[1];
     }
@@ -77,7 +77,7 @@ public class TimeSlot {
         return endTime;
     }
 
-    private static LocalTime[] timeParser(String input) throws WrongTimeFormatException {
+    private static LocalTime[] parseTime(String input) throws WrongTimeFormatException {
         String[] times = input.trim().split("-");
         if (times.length != 2) {
             throw new WrongTimeFormatException();
@@ -142,7 +142,7 @@ public class TimeSlot {
      */
     public static boolean isValidTimeSlot(String test) {
         try {
-            timeParser(test);
+            parseTime(test);
             return true;
         } catch (WrongTimeFormatException e) {
             return false;

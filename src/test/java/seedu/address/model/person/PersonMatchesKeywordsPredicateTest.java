@@ -333,7 +333,7 @@ public class PersonMatchesKeywordsPredicateTest {
                         List.of(), List.of("CS"), List.of(), List.of());
 
         String expected = PersonMatchesKeywordsPredicate.class.getCanonicalName()
-                + "{findKeywords=" + FindKeywords.class.getCanonicalName()
+                + "{personKeywordSet=" + PersonKeywordSet.class.getCanonicalName()
                 + "{compulsoryNameKeywords=" + keywords
                 + ", optionalNameKeywords=[]"
                 + ", compulsoryAddressKeywords=[]"

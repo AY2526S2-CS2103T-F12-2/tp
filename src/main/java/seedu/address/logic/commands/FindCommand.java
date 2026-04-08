@@ -19,7 +19,8 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds persons whose fields match the given keywords.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds persons whose fields match the given keywords.\n"
             + "Flags:\n"
             + "  -c (compulsory / all-match): ALL keywords under -c must match their respective fields.\n"
             + "  -o (optional / any-match):   ANY keyword under -o matching its field is sufficient.\n"
@@ -35,7 +36,7 @@ public class FindCommand extends Command {
             + "Note: [ -c ] and [ -o ] tokens are recognized as flags first.";
     public static final String MESSAGE_EMPTY_KEYWORD = "Keywords should be nonempty.";
     public static final String MESSAGE_INVALID_TIME_KEYWORD =
-            "Time keywords should be nonempty and in the format HHMM/HHMM-HHMM, e.g. 1000 or 0900-1100.";
+            "Time keywords should be nonempty and in the format HHMM or HHMM-HHMM, e.g. 1000 or 0900-1100.";
 
     private final PersonMatchesKeywordsPredicate predicate;
 

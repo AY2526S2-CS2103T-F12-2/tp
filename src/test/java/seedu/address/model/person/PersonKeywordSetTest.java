@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class FindKeywordsTest {
+public class PersonKeywordSetTest {
 
-    private static FindKeywords emptyKeywords() {
-        return new FindKeywords(
+    private static PersonKeywordSet emptyKeywords() {
+        return new PersonKeywordSet(
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -25,7 +25,7 @@ public class FindKeywordsTest {
 
     @Test
     public void addAllKeywords_compulsory_routesToCompulsoryBucketsOnly() {
-        FindKeywords keywords = FindKeywords.withMutableBuckets();
+        PersonKeywordSet keywords = PersonKeywordSet.withMutableBuckets();
 
         keywords.addAllKeywords(true,
                 List.of("alice"), List.of("cs2103t"), List.of("jurong"),
@@ -48,7 +48,7 @@ public class FindKeywordsTest {
 
     @Test
     public void addAllKeywords_optional_routesToOptionalBucketsOnly() {
-        FindKeywords keywords = FindKeywords.withMutableBuckets();
+        PersonKeywordSet keywords = PersonKeywordSet.withMutableBuckets();
 
         keywords.addAllKeywords(false,
                 List.of("bob"), List.of("bestie"), List.of("clementi"),
@@ -71,7 +71,7 @@ public class FindKeywordsTest {
 
     @Test
     public void areAllNonTimeKeywordsValid() {
-        FindKeywords valid = new FindKeywords(
+        PersonKeywordSet valid = new PersonKeywordSet(
                 List.of("alice"), List.of("bob"),
                 List.of("jurong"), List.of("clementi"),
                 List.of("123"), List.of("456"),
@@ -81,7 +81,7 @@ public class FindKeywordsTest {
                 List.of("ta"), List.of("lead"),
                 List.of("g1"), List.of("g2"),
                 List.of(), List.of());
-        FindKeywords invalid = new FindKeywords(
+        PersonKeywordSet invalid = new PersonKeywordSet(
                 List.of(""), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -98,7 +98,7 @@ public class FindKeywordsTest {
 
     @Test
     public void areAllTimeKeywordsValid() {
-        FindKeywords valid = new FindKeywords(
+        PersonKeywordSet valid = new PersonKeywordSet(
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -108,7 +108,7 @@ public class FindKeywordsTest {
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of("0900"), List.of("1000-1200"));
-        FindKeywords invalid = new FindKeywords(
+        PersonKeywordSet invalid = new PersonKeywordSet(
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -125,8 +125,8 @@ public class FindKeywordsTest {
 
     @Test
     public void emptyAndFuzzyChecks() {
-        FindKeywords empty = emptyKeywords();
-        FindKeywords optionalNotEmpty = new FindKeywords(
+        PersonKeywordSet empty = emptyKeywords();
+        PersonKeywordSet optionalNotEmpty = new PersonKeywordSet(
                 List.of(), List.of("alice"),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -136,7 +136,7 @@ public class FindKeywordsTest {
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of());
-        FindKeywords compulsoryNotEmpty = new FindKeywords(
+        PersonKeywordSet compulsoryNotEmpty = new PersonKeywordSet(
                 List.of(), List.of(),
                 List.of("jurong"), List.of(),
                 List.of(), List.of(),
@@ -146,7 +146,7 @@ public class FindKeywordsTest {
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of());
-        FindKeywords fuzzyNotEmpty = new FindKeywords(
+        PersonKeywordSet fuzzyNotEmpty = new PersonKeywordSet(
                 List.of(), List.of(),
                 List.of(), List.of(),
                 List.of(), List.of(),
@@ -167,7 +167,7 @@ public class FindKeywordsTest {
 
     @Test
     public void equalsAndToString() {
-        FindKeywords first = new FindKeywords(
+        PersonKeywordSet first = new PersonKeywordSet(
                 List.of("n1"), List.of("n2"),
                 List.of("a1"), List.of("a2"),
                 List.of("p1"), List.of("p2"),
@@ -177,7 +177,7 @@ public class FindKeywordsTest {
                 List.of("po1"), List.of("po2"),
                 List.of("g1"), List.of("g2"),
                 List.of("0900"), List.of("1000"));
-        FindKeywords firstCopy = new FindKeywords(
+        PersonKeywordSet firstCopy = new PersonKeywordSet(
                 List.of("n1"), List.of("n2"),
                 List.of("a1"), List.of("a2"),
                 List.of("p1"), List.of("p2"),
@@ -187,7 +187,7 @@ public class FindKeywordsTest {
                 List.of("po1"), List.of("po2"),
                 List.of("g1"), List.of("g2"),
                 List.of("0900"), List.of("1000"));
-        FindKeywords different = new FindKeywords(
+        PersonKeywordSet different = new PersonKeywordSet(
                 List.of("nX"), List.of("n2"),
                 List.of("a1"), List.of("a2"),
                 List.of("p1"), List.of("p2"),
@@ -204,7 +204,7 @@ public class FindKeywordsTest {
         assertFalse(first.equals(1));
         assertFalse(first.equals(different));
 
-        String expected = FindKeywords.class.getCanonicalName()
+        String expected = PersonKeywordSet.class.getCanonicalName()
                 + "{compulsoryNameKeywords=[n1]"
                 + ", optionalNameKeywords=[n2]"
                 + ", compulsoryAddressKeywords=[a1]"

@@ -2,6 +2,7 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_PERSONS_LISTED_OVERVIEW;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DATE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
@@ -43,6 +44,7 @@ public class MeetCommand extends Command {
             + PREFIX_MAJOR + ", "
             + PREFIX_POSITION + ", or "
             + PREFIX_TAG + " are provided, all contacts will be checked for validity.\n"
+            + "Other prefixes (such as " + PREFIX_ADDRESS + ") will be treated as normal text input.\n"
             + "Order of arguments (except for DESCRIPTION) can be changed.\n"
             + "Note that if a contact's available hours are not specified,"
             + " they will be considered available for all time slots.\n"

@@ -8,24 +8,24 @@ import seedu.address.model.TimeSlot;
 import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
 /**
- * Immutable container for all find command keyword buckets.
+ * Container for all find command keyword buckets.
  */
-public record FindKeywords(List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
-                           List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
-                           List<String> compulsoryPhoneKeywords, List<String> optionalPhoneKeywords,
-                           List<String> compulsoryMajorKeywords, List<String> optionalMajorKeywords,
-                           List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
-                           List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
-                           List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
-                           List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
-                           List<String> compulsoryTimeKeywords, List<String> optionalTimeKeywords) {
+public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
+                               List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
+                               List<String> compulsoryPhoneKeywords, List<String> optionalPhoneKeywords,
+                               List<String> compulsoryMajorKeywords, List<String> optionalMajorKeywords,
+                               List<String> compulsoryEmailKeywords, List<String> optionalEmailKeywords,
+                               List<String> compulsoryTagKeywords, List<String> optionalTagKeywords,
+                               List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
+                               List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
+                               List<String> compulsoryTimeKeywords, List<String> optionalTimeKeywords) {
 
 
     /**
-     * Creates a {@code FindKeywords} instance backed by mutable lists for parser accumulation.
+     * Creates a {@code PersonKeywordSet} instance backed by mutable lists for parser accumulation.
      */
-    public static FindKeywords withMutableBuckets() {
-        return new FindKeywords(
+    public static PersonKeywordSet withMutableBuckets() {
+        return new PersonKeywordSet(
                 new ArrayList<>(), new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(),
@@ -106,7 +106,7 @@ public record FindKeywords(List<String> compulsoryNameKeywords, List<String> opt
 
 
     private static boolean areNonTimeKeywordsValid(List<String> keywords) {
-        return keywords.stream().noneMatch(String::isEmpty);
+        return keywords.stream().noneMatch(keyword -> keyword.trim().isEmpty());
     }
 
     private static boolean areTimeKeywordsValid(List<String> keywords) {
@@ -168,10 +168,10 @@ public record FindKeywords(List<String> compulsoryNameKeywords, List<String> opt
         if (this == other) {
             return true;
         }
-        if (!(other instanceof FindKeywords)) {
+        if (!(other instanceof PersonKeywordSet)) {
             return false;
         }
-        FindKeywords otherKeywords = (FindKeywords) other;
+        PersonKeywordSet otherKeywords = (PersonKeywordSet) other;
         return compulsoryNameKeywords.equals(otherKeywords.compulsoryNameKeywords)
                 && optionalNameKeywords.equals(otherKeywords.optionalNameKeywords)
                 && compulsoryAddressKeywords.equals(otherKeywords.compulsoryAddressKeywords)
@@ -216,4 +216,3 @@ public record FindKeywords(List<String> compulsoryNameKeywords, List<String> opt
                 .toString();
     }
 }
-

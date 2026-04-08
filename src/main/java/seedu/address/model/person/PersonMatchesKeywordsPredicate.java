@@ -17,7 +17,7 @@ import seedu.address.model.TimeSlot;
  * optional (-o) keywords use any-match (OR) semantics.
  */
 public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
-    private final FindKeywords findKeywords;
+    private final PersonKeywordSet personKeywordSet;
     private final boolean areAllOptionalKeywordsEmpty;
     private final boolean areAllCompulsoryKeywordsEmpty;
 
@@ -35,7 +35,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
             List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
             List<String> compulsoryTimeKeywords, List<String> optionalTimeKeywords) {
-        this(new FindKeywords(
+        this(new PersonKeywordSet(
                 compulsoryNameKeywords, optionalNameKeywords,
                 compulsoryAddressKeywords, optionalAddressKeywords,
                 compulsoryPhoneKeywords, optionalPhoneKeywords,
@@ -48,12 +48,12 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     /**
-     * Creates a predicate that matches on the given {@code FindKeywords}.
+     * Creates a predicate that matches on the given {@code PersonKeywordSet}.
      */
-    public PersonMatchesKeywordsPredicate(FindKeywords findKeywords) {
-        this.findKeywords = findKeywords;
-        this.areAllOptionalKeywordsEmpty = findKeywords.areAllOptionalKeywordsEmpty();
-        this.areAllCompulsoryKeywordsEmpty = findKeywords.areAllCompulsoryKeywordsEmpty();
+    public PersonMatchesKeywordsPredicate(PersonKeywordSet personKeywordSet) {
+        this.personKeywordSet = personKeywordSet;
+        this.areAllOptionalKeywordsEmpty = personKeywordSet.areAllOptionalKeywordsEmpty();
+        this.areAllCompulsoryKeywordsEmpty = personKeywordSet.areAllCompulsoryKeywordsEmpty();
     }
 
     /**
@@ -104,8 +104,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesName(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryNameKeywords()
-                : findKeywords.optionalNameKeywords();
+                ? personKeywordSet.compulsoryNameKeywords()
+                : personKeywordSet.optionalNameKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -128,8 +128,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesAddress(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryAddressKeywords()
-                : findKeywords.optionalAddressKeywords();
+                ? personKeywordSet.compulsoryAddressKeywords()
+                : personKeywordSet.optionalAddressKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -144,8 +144,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesPhone(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryPhoneKeywords()
-                : findKeywords.optionalPhoneKeywords();
+                ? personKeywordSet.compulsoryPhoneKeywords()
+                : personKeywordSet.optionalPhoneKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -160,8 +160,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesEmail(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryEmailKeywords()
-                : findKeywords.optionalEmailKeywords();
+                ? personKeywordSet.compulsoryEmailKeywords()
+                : personKeywordSet.optionalEmailKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -189,8 +189,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesMajor(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryMajorKeywords()
-                : findKeywords.optionalMajorKeywords();
+                ? personKeywordSet.compulsoryMajorKeywords()
+                : personKeywordSet.optionalMajorKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -210,8 +210,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesTags(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryTagKeywords()
-                : findKeywords.optionalTagKeywords();
+                ? personKeywordSet.compulsoryTagKeywords()
+                : personKeywordSet.optionalTagKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -231,8 +231,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesPositions(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryPositionKeywords()
-                : findKeywords.optionalPositionKeywords();
+                ? personKeywordSet.compulsoryPositionKeywords()
+                : personKeywordSet.optionalPositionKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -252,8 +252,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesGroups(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryGroupKeywords()
-                : findKeywords.optionalGroupKeywords();
+                ? personKeywordSet.compulsoryGroupKeywords()
+                : personKeywordSet.optionalGroupKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -274,8 +274,8 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     private boolean matchesTime(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
-                ? findKeywords.compulsoryTimeKeywords()
-                : findKeywords.optionalTimeKeywords();
+                ? personKeywordSet.compulsoryTimeKeywords()
+                : personKeywordSet.optionalTimeKeywords();
         if (keywords.isEmpty()) {
             return isCompulsory;
         }
@@ -311,19 +311,20 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Returns 0 if there are no fuzzy-relevant keywords.
      */
     public int computeFuzzyScore(Person person) {
-        boolean hasFuzzyKeywords = !findKeywords.areAllFuzzyKeywordsEmpty();
+        boolean hasFuzzyKeywords = !personKeywordSet.areAllFuzzyKeywordsEmpty();
         if (!hasFuzzyKeywords) {
             return 0;
         }
 
-        int nameScore = computeFuzzyScoreOfField(person.getName().fullName, findKeywords.compulsoryNameKeywords(),
-                findKeywords.optionalNameKeywords());
-        int phoneScore = computeFuzzyScoreOfField(person.getPhone().value, findKeywords.compulsoryPhoneKeywords(),
-                findKeywords.optionalPhoneKeywords());
-        int addressScore = computeFuzzyScoreOfField(person.getAddress().value, findKeywords.compulsoryAddressKeywords(),
-                findKeywords.optionalAddressKeywords());
-        int emailScore = computeFuzzyScoreOfField(person.getEmail().value, findKeywords.compulsoryEmailKeywords(),
-                findKeywords.optionalEmailKeywords());
+        int nameScore = computeFuzzyScoreOfField(person.getName().fullName, personKeywordSet.compulsoryNameKeywords(),
+                personKeywordSet.optionalNameKeywords());
+        int phoneScore = computeFuzzyScoreOfField(person.getPhone().value, personKeywordSet.compulsoryPhoneKeywords(),
+                personKeywordSet.optionalPhoneKeywords());
+        int addressScore = computeFuzzyScoreOfField(person.getAddress().value,
+                personKeywordSet.compulsoryAddressKeywords(),
+                personKeywordSet.optionalAddressKeywords());
+        int emailScore = computeFuzzyScoreOfField(person.getEmail().value, personKeywordSet.compulsoryEmailKeywords(),
+                personKeywordSet.optionalEmailKeywords());
         return IntStream.of(nameScore, phoneScore, addressScore, emailScore)
                 .min().getAsInt();
     }
@@ -348,7 +349,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         }
 
         PersonMatchesKeywordsPredicate otherPredicate = (PersonMatchesKeywordsPredicate) other;
-        return findKeywords.equals(otherPredicate.findKeywords);
+        return personKeywordSet.equals(otherPredicate.personKeywordSet);
     }
 
     /**
@@ -357,7 +358,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .add("findKeywords", findKeywords)
+                .add("personKeywordSet", personKeywordSet)
                 .toString();
     }
 }
