@@ -353,4 +353,150 @@ public class PersonMatchesKeywordsPredicateTest {
                 + ", optionalTimeSlotKeywords=[]}";
         assertEquals(expected, predicate.toString());
     }
+
+    @Test
+    public void test_compulsoryAddressFuzzyKeyword_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of("Jurng"), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withAddress("123 Jurong Ave").build()));
+    }
+
+    @Test
+    public void test_compulsoryPhoneFuzzyKeyword_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of("94351254"), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withPhone("94351253").build()));
+    }
+
+    @Test
+    public void test_compulsoryPhoneKeywordNoMatch_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of("99999999"), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withPhone("94351253").build()));
+    }
+
+    @Test
+    public void test_compulsoryMajorKeywordNoMatch_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of("Computer Science"), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withMajors("Mathematics").build()));
+    }
+
+    @Test
+    public void test_compulsoryEmailFuzzyKeyword_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of("alcie@example.com"), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withEmail("alice@example.com").build()));
+    }
+
+    @Test
+    public void test_compulsoryTagKeywordNoMatch_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of("teammate"), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withTags("friend").build()));
+    }
+
+    @Test
+    public void test_compulsoryPositionKeywordNoMatch_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of("Project Lead"), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withPositions("Member").build()));
+    }
+
+    @Test
+    public void test_compulsoryGroupKeywordNoMatch_returnsFalse() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of("CS2103T"), List.of(), List.of(), List.of());
+        assertFalse(predicate.test(new PersonBuilder().withGroups("CS2101").build()));
+    }
+
+    @Test
+    public void test_compulsorySlotWithinAvailability_returnsTrue() {
+        PersonMatchesKeywordsPredicate predicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of("1000-1100"), List.of());
+        assertTrue(predicate.test(new PersonBuilder().withAvailableHours("0900-1200").build()));
+    }
+
+    @Test
+    public void test_computeFuzzyScore_withPhoneAndEmailKeywords() {
+        Person person = new PersonBuilder()
+                .withName("Alice")
+                .withPhone("94351253")
+                .withAddress("123 Jurong Ave")
+                .withEmail("alice@example.com")
+                .build();
+
+        PersonMatchesKeywordsPredicate phonePredicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of("94351254"),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of());
+        assertEquals(1, phonePredicate.computeFuzzyScore(person));
+
+        PersonMatchesKeywordsPredicate emailPredicate =
+                createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of("alice@example.co"), List.of(), List.of(),
+                        List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+        assertEquals(0, emailPredicate.computeFuzzyScore(person));
+    }
+
+    @Test
+    public void equals_differentLaterFields_returnsFalse() {
+        PersonMatchesKeywordsPredicate baseline =
+                createPredicate(List.of("name"), List.of("oname"), List.of("address"), List.of("oaddress"),
+                        List.of("phone"), List.of("ophone"), List.of("major"), List.of("omajor"),
+                        List.of("email"), List.of("oemail"), List.of("tag"), List.of("otag"),
+                        List.of("position"), List.of("oposition"), List.of("group"), List.of("ogroup"),
+                        List.of("0900"), List.of("1000"));
+
+        PersonMatchesKeywordsPredicate differentCompulsoryAddress =
+                createPredicate(List.of("name"), List.of("oname"), List.of("different"), List.of("oaddress"),
+                        List.of("phone"), List.of("ophone"), List.of("major"), List.of("omajor"),
+                        List.of("email"), List.of("oemail"), List.of("tag"), List.of("otag"),
+                        List.of("position"), List.of("oposition"), List.of("group"), List.of("ogroup"),
+                        List.of("0900"), List.of("1000"));
+
+        PersonMatchesKeywordsPredicate differentCompulsoryPhone =
+                createPredicate(List.of("name"), List.of("oname"), List.of("address"), List.of("oaddress"),
+                        List.of("different"), List.of("ophone"), List.of("major"), List.of("omajor"),
+                        List.of("email"), List.of("oemail"), List.of("tag"), List.of("otag"),
+                        List.of("position"), List.of("oposition"), List.of("group"), List.of("ogroup"),
+                        List.of("0900"), List.of("1000"));
+
+        PersonMatchesKeywordsPredicate differentCompulsoryEmail =
+                createPredicate(List.of("name"), List.of("oname"), List.of("address"), List.of("oaddress"),
+                        List.of("phone"), List.of("ophone"), List.of("major"), List.of("omajor"),
+                        List.of("different"), List.of("oemail"), List.of("tag"), List.of("otag"),
+                        List.of("position"), List.of("oposition"), List.of("group"), List.of("ogroup"),
+                        List.of("0900"), List.of("1000"));
+
+        PersonMatchesKeywordsPredicate differentOptionalTimeSlot =
+                createPredicate(List.of("name"), List.of("oname"), List.of("address"), List.of("oaddress"),
+                        List.of("phone"), List.of("ophone"), List.of("major"), List.of("omajor"),
+                        List.of("email"), List.of("oemail"), List.of("tag"), List.of("otag"),
+                        List.of("position"), List.of("oposition"), List.of("group"), List.of("ogroup"),
+                        List.of("0900"), List.of("different"));
+
+        assertFalse(baseline.equals(differentCompulsoryAddress));
+        assertFalse(baseline.equals(differentCompulsoryPhone));
+        assertFalse(baseline.equals(differentCompulsoryEmail));
+        assertFalse(baseline.equals(differentOptionalTimeSlot));
+    }
 }
