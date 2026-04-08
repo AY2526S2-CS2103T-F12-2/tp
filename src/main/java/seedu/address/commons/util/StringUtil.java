@@ -174,9 +174,4 @@ public class StringUtil {
             return false;
         }
     }
-    public static void main(String[] args) {
-        String text = "alice@example.com";
-        String tt = "alice@example.co";
-        System.out.println(minFuzzyDistance(text, tt));
-    }
 }
