@@ -18,7 +18,7 @@
 <fx:root type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
          title="CampusLink" minWidth="450" minHeight="600" onCloseRequest="#handleExit">
   <icons>
-    <Image url="@/images/address_book_32.png" />
+    <Image url="@/images/campusLink_logo.png" />
   </icons>
   <scene>
     <Scene>
@@ -35,16 +35,16 @@
           <Menu mnemonicParsing="false" text="Help">
             <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" onAction="#handleHelp" text="Help" />
           </Menu>
+          <Menu mnemonicParsing="false" text="Theme">
+            <MenuItem fx:id="colorModeMenuItem" mnemonicParsing="false" onAction="#handleToggleColorMode" text="Toggle Light/Dark Mode" />
+          </Menu>
         </MenuBar>
 
-        <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
+        <HBox alignment="CENTER" VBox.vgrow="NEVER">
           <padding>
             <Insets top="20" bottom="20" left="25" right="25"/>
           </padding>
-          <Label text="CampusLink" styleClass="logo-label" HBox.hgrow="ALWAYS"/>
-          <Button fx:id="colorModeButton" text="☀" onAction="#handleToggleColorMode"
-                  prefWidth="38" prefHeight="38"
-                  style="-fx-background-color: transparent; -fx-text-fill: #aaaaaa; -fx-font-size: 20px; -fx-cursor: hand; -fx-padding: 0; -fx-border-color: transparent; -fx-border-width: 0; -fx-background-insets: 0;"/>
+          <Label text="CampusLink" styleClass="logo-label"/>
         </HBox>
 
         <VBox styleClass="command-result-container">
