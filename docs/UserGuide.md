@@ -76,6 +76,9 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * For commands that parse prefixed fields (e.g. `find`), prefixes unrelated to that command are treated as normal text input instead of parsed fields.<br>
   e.g. in `find`, `f/` is treated as text unless it appears under a supported `find` prefix such as `n/` or `a/`.
 
+* For timeslot/available hours, start time and end time are both inclusive and regarded as in the same day, and end time must be after start time.<br>
+  e.g. `h/0900-1700` is valid but `h/1700-0900` is invalid.
+
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
@@ -197,6 +200,14 @@ Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]… [
 At least one field (besides the flag) must be provided. You cannot run `edit 1` with nothing else — there would be nothing to change.
 </div>
 
+<div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
+
+* **INDEX is relative to the displayed list.** After a `find` command, index 1 refers to the first contact *shown*, not the first contact in the full list. Always confirm which contact is at a given index before editing.
+* **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved.
+* **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
+* **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
+</div>
+
 **Examples:**
 
 * Update the phone number and email of the 1st contact:
@@ -226,16 +237,17 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 
 Use this when you want to quickly locate a specific person or a group of people. You can search across multiple fields at once and control whether multiple keywords for the same field must **all** match or whether **any one** of them is enough.
 
-Format: `find [[FLAG] PREFIX/KEYWORD]…`
+Format: `find [-c/-o PREFIX/KEYWORD…]…`
 
-| Argument | Description |
-|---|---|
-| `PREFIX/KEYWORD` | What to search for. Use `n/` for name, `p/` for phone, `e/` for email, `a/` for address, `g/` for group, `po/` for position, `m/` for major, `t/` for tag, `h/` for available hours. |
-| `-c` (flag) | **Compulsory / all-match** — ALL keywords under `-c` must match their respective fields. |
-| `-o` (flag) | **Optional / any-match** — ANY one keyword under `-o` matching its field is sufficient. |
+| Argument | Description                                                                                                                                                                                       |
+|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PREFIX/KEYWORD` | What to search for. Use `n/` for name, `p/` for phone, `e/` for email, `a/` for address, `g/` for group, `po/` for position, `m/` for major, `t/` for tag, `h/` for time/timeslot. |
+| `-c` (flag) | **Compulsory / all-match** — ALL keywords under `-c` must match their respective fields.                                                                                                          |
+| `-o` (flag) | **Optional / any-match** — ANY one keyword under `-o` matching its field is sufficient.                                                                                                           |
 
 **Arguments:**
 * At least one keyword must be supplied, each preceded by its prefix (e.g., `n/`).
+* Keyword for `h/` can be a time (e.g. `h/0900`) or a timeslot (e.g. `h/0900-1700`). A contact matches if they are available at the time/during the entire timeslot.
 * Flags control matching behavior for the keywords that follow them. By default (no flag) keywords are treated as `-o` (any-match).
 * Flags must be surrounded by spaces (but flag at the very end of a command does not require trailing space). Where input can be read as both a flag and a keyword, it is treated as a flag.
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
@@ -244,7 +256,7 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
 * This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
 * For names, only full words match — `H` does **not** match `Hans`.
-* Keywords for other fields (email, phone, etc.) are partial matches.
+* Keywords for other fields (email, phone, etc.) are partial matches. If a person's available hours are not set, they are always interpreted as available.
 * For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
 * When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
@@ -301,6 +313,14 @@ Format: `find [[FLAG] PREFIX/KEYWORD]…`
   ```
   *Outcome: Shows contacts who are in the `CS2103T` group **and** have at least one of `project` or `friend` tag.*
 
+<div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
+
+* **Empty keyword after a prefix is invalid.** `find n/` (prefix with nothing after it) is rejected. Every prefix must be followed by a non-empty keyword.
+* **No matching contacts** results in an empty contact list being displayed, not an error. Run `list` to restore the full view.
+* **Fuzzy matching is intentionally permissive.** A very short keyword (e.g., a single letter) may match many contacts because the edit-distance threshold is generous. Narrow your search with more characters or use `-c` for stricter results.
+* **The displayed list is updated**, not the saved data. Running `find` does not delete or modify any contact.
+</div>
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Scheduling a meeting : `meet`
@@ -324,6 +344,49 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 Examples:
 * `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
 * `meet Daily standup h/0900-1000`
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
+
+* **Description is required** and must be the first token, written as plain text with no prefix. A bare `meet h/0900-1000` with no description is invalid.
+* **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected.
+* **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
+* **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied filters (`n/`, `g/`, `m/`, `po/`, `t/`).
+* **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not overlap the requested slot are excluded.
+* **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
+* **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
+* **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
+</div>
+
+--------------------------------------------------------------------------------------------------------------------
+
+### Removing a meeting : `unmeet`
+
+**Deletes a scheduled meeting from the meeting list.**
+
+Use this when a meeting is canceled or no longer relevant. The meeting is identified by its index in the Meeting panel.
+
+Format: `unmeet INDEX`
+
+**Arguments:**
+
+| Argument | Description |
+|---|---|
+| `INDEX` | The number shown next to the meeting in the Meeting panel. Must be a positive whole number (1, 2, 3, …). |
+
+* The meeting is permanently removed. This does not affect any contacts who were listed as attendees.
+* After removal, remaining meetings are reindexed to stay contiguous (1, 2, 3, …).
+
+<div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
+Removal is permanent. There is no undo.
+</div>
+
+**Examples:**
+
+* Remove the 1st scheduled meeting:
+  ```
+  unmeet 1
+  ```
+  *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -721,6 +784,19 @@ Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.
 If the data file is edited incorrectly and becomes invalid, CampusLink will discard all data and start with an empty contact list on the next run. It is strongly recommended to keep a backup copy of the file before making any direct edits. Editing the file incorrectly may also cause unexpected behavior even if the file appears valid.
 </div>
 
+### Security limitations of password protection
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Important — password protection is application-level only.**
+
+CampusLink's password protects you from casual access through the app itself, but it does **not** encrypt the underlying files. Anyone with direct access to your file system can bypass or reset the password without ever opening CampusLink:
+
+* **Bypassing the password:** The password hash is stored in `preferences.json` in the app's home folder. Deleting or editing this file removes password protection entirely — no password will be required on the next launch.
+* **Reading contact data directly:** All contacts are stored as plain JSON in `data/addressbook.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
+* **Corrupting or wiping data:** Deleting or truncating `data/addressbook.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
+
+**What this means:** CampusLink's password is a convenience lock, not a security boundary. If you store sensitive contact information, you should protect the entire folder at the operating system level — for example, using BitLocker (Windows), FileVault (macOS), or equivalent filesystem-level encryption. Do not rely on the in-app password alone as a substitute for OS-level access control.
+</div>
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## FAQ
@@ -750,6 +826,7 @@ Action | Format, Examples
 **Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
 **Meet** | `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
+**Unmeet** | `unmeet INDEX`<br> e.g., `unmeet 1`
 **Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
 **Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`
 **Import** | `import fp/FILE_PATH`<br> e.g., `import fp/backup.json`
