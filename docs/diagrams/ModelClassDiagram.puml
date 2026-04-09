@@ -24,6 +24,11 @@ Class Tag
 Class Position
 Class Major
 Class Group
+Class TimeSlot
+Class FollowUp
+
+Class UniqueMeetingList
+Class Meeting
 
 Class I #FFFFFF
 }
@@ -41,7 +46,11 @@ ModelManager -right-> "1" UserPrefs
 UserPrefs .up.|> ReadOnlyUserPrefs
 
 AddressBook *--> "1" UniquePersonList
+AddressBook *--> "1" UniqueMeetingList
 UniquePersonList --> "~* all" Person
+UniqueMeetingList --> "~* all" Meeting
+Meeting --> "1..*" Person
+
 Person *--> Name
 Person *--> Phone
 Person *--> Email
@@ -50,6 +59,8 @@ Person *--> "*" Tag
 Person *--> "*" Position
 Person *-right> "*" Major
 Person *-left> "*" Group
+Person *--> "0..1" TimeSlot
+Person *--> FollowUp
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
@@ -58,5 +69,5 @@ Name -[hidden]right-> Phone
 Phone -[hidden]right-> Address
 Address -[hidden]right-> Email
 
-ModelManager --> "~* filtered" Person
+ModelManager --> "~* displayed" Person
 @enduml
