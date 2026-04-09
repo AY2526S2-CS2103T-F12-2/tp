@@ -126,16 +126,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return isCompulsory;
         }
         String fullName = person.getName().fullName;
-        if (isCompulsory) {
-            return keywords.stream()
-                    .allMatch(keyword -> StringUtil.fuzzyMatchesWord(fullName, keyword,
-                            StringUtil.FUZZY_MATCH_MAX_DISTANCE));
-        }
-        return keywords.stream()
-                .anyMatch(keyword -> Arrays.stream(keyword.trim().split("\\s+"))
-                        .anyMatch(part -> isFuzzyUsed
-                                ? StringUtil.fuzzyMatchesWord(fullName, part, StringUtil.FUZZY_MATCH_MAX_DISTANCE)
-                                : containsIgnoreCaseSubstring(fullName, part)));
+        return areFuzzyKeywordsMatched(isCompulsory, keywords, fullName);
     }
 
     /**
