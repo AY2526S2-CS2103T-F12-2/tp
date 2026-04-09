@@ -22,7 +22,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     private final PersonKeywordSet personKeywordSet;
     private final boolean areAllOptionalKeywordsEmpty;
     private final boolean areAllCompulsoryKeywordsEmpty;
-    private final boolean useFuzzy;
+    private final boolean isFuzzyUsed;
 
     /**
      * Creates a predicate that matches on compulsory and optional name, address, phone, major, email,
@@ -60,11 +60,11 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     /**
      * Creates a predicate that matches on the given {@code PersonKeywordSet}.
      *
-     * @param useFuzzy if {@code false}, optional name/address/phone/email matching uses substring only.
+     * @param isFuzzyUsed if {@code false}, optional name/address/phone/email matching uses substring only.
      */
-    public PersonMatchesKeywordsPredicate(PersonKeywordSet personKeywordSet, boolean useFuzzy) {
+    public PersonMatchesKeywordsPredicate(PersonKeywordSet personKeywordSet, boolean isFuzzyUsed) {
         this.personKeywordSet = personKeywordSet;
-        this.useFuzzy = useFuzzy;
+        this.isFuzzyUsed = isFuzzyUsed;
         this.areAllOptionalKeywordsEmpty = personKeywordSet.areAllOptionalKeywordsEmpty();
         this.areAllCompulsoryKeywordsEmpty = personKeywordSet.areAllCompulsoryKeywordsEmpty();
     }
@@ -133,7 +133,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         }
         return keywords.stream()
                 .anyMatch(keyword -> Arrays.stream(keyword.trim().split("\\s+"))
-                        .anyMatch(part -> useFuzzy
+                        .anyMatch(part -> isFuzzyUsed
                                 ? StringUtil.fuzzyMatchesWord(fullName, part, StringUtil.FUZZY_MATCH_MAX_DISTANCE)
                                 : containsIgnoreCaseSubstring(fullName, part)));
     }
@@ -196,7 +196,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         return keywords.stream()
                 .anyMatch(keyword -> Arrays.stream(keyword.trim().split("\\s+"))
                         .anyMatch(part -> containsIgnoreCaseSubstring(value, part)
-                                || (useFuzzy && StringUtil.fuzzyMatchesWord(value, part,
+                                || (isFuzzyUsed && StringUtil.fuzzyMatchesWord(value, part,
                                 StringUtil.FUZZY_MATCH_MAX_DISTANCE))));
     }
 
@@ -371,7 +371,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
 
         PersonMatchesKeywordsPredicate otherPredicate = (PersonMatchesKeywordsPredicate) other;
         return personKeywordSet.equals(otherPredicate.personKeywordSet)
-                && useFuzzy == otherPredicate.useFuzzy;
+                && isFuzzyUsed == otherPredicate.isFuzzyUsed;
     }
 
     /**
