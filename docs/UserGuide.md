@@ -479,10 +479,10 @@ Format: `sort CONDITION ORDER`
 | Argument | Values | Description |
 |---|---|---|
 | `CONDITION` | `firstname` | Sorts by the **first word** of each contact's name (e.g. "Alice" in "Alice Tan"). |
-| | `lastname` | Sorts by the **last word** of each contact's name (e.g. "Tan" in "Alice Tan"). |
+| | `lastname` | Sorts by the **last word** of each contact's name (e.g. "Tan" in "Alice Tan", or "Madonna" if that is the full name). |
 | | `recent` | Sorts by the order contacts were added or imported — newest first. |
-| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; oldest first for `recent`). |
-| | `d` or `DESC` | Descending order (Z → A for names; newest first for `recent`). |
+| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; newest first for `recent`). |
+| | `d` or `DESC` | Descending order (Z → A for names; oldest first for `recent`). |
 
 * The sort is case-insensitive.
 * Sorting is a **display preference only** — it does not modify the saved data and resets when you restart the app.

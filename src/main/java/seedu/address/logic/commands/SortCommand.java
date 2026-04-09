@@ -75,7 +75,7 @@ public class SortCommand extends Command {
             for (Person p : unmodifiableList) {
                 indexMap.put(p, idx++);
             }
-            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, Integer.MAX_VALUE));
+            fieldComparator = Comparator.<Person>comparingInt(p -> indexMap.getOrDefault(p, -1)).reversed();
             break;
         default:
             fieldComparator = Comparator.comparing(
@@ -86,9 +86,19 @@ public class SortCommand extends Command {
             fieldComparator = fieldComparator.reversed();
         }
 
-        // Pinned contacts always come first, then apply the field sort
-        Comparator<Person> fullComparator = Comparator.comparing((Person p) -> !p.isPinned())
-                .thenComparing(fieldComparator);
+        final Comparator<Person> finalFieldComparator = fieldComparator;
+
+        // Pinned contacts always come first, and are not affected by the sort mode
+        Comparator<Person> fullComparator = (p1, p2) -> {
+            if (p1.isPinned() && p2.isPinned()) {
+                return 0;
+            } else if (p1.isPinned()) {
+                return -1;
+            } else if (p2.isPinned()) {
+                return 1;
+            }
+            return finalFieldComparator.compare(p1, p2);
+        };
 
         model.updateSortComparator(fullComparator);
 
