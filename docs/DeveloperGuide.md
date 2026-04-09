@@ -23,7 +23,7 @@ Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 <div markdown="span" class="alert alert-primary">
 
-:bulb: **Tip:** The `.puml` files used to create diagrams are in this document `docs/diagrams` folder. Refer to the [_PlantUML Tutorial_ at se-edu/guides](https://se-education.org/guides/tutorials/plantUml.html) to learn how to create and edit diagrams.
+:bulb: **Tip:** The `.puml` diagram source files are in the `docs/diagrams` folder. Refer to the [_PlantUML Tutorial_ at se-edu/guides](https://se-education.org/guides/tutorials/plantUml.html) to learn how to create and edit diagrams.
 </div>
 
 ### Architecture
@@ -313,7 +313,7 @@ The pin feature allows users to pin up to 3 contacts to the top of the displayed
 **Command flow:**
 
 1. `AddressBookParser` recognises `pin` and delegates to `PinCommandParser`.
-2. `PinCommandParser` extracts the index (same pattern as `DeleteCommandParser`).
+2. `PinCommandParser` extracts and validates the index.
 3. `PinCommand#execute()` toggles the pin status:
    * If unpinned → checks the 3-pin limit → creates a new `Person` with `pinned = true` → calls `model.setPerson()`.
    * If already pinned → creates a new `Person` with `pinned = false` → calls `model.setPerson()`.

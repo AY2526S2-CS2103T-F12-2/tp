@@ -362,8 +362,6 @@ Examples:
 * **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
 </div>
 
-![Ui](images/features/meeting.png)
-
 --------------------------------------------------------------------------------------------------------------------
 
 ### Removing a meeting : `unmeet`
@@ -396,7 +394,6 @@ Removal is permanent. There is no undo.
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
   ![unmeet 1'](images/features/unmeetResult.png)
 
-![Ui](images/features/unmeeting.png)
 --------------------------------------------------------------------------------------------------------------------
 
 ### Deleting a contact : `delete`
@@ -746,7 +743,7 @@ Format: `followup INDEX f/NOTE`
 
 **Removes the reminder note from a contact once you have finished the task.**
 
-Use this after you have sent that email, made that call, or completed whatever you needed to follow up on. Clearing the reminder removes it from the startup reminder list.
+Use this after completing whatever you needed to follow up on. The contact will no longer appear in the startup reminder list.
 
 Format: `clearfollowup INDEX`
 
@@ -789,7 +786,7 @@ CampusLink saves your data automatically to the hard disk after every command th
 Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users are welcome to edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If the data file is edited incorrectly and becomes invalid, CampusLink will discard all data and start with an empty contact list on the next run. It is strongly recommended to keep a backup copy of the file before making any direct edits. Editing the file incorrectly may also cause unexpected behavior even if the file appears valid.
+If the data file is edited incorrectly, CampusLink may discard all data and start with an empty contact list, or exhibit unexpected behavior even if the file appears valid. Keep a backup before making any direct edits.
 </div>
 
 ### Security limitations of password protection
