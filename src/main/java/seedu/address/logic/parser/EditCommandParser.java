@@ -3,6 +3,8 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_FLAG;
+import static seedu.address.logic.parser.CliSyntax.FLAG_LENGTH;
+import static seedu.address.logic.parser.CliSyntax.FLAG_PREFIX_STRING;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
@@ -31,8 +33,6 @@ public class EditCommandParser implements Parser<EditCommand> {
 
     private static final String APPEND_FLAG_STRING_WITH_BLANK = "-a ";
     private static final String RESET_FLAG_STRING_WITH_BLANK = "-r ";
-    private static final String FLAG_PREFIX_STRING = "-";
-    private static final int FLAG_LENGTH = 2;
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand

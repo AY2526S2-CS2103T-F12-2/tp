@@ -2,8 +2,10 @@ package seedu.address.model.person;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -224,6 +226,59 @@ public class PersonKeywordSetTest {
                 + ", compulsoryTimeKeywords=[0900]"
                 + ", optionalTimeKeywords=[1000]}";
         assertEquals(expected, first.toString());
+    }
+
+    @Test
+    public void constructor_nullBucket_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new PersonKeywordSet(
+                null, List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of()));
+    }
+
+    @Test
+    public void constructor_bucketContainsNull_throwsNullPointerException() {
+        List<String> nameKeywordsWithNull = new ArrayList<>();
+        nameKeywordsWithNull.add(null);
+
+        assertThrows(NullPointerException.class, () -> new PersonKeywordSet(
+                nameKeywordsWithNull, List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of(),
+                List.of(), List.of()));
+    }
+
+    @Test
+    public void addAllKeywords_nullIncomingKeywords_throwsNullPointerException() {
+        PersonKeywordSet keywords = PersonKeywordSet.withMutableBuckets();
+
+        assertThrows(NullPointerException.class, () -> keywords.addAllKeywords(true,
+                null, List.of(), List.of(),
+                List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of()));
+    }
+
+    @Test
+    public void addAllKeywords_incomingKeywordsContainsNull_throwsNullPointerException() {
+        PersonKeywordSet keywords = PersonKeywordSet.withMutableBuckets();
+        List<String> namesWithNull = new ArrayList<>();
+        namesWithNull.add(null);
+
+        assertThrows(NullPointerException.class, () -> keywords.addAllKeywords(true,
+                namesWithNull, List.of(), List.of(),
+                List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of()));
     }
 }
 
