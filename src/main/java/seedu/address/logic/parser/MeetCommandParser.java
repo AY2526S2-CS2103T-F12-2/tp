@@ -56,7 +56,7 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         TimeSlot meetingSlot = ParserUtil.parseTimeSlot(argMultimap.getValue(PREFIX_TIME).get());
 
         PersonKeywordSet personKeywordSetForMeeting = createPersonKeywordSetForMeeting(argMultimap);
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(personKeywordSetForMeeting);
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(personKeywordSetForMeeting, false);
 
         return new MeetCommand(description, meetingDate, meetingSlot, predicate);
     }
