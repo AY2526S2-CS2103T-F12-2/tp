@@ -30,6 +30,7 @@ public class UnmeetCommand extends Command {
      * Creates an {@code UnmeetCommand} to delete the meeting at {@code targetIndex}.
      */
     public UnmeetCommand(Index targetIndex) {
+        requireNonNull(targetIndex);
         this.targetIndex = targetIndex;
     }
 

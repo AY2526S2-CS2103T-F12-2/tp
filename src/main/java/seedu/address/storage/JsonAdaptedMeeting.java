@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.TimeSlot;
+import seedu.address.model.exceptions.WrongTimeFormatException;
 import seedu.address.model.meeting.Date;
 import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
 
 /**
  * Jackson-friendly version of {@link Meeting}.
@@ -61,6 +61,7 @@ class JsonAdaptedMeeting {
     }
 
     public Meeting toModelType() throws IllegalValueException {
+        // Validate required scalar fields before constructing any model objects.
         if (description == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "description"));
         }
@@ -74,6 +75,7 @@ class JsonAdaptedMeeting {
             throw new IllegalValueException(MESSAGE_INVALID_INDEX);
         }
 
+        // Persisted meetings may come from older data; missing date falls back to today's date.
         Date modelDate = Date.today();
         if (date != null) {
             if (!Date.isValidDate(date)) {
@@ -88,16 +90,19 @@ class JsonAdaptedMeeting {
         try {
             modelStartTime = LocalTime.parse(startTime);
             modelEndTime = LocalTime.parse(endTime);
+            // Constructor enforces start-before-end and same-day invariants.
             modelTimeSlot = new TimeSlot(modelStartTime, modelEndTime);
         } catch (DateTimeParseException | WrongTimeFormatException ex) {
             throw new IllegalValueException(MESSAGE_INVALID_TIME_FORMAT);
         }
 
+        // Convert nested attendees after scalar validation so errors map cleanly to data sections.
         List<Person> modelAttendees = new ArrayList<>();
         for (JsonAdaptedPerson attendee : attendees) {
             modelAttendees.add(attendee.toModelType());
         }
 
+        // Index defaults to 0 so the model layer can assign list position when needed.
         int modelIndex = index == null ? 0 : index;
         return new Meeting(modelIndex, description, modelDate, modelTimeSlot, modelAttendees);
     }

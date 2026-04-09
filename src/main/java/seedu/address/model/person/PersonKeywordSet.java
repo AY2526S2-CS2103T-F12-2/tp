@@ -1,14 +1,17 @@
 package seedu.address.model.person;
 
+import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.TimeSlot;
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
+import seedu.address.model.exceptions.WrongTimeFormatException;
 
 /**
- * Container for all find command keyword buckets.
+ * Container for all compulsory or optional keywords of a person.
  */
 public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String> optionalNameKeywords,
                                List<String> compulsoryAddressKeywords, List<String> optionalAddressKeywords,
@@ -19,6 +22,41 @@ public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String>
                                List<String> compulsoryPositionKeywords, List<String> optionalPositionKeywords,
                                List<String> compulsoryGroupKeywords, List<String> optionalGroupKeywords,
                                List<String> compulsoryTimeKeywords, List<String> optionalTimeKeywords) {
+
+    /**
+     * Constructs a new <code>PersonKeywordSet</code> instance.
+     * Every list must be non-null and contain no null elements.
+     */
+    public PersonKeywordSet {
+        requireAllNonNull(compulsoryNameKeywords, optionalNameKeywords,
+                compulsoryAddressKeywords, optionalAddressKeywords,
+                compulsoryPhoneKeywords, optionalPhoneKeywords,
+                compulsoryMajorKeywords, optionalMajorKeywords,
+                compulsoryEmailKeywords, optionalEmailKeywords,
+                compulsoryTagKeywords, optionalTagKeywords,
+                compulsoryPositionKeywords, optionalPositionKeywords,
+                compulsoryGroupKeywords, optionalGroupKeywords,
+                compulsoryTimeKeywords, optionalTimeKeywords);
+
+        ensureNoNullElements(compulsoryNameKeywords);
+        ensureNoNullElements(optionalNameKeywords);
+        ensureNoNullElements(compulsoryAddressKeywords);
+        ensureNoNullElements(optionalAddressKeywords);
+        ensureNoNullElements(compulsoryPhoneKeywords);
+        ensureNoNullElements(optionalPhoneKeywords);
+        ensureNoNullElements(compulsoryMajorKeywords);
+        ensureNoNullElements(optionalMajorKeywords);
+        ensureNoNullElements(compulsoryEmailKeywords);
+        ensureNoNullElements(optionalEmailKeywords);
+        ensureNoNullElements(compulsoryTagKeywords);
+        ensureNoNullElements(optionalTagKeywords);
+        ensureNoNullElements(compulsoryPositionKeywords);
+        ensureNoNullElements(optionalPositionKeywords);
+        ensureNoNullElements(compulsoryGroupKeywords);
+        ensureNoNullElements(optionalGroupKeywords);
+        ensureNoNullElements(compulsoryTimeKeywords);
+        ensureNoNullElements(optionalTimeKeywords);
+    }
 
 
     /**
@@ -65,11 +103,18 @@ public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String>
                                     List<String> compulsoryBucket,
                                     List<String> optionalBucket,
                                     List<String> incomingKeywords) {
+        requireNonNull(incomingKeywords);
+        ensureNoNullElements(incomingKeywords);
+        // Route one parsed keyword batch into either the compulsory or optional side.
         if (isCompulsory) {
             compulsoryBucket.addAll(incomingKeywords);
         } else {
             optionalBucket.addAll(incomingKeywords);
         }
+    }
+
+    private static void ensureNoNullElements(List<String> keywords) {
+        requireAllNonNull(keywords);
     }
 
     /**
@@ -111,6 +156,7 @@ public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String>
 
     private static boolean areTimeKeywordsValid(List<String> keywords) {
         for (String keyword : keywords) {
+            // Allow both explicit slots (HHMM-HHMM) and single times (HHMM).
             if (TimeSlot.isValidTimeSlot(keyword)) {
                 continue;
             }
@@ -161,35 +207,6 @@ public record PersonKeywordSet(List<String> compulsoryNameKeywords, List<String>
                 && compulsoryAddressKeywords.isEmpty() && optionalAddressKeywords.isEmpty()
                 && compulsoryPhoneKeywords.isEmpty() && optionalPhoneKeywords.isEmpty()
                 && compulsoryEmailKeywords.isEmpty() && optionalEmailKeywords.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (this == other) {
-            return true;
-        }
-        if (!(other instanceof PersonKeywordSet)) {
-            return false;
-        }
-        PersonKeywordSet otherKeywords = (PersonKeywordSet) other;
-        return compulsoryNameKeywords.equals(otherKeywords.compulsoryNameKeywords)
-                && optionalNameKeywords.equals(otherKeywords.optionalNameKeywords)
-                && compulsoryAddressKeywords.equals(otherKeywords.compulsoryAddressKeywords)
-                && optionalAddressKeywords.equals(otherKeywords.optionalAddressKeywords)
-                && compulsoryPhoneKeywords.equals(otherKeywords.compulsoryPhoneKeywords)
-                && optionalPhoneKeywords.equals(otherKeywords.optionalPhoneKeywords)
-                && compulsoryMajorKeywords.equals(otherKeywords.compulsoryMajorKeywords)
-                && optionalMajorKeywords.equals(otherKeywords.optionalMajorKeywords)
-                && compulsoryEmailKeywords.equals(otherKeywords.compulsoryEmailKeywords)
-                && optionalEmailKeywords.equals(otherKeywords.optionalEmailKeywords)
-                && compulsoryTagKeywords.equals(otherKeywords.compulsoryTagKeywords)
-                && optionalTagKeywords.equals(otherKeywords.optionalTagKeywords)
-                && compulsoryPositionKeywords.equals(otherKeywords.compulsoryPositionKeywords)
-                && optionalPositionKeywords.equals(otherKeywords.optionalPositionKeywords)
-                && compulsoryGroupKeywords.equals(otherKeywords.compulsoryGroupKeywords)
-                && optionalGroupKeywords.equals(otherKeywords.optionalGroupKeywords)
-                && compulsoryTimeKeywords.equals(otherKeywords.compulsoryTimeKeywords)
-                && optionalTimeKeywords.equals(otherKeywords.optionalTimeKeywords);
     }
 
     @Override

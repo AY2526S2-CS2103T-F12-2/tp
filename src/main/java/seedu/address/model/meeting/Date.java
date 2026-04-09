@@ -41,7 +41,7 @@ public class Date {
     }
 
     /**
-     * Returns true if {@code test} is a valid ISO-8601 date string.
+     * Returns true if {@code test} is a valid date string.
      */
     public static boolean isValidDate(String test) {
         requireNonNull(test);

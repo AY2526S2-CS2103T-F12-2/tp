@@ -249,6 +249,7 @@ public class EditCommand extends Command {
         }
 
         public void setEditFlag(EditFlag flag) {
+            requireNonNull(flag);
             this.flag = flag;
         }
 

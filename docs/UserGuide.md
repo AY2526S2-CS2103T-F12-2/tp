@@ -73,6 +73,9 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * Extraneous parameters for commands that do not take in parameters (such as `help`, `list`, `exit` and `clear`) will be ignored.<br>
   e.g. if the command specifies `help 123`, it will be interpreted as `help`.
 
+* For commands that parse prefixed fields (e.g. `find`), prefixes unrelated to that command are treated as normal text input instead of parsed fields.<br>
+  e.g. in `find`, `f/` is treated as text unless it appears under a supported `find` prefix such as `n/` or `a/`.
+
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 

@@ -1,5 +1,7 @@
 package seedu.address.model.person;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -62,6 +64,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      */
     @Override
     public boolean test(Person person) {
+        requireNonNull(person);
         if (areAllCompulsoryKeywordsEmpty && areAllOptionalKeywordsEmpty) {
             return true; // No keywords means all persons match.
         }
@@ -70,15 +73,16 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
     }
 
     private boolean testCompulsory(Person person) {
-        return matchesName(person, true)
-                && matchesAddress(person, true)
-                && matchesPhone(person, true)
-                && matchesMajor(person, true)
-                && matchesEmail(person, true)
-                && matchesTags(person, true)
-                && matchesPositions(person, true)
-                && matchesGroups(person, true)
-                && matchesTime(person, true);
+        // Every compulsory bucket is AND-ed: all specified fields must satisfy their own matching rule.
+        return isNameMatched(person, true)
+                && isAddressMatched(person, true)
+                && isPhoneMatched(person, true)
+                && isMajorMatched(person, true)
+                && isEmailMatched(person, true)
+                && areTagsMatched(person, true)
+                && arePositionsMatched(person, true)
+                && areGroupsMatched(person, true)
+                && isTimeMatched(person, true);
     }
 
     private boolean testOptional(Person person) {
@@ -86,15 +90,16 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return true;
         }
 
-        return matchesName(person, false)
-                || matchesAddress(person, false)
-                || matchesPhone(person, false)
-                || matchesMajor(person, false)
-                || matchesEmail(person, false)
-                || matchesTags(person, false)
-                || matchesPositions(person, false)
-                || matchesGroups(person, false)
-                || matchesTime(person, false);
+        // Optional buckets are OR-ed across fields: a match in any field is sufficient.
+        return isNameMatched(person, false)
+                || isAddressMatched(person, false)
+                || isPhoneMatched(person, false)
+                || isMajorMatched(person, false)
+                || isEmailMatched(person, false)
+                || areTagsMatched(person, false)
+                || arePositionsMatched(person, false)
+                || areGroupsMatched(person, false)
+                || isTimeMatched(person, false);
     }
 
     /**
@@ -102,7 +107,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Compulsory: all keywords must match (and every space-separated part of each keyword must match).
      * Optional: any space-separated part of any keyword matching is sufficient.
      */
-    private boolean matchesName(Person person, boolean isCompulsory) {
+    private boolean isNameMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryNameKeywords()
                 : personKeywordSet.optionalNameKeywords();
@@ -126,7 +131,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Compulsory: all keywords must match (every space-separated part of each keyword must match).
      * Optional: any space-separated part of any keyword matching is sufficient.
      */
-    private boolean matchesAddress(Person person, boolean isCompulsory) {
+    private boolean isAddressMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryAddressKeywords()
                 : personKeywordSet.optionalAddressKeywords();
@@ -134,7 +139,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return isCompulsory;
         }
         String address = person.getAddress().value;
-        return areKeywordsFuzzyMatched(isCompulsory, keywords, address);
+        return areFuzzyKeywordsMatched(isCompulsory, keywords, address);
     }
 
     /**
@@ -142,7 +147,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Compulsory: all keywords must match (every space-separated part of each keyword must match).
      * Optional: any space-separated part of any keyword matching is sufficient.
      */
-    private boolean matchesPhone(Person person, boolean isCompulsory) {
+    private boolean isPhoneMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryPhoneKeywords()
                 : personKeywordSet.optionalPhoneKeywords();
@@ -150,7 +155,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return isCompulsory;
         }
         String phone = person.getPhone().value;
-        return areKeywordsFuzzyMatched(isCompulsory, keywords, phone);
+        return areFuzzyKeywordsMatched(isCompulsory, keywords, phone);
     }
 
     /**
@@ -158,7 +163,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Compulsory: all keywords must match (every space-separated part of each keyword must match).
      * Optional: any space-separated part of any keyword matching is sufficient.
      */
-    private boolean matchesEmail(Person person, boolean isCompulsory) {
+    private boolean isEmailMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryEmailKeywords()
                 : personKeywordSet.optionalEmailKeywords();
@@ -166,19 +171,19 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return isCompulsory;
         }
         String email = person.getEmail().value;
-        return areKeywordsFuzzyMatched(isCompulsory, keywords, email);
+        return areFuzzyKeywordsMatched(isCompulsory, keywords, email);
     }
 
-    private boolean areKeywordsFuzzyMatched(boolean isCompulsory, List<String> keywords, String value) {
+    private boolean areFuzzyKeywordsMatched(boolean isCompulsory, List<String> keywords, String value) {
         if (isCompulsory) {
             return keywords.stream()
-                    .allMatch(keyword -> containsIgnoreCase(value, keyword)
+                    .allMatch(keyword -> containsIgnoreCaseSubstring(value, keyword)
                             || StringUtil.fuzzyMatchesWord(value, keyword,
                             StringUtil.FUZZY_MATCH_MAX_DISTANCE));
         }
         return keywords.stream()
                 .anyMatch(keyword -> Arrays.stream(keyword.trim().split("\\s+"))
-                        .anyMatch(part -> containsIgnoreCase(value, part)
+                        .anyMatch(part -> containsIgnoreCaseSubstring(value, part)
                                 || StringUtil.fuzzyMatchesWord(value, part,
                                 StringUtil.FUZZY_MATCH_MAX_DISTANCE)));
     }
@@ -187,7 +192,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * Returns true if major keywords each match at least one of the person's majors.
      * Compulsory: all keywords must match some major. Optional: any keyword matching some major suffices.
      */
-    private boolean matchesMajor(Person person, boolean isCompulsory) {
+    private boolean isMajorMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryMajorKeywords()
                 : personKeywordSet.optionalMajorKeywords();
@@ -197,18 +202,18 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (isCompulsory) {
             return keywords.stream()
                     .allMatch(keyword -> person.getMajors().stream()
-                            .anyMatch(major -> containsIgnoreCase(major.value, keyword)));
+                            .anyMatch(major -> containsIgnoreCaseSubstring(major.value, keyword)));
         }
         return keywords.stream()
                 .anyMatch(keyword -> person.getMajors().stream()
-                        .anyMatch(major -> containsIgnoreCase(major.value, keyword)));
+                        .anyMatch(major -> containsIgnoreCaseSubstring(major.value, keyword)));
     }
 
     /**
      * Returns true if tag keywords each match at least one of the person's tags (exact substring only).
      * Compulsory: all keywords must match some tag. Optional: any keyword matching some tag suffices.
      */
-    private boolean matchesTags(Person person, boolean isCompulsory) {
+    private boolean areTagsMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryTagKeywords()
                 : personKeywordSet.optionalTagKeywords();
@@ -218,18 +223,18 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (isCompulsory) {
             return keywords.stream()
                     .allMatch(keyword -> person.getTags().stream()
-                            .anyMatch(tag -> containsIgnoreCase(tag.tagName, keyword)));
+                            .anyMatch(tag -> containsIgnoreCaseSubstring(tag.tagName, keyword)));
         }
         return keywords.stream()
                 .anyMatch(keyword -> person.getTags().stream()
-                        .anyMatch(tag -> containsIgnoreCase(tag.tagName, keyword)));
+                        .anyMatch(tag -> containsIgnoreCaseSubstring(tag.tagName, keyword)));
     }
 
     /**
      * Returns true if position keywords each match at least one of the person's positions.
      * Compulsory: all keywords must match some position. Optional: any keyword matching some position suffices.
      */
-    private boolean matchesPositions(Person person, boolean isCompulsory) {
+    private boolean arePositionsMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryPositionKeywords()
                 : personKeywordSet.optionalPositionKeywords();
@@ -239,18 +244,18 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (isCompulsory) {
             return keywords.stream()
                     .allMatch(keyword -> person.getPositions().stream()
-                            .anyMatch(position -> containsIgnoreCase(position.value, keyword)));
+                            .anyMatch(position -> containsIgnoreCaseSubstring(position.value, keyword)));
         }
         return keywords.stream()
                 .anyMatch(keyword -> person.getPositions().stream()
-                        .anyMatch(position -> containsIgnoreCase(position.value, keyword)));
+                        .anyMatch(position -> containsIgnoreCaseSubstring(position.value, keyword)));
     }
 
     /**
      * Returns true if group keywords each match at least one of the person's groups.
      * Compulsory: all keywords must match some group. Optional: any keyword matching some group suffices.
      */
-    private boolean matchesGroups(Person person, boolean isCompulsory) {
+    private boolean areGroupsMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryGroupKeywords()
                 : personKeywordSet.optionalGroupKeywords();
@@ -260,11 +265,11 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
         if (isCompulsory) {
             return keywords.stream()
                     .allMatch(keyword -> person.getGroups().stream()
-                            .anyMatch(group -> containsIgnoreCase(group.value, keyword)));
+                            .anyMatch(group -> containsIgnoreCaseSubstring(group.value, keyword)));
         }
         return keywords.stream()
                 .anyMatch(keyword -> person.getGroups().stream()
-                        .anyMatch(group -> containsIgnoreCase(group.value, keyword)));
+                        .anyMatch(group -> containsIgnoreCaseSubstring(group.value, keyword)));
     }
 
     /**
@@ -272,7 +277,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
      * or when the person has no available hours.
      * Compulsory: all keywords must be covered. Optional: any keyword being covered suffices.
      */
-    private boolean matchesTime(Person person, boolean isCompulsory) {
+    private boolean isTimeMatched(Person person, boolean isCompulsory) {
         List<String> keywords = isCompulsory
                 ? personKeywordSet.compulsoryTimeKeywords()
                 : personKeywordSet.optionalTimeKeywords();
@@ -283,6 +288,7 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
             return true; // If person has no available hours, they are always free by default.
         }
 
+        // Keywords can be either a full slot (HHMM-HHMM) or a single time (HHMM).
         if (isCompulsory) {
             return keywords.stream()
                     .allMatch(keyword -> person.getAvailableHours().stream()
@@ -291,16 +297,19 @@ public class PersonMatchesKeywordsPredicate implements Predicate<Person> {
                                     : TimeSlot.isTimeWithinTimeSlot(TimeSlot.stringToTime(keyword), duration)));
         }
         return keywords.stream()
-                .anyMatch(keyword -> person.getAvailableHours().stream()
-                        .anyMatch(duration -> TimeSlot.isValidTimeSlot(keyword)
-                                ? TimeSlot.isSlotWithinTimeSlot(new TimeSlot(keyword), duration)
-                                : TimeSlot.isTimeWithinTimeSlot(TimeSlot.stringToTime(keyword), duration)));
+                .anyMatch(keyword -> TimeSlot.isValidTimeSlot(keyword)
+                        ? person.getAvailableHours().stream()
+                          .anyMatch(duration -> TimeSlot.isSlotWithinTimeSlot(
+                                  new TimeSlot(keyword), duration))
+                        : person.getAvailableHours().stream()
+                          .anyMatch(duration -> TimeSlot.isTimeWithinTimeSlot(
+                                  TimeSlot.stringToTime(keyword), duration)));
     }
 
     /**
      * Returns true if {@code sentence} contains {@code keyword} as a case-insensitive substring.
      */
-    private boolean containsIgnoreCase(String sentence, String keyword) {
+    private boolean containsIgnoreCaseSubstring(String sentence, String keyword) {
         return sentence.toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 

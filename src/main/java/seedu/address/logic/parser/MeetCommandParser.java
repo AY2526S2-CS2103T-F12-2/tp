@@ -65,12 +65,11 @@ public class MeetCommandParser implements Parser<MeetCommand> {
         // Date defaults to today when omitted.
         Date meetingDate = Date.today();
         if (argMultimap.getValue(PREFIX_DATE).isPresent()) {
-            String dateValue = argMultimap.getValue(PREFIX_DATE).get();
-            try {
-                meetingDate = new Date(dateValue);
-            } catch (IllegalArgumentException ex) {
+            String dateValue = argMultimap.getValue(PREFIX_DATE).get().trim();
+            if (!Date.isValidDate(dateValue)) {
                 throw new ParseException(Date.MESSAGE_CONSTRAINTS);
             }
+            meetingDate = new Date(dateValue);
         }
         return meetingDate;
     }

@@ -16,6 +16,8 @@ import seedu.address.model.person.Person;
  * Represents a meeting in the address book domain model.
  */
 public class Meeting {
+    private static final String MEETING = "Meeting";
+
     private final int index;
     private final String description;
     private final TimeSlot timeSlot;
@@ -51,6 +53,7 @@ public class Meeting {
         requireNonNull(date);
         requireNonNull(timeSlot);
         requireNonNull(attendees);
+        // Invariant: a meeting must always involve at least one attendee.
         assert !attendees.isEmpty() : "A meeting must have at least one attendee";
         if (index < 0) {
             throw new IllegalArgumentException("Meeting index cannot be negative");
@@ -111,6 +114,7 @@ public class Meeting {
             }
         }
 
+        // Preserve identity when there is no effective change.
         if (!hasUpdatedAttendee) {
             return this;
         }
@@ -155,24 +159,23 @@ public class Meeting {
      * Returns a string representation of the meeting without the index.
      */
     public String toNoIndexString() {
-        String attendeeString = this.attendees.stream()
-                .map(Person::getName)
-                .map(name -> name.fullName)
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("");
-        return "Meeting: " + description + ". Date: " + date + ". Time: "
-                + timeSlot + ". Attendees: " + attendeeString;
+        return MEETING + ": " + this.toMeetingContentString();
     }
 
     @Override
     public String toString() {
+        return MEETING + " #" + index + ": " + this.toMeetingContentString();
+    }
+
+    private String toMeetingContentString() {
+        // Keep attendee formatting in one place so both string views stay consistent.
         String attendeeString = this.attendees.stream()
                 .map(Person::getName)
                 .map(name -> name.fullName)
                 .reduce((a, b) -> a + ", " + b)
                 .orElse("");
-        return "Meeting #" + index + ": " + description + ". Date: " + date + ". Time: " + timeSlot
-                + ". Attendees: " + attendeeString;
+        return description + ". Date: " + date + ". Time: "
+                + timeSlot + ". Attendees: " + attendeeString;
     }
 
     @Override

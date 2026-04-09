@@ -1,6 +1,16 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_FOLLOW_UP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_MAJOR;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_POSITION;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 
 import java.util.Comparator;
 
@@ -27,12 +37,16 @@ public class FindCommand extends Command {
             + "  No flag defaults to -o (any-match).\n"
             + "A contact is returned when all -c conditions are satisfied AND "
             + "(if -o keywords exist) at least one -o field matches.\n"
-            + "Parameters: [FLAG] [n/NAME]... [a/ADDRESS]... [p/PHONE]... [m/MAJOR]... [e/EMAIL]... "
-            + "[t/TAG]... [po/POSITION]... [g/GROUP]... [h/TIME_SLOT] OR [h/TIME]\n"
-            + "Example: " + COMMAND_WORD + " -o n/alice n/bob n/charlie\n"
-            + "Example: " + COMMAND_WORD + " -c n/alice n/bob\n"
-            + "Example: " + COMMAND_WORD + " -c a/Jurong -o p/94351253\n"
-            + "Example: " + COMMAND_WORD + " g/CS2103T\n"
+            + "Parameters: [FLAG] [" + PREFIX_NAME + "NAME]... [" + PREFIX_ADDRESS + "ADDRESS]... ["
+            + PREFIX_PHONE + "PHONE]... [" + PREFIX_MAJOR + "MAJOR]... [" + PREFIX_EMAIL + "EMAIL]... "
+            + "[" + PREFIX_TAG + "TAG]... [" + PREFIX_POSITION + "POSITION]... [" + PREFIX_GROUP + "GROUP]... ["
+            + PREFIX_TIME + "TIME_SLOT] OR [" + PREFIX_TIME + "TIME]\n"
+            + "Other prefixes (such as " + PREFIX_FOLLOW_UP + ") will be treated as normal text input.\n"
+            + "Example: " + COMMAND_WORD + " -o " + PREFIX_NAME + "alice " + PREFIX_NAME + "bob "
+            + PREFIX_NAME + "charlie\n"
+            + "Example: " + COMMAND_WORD + " -c " + PREFIX_NAME + "alice " + PREFIX_NAME + "bob\n"
+            + "Example: " + COMMAND_WORD + " -c " + PREFIX_ADDRESS + "Jurong -o " + PREFIX_PHONE + "94351253\n"
+            + "Example: " + COMMAND_WORD + " " + PREFIX_GROUP + "CS2103T\n"
             + "Note: [ -c ] and [ -o ] tokens are recognized as flags first.";
     public static final String MESSAGE_EMPTY_KEYWORD = "Keywords should be nonempty.";
     public static final String MESSAGE_INVALID_TIME_KEYWORD =

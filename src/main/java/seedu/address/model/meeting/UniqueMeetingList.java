@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,7 +25,7 @@ public class UniqueMeetingList implements Iterable<Meeting> {
     /**
      * Returns true if the list contains an equivalent meeting as the given argument.
      */
-    public boolean contains(Meeting toCheck) {
+    public boolean isContaining(Meeting toCheck) {
         requireNonNull(toCheck);
         return internalList.stream().anyMatch(toCheck::isSameMeeting);
     }
@@ -35,7 +36,7 @@ public class UniqueMeetingList implements Iterable<Meeting> {
      */
     public void add(Meeting toAdd) {
         requireNonNull(toAdd);
-        if (contains(toAdd)) {
+        if (isContaining(toAdd)) {
             throw new DuplicateMeetingException();
         }
         internalList.add(toAdd);
@@ -70,6 +71,7 @@ public class UniqueMeetingList implements Iterable<Meeting> {
             throw new DuplicateMeetingException();
         }
         internalList.setAll(meetings);
+        this.reindexMeetings();
     }
 
     /**
@@ -149,7 +151,7 @@ public class UniqueMeetingList implements Iterable<Meeting> {
         boolean hasStructureChanged = false;
         for (int i = internalList.size() - 1; i >= 0; i--) {
             Meeting currentMeeting = internalList.get(i);
-            java.util.Optional<Meeting> maybeUpdatedMeeting = currentMeeting.withoutAttendee(target);
+            Optional<Meeting> maybeUpdatedMeeting = currentMeeting.withoutAttendee(target);
 
             if (maybeUpdatedMeeting.isEmpty()) {
                 internalList.remove(i);

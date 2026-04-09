@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
+import seedu.address.model.exceptions.WrongTimeFormatException;
 
 /**
  * Tests for {@link TimeSlot}.
@@ -57,8 +57,7 @@ public class TimeSlotTest {
 
     @Test
     public void isValidTimeSlot() {
-        assertThrows(NullPointerException.class, () -> TimeSlot.isValidTimeSlot(null));
-
+        assertFalse(TimeSlot.isValidTimeSlot(null));
         assertFalse(TimeSlot.isValidTimeSlot(""));
         assertFalse(TimeSlot.isValidTimeSlot("0900"));
         assertFalse(TimeSlot.isValidTimeSlot("0900-0900"));
