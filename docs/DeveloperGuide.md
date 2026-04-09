@@ -141,8 +141,8 @@ How the parsing works:
 
 The `Model` component,
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
+* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object) and all `Meeting` objects (which are contained in a `UniqueMeetingList` object).
+* stores the currently ‘selected’ `Person` objects (e.g., results of a search query) as a separate _filtered_ list, which is further wrapped in a `SortedList` to support ordering (e.g. pinned contacts first, fuzzy score). This combined view is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be ‘observed’ e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
 * stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -497,6 +497,54 @@ The class diagram below shows the key classes involved:
 * The overall score is the minimum across all fuzzy-relevant keywords and fields. A score of 0 means an exact match; higher scores indicate fuzzier matches.
 * `FindCommand#execute` passes `predicate::computeFuzzyScore` to `model.updateSortComparator` so that contacts with lower scores appear first. Pinned contacts are always placed at the top regardless of score.
 
+### Meet/Unmeet feature
+
+#### Overview
+
+The meet/unmeet feature lets users schedule and remove meetings. A meeting has a description, date, time slot, and a list of attendees drawn from contacts that match user-specified filters and are available during the requested time.
+
+#### Meet command flow
+
+1. `AddressBookParser` recognises `meet` and delegates to `MeetCommandParser`.
+2. `MeetCommandParser` extracts:
+   * The **description** (unprefixed preamble — required).
+   * The **time slot** from `h/START-END` (required, exactly once).
+   * The **date** from `d/YYYY-MM-DD` (optional; defaults to today).
+   * Optional **attendee filter** keywords from `n/`, `g/`, `m/`, `po/`, `t/`.
+3. The time slot value is added as a **compulsory** time keyword in a `PersonMatchesKeywordsPredicate`. The remaining keyword filters are added as **optional** fields (any-match). If no optional keywords are given, all contacts pass the optional check.
+4. `MeetCommand#execute`:
+   * Calls `model.updateFilteredPersonList(predicate)` — this both applies the keyword filters *and* checks that each contact's `availableHours` (if set) contains the requested slot. Contacts with no `availableHours` are always treated as free.
+   * Throws `MESSAGE_NO_MATCHING_ATTENDEES` if the filtered list is empty.
+   * Creates a `Meeting` from the description, date, time slot, and the current displayed person list (an immutable snapshot is taken via `List.copyOf`).
+   * Throws `MESSAGE_DUPLICATE_MEETING` if an identical meeting (same description, date, and time slot) already exists.
+   * Calls `model.addMeeting(meeting)`, which assigns the next sequential 1-based index before adding.
+   * The filtered person list **remains showing the meeting attendees** after the command, providing visual confirmation of who was included.
+
+#### Unmeet command flow
+
+1. `AddressBookParser` recognises `unmeet` and delegates to `UnmeetCommandParser`.
+2. `UnmeetCommandParser` parses the index.
+3. `UnmeetCommand#execute` retrieves the meeting from the **full** (unfiltered) meeting list by zero-based index and calls `model.deleteMeeting(meeting)`.
+4. `UniqueMeetingList#remove` removes the meeting and calls `reindexMeetings()` to restore contiguous 1-based indices.
+
+#### Attendee cascade updates
+
+When a contact is edited (`edit` command), `AddressBook#setPerson` calls `UniqueMeetingList#replaceAttendeeInMeetings`, which iterates all meetings and replaces the old `Person` reference with the new one. This keeps meeting attendee data in sync with contact edits.
+
+When a contact is deleted (`delete` command), `AddressBook#removePerson` calls `UniqueMeetingList#removeAttendeeFromMeetings`. Meetings that become empty after removal are deleted entirely; the remaining meetings are then reindexed.
+
+#### Design considerations
+
+**Aspect: Availability check placement**
+
+* **Current choice:** Availability is checked via the `PersonMatchesKeywordsPredicate` time keyword, reusing the existing `find` predicate infrastructure. This keeps the filtering logic centralised.
+* **Alternative:** Check availability inside `MeetCommand#execute` after filtering. This would duplicate logic already handled by the predicate.
+
+**Aspect: Attendee list storage**
+
+* **Current choice:** `Meeting` stores a `List<Person>` snapshot (via `List.copyOf`). Attendee data stays consistent with the address book because edits/deletes cascade through `UniqueMeetingList`.
+* **Alternative:** Store only person indices or IDs. This would require resolving references on every read and adds complexity for index invalidation.
+
 ### Upload image feature
 
 #### Implementation
@@ -652,17 +700,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 1.
 
-* 2b. A contact with the same name and email already exists.
+* 2b. A contact with the same name, phone number, or email already exists.
 
-    * 2b1. AddressBook shows a duplicate contact error message.
+    * 2b1. AddressBook shows a duplicate contact error message indicating which fields are duplicated.
 
       Use case resumes at step 1.
 
-* 2c. The available hours field is not in a valid time format.
+* 2c. A required field (name, phone, email, or address) is missing or in an invalid format.
 
-    * 2c1. AddressBook shows a warning and saves the contact without available hours.
+    * 2c1. AddressBook shows an error message indicating the invalid field.
 
-      Use case ends.
+      Use case resumes at step 1.
 
 **Use case: Find contacts by group**
 
@@ -715,7 +763,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User enters the find command with a name keyword (e.g., `find John`)
+1.  User enters the find command with a name keyword (e.g., `find n/John`)
 2.  AddressBook searches for contacts whose names match the keyword (case-insensitive)
 3.  AddressBook displays a filtered list of matching contacts
 4.  User selects a contact from the list to view their full details
@@ -735,6 +783,60 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 3a1. AddressBook displays "0 persons found!".
 
       Use case ends.
+
+**Use case: Schedule a meeting**
+
+**MSS**
+
+1. User enters the meet command with a description, time slot, and optional filters (e.g., `meet Project sync h/1200-1300 g/CS2103T`)
+2. AddressBook filters contacts who match the filters and are available during the time slot
+3. AddressBook creates the meeting with the matched contacts as attendees and displays a success message
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The description is missing.
+
+    * 1a1. AddressBook shows an error message with the correct format.
+
+      Use case resumes at step 1.
+
+* 1b. The time slot (`h/`) is missing or in an invalid format.
+
+    * 1b1. AddressBook shows an error message.
+
+      Use case resumes at step 1.
+
+* 2a. No contacts match the filters or are available during the time slot.
+
+    * 2a1. AddressBook shows a "no available contacts" error. No meeting is created.
+
+      Use case resumes at step 1.
+
+* 3a. A meeting with the same description, date, and time slot already exists.
+
+    * 3a1. AddressBook shows a duplicate meeting error. No meeting is created.
+
+      Use case resumes at step 1.
+
+**Use case: Remove a meeting**
+
+**MSS**
+
+1. User enters `unmeet INDEX` to delete a meeting by its index
+2. AddressBook removes the meeting and reindexes the remaining meetings
+3. AddressBook displays a success message
+
+   Use case ends.
+
+**Extensions**
+
+* 1a. The given index is invalid.
+
+    * 1a1. AddressBook shows an error message.
+
+      Use case resumes at step 1.
 
 **Use case: Set password protection**
 
@@ -812,9 +914,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 4a. The updated email causes a duplicate contact.
+* 4a. The updated name, phone, or email matches an existing contact.
 
-    * 4a1. AddressBook shows a duplicate contact error message.
+    * 4a1. AddressBook shows a duplicate contact error message indicating which fields are duplicated.
 
       Use case resumes at step 2.
 
@@ -948,7 +1050,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Available Hours**: The time range during which a contact is available, specified in 24-hour format (e.g., 0900-1800)
 * **Tag**: A custom label that can be assigned to a contact for flexible categorisation beyond groups
 * **Position**: The role of a contact in an academic context (e.g., Student, TA, Professor)
-* **Duplicate contact**: Two contacts are considered duplicates if they share the same name (case-insensitive) and email address
+* **Duplicate contact**: Two contacts are considered duplicates if they share the same name, phone number, or email address (any one match is sufficient)
 * **MVP**: Minimum Viable Product — the smallest set of features that delivers core value to the user
 
 --------------------------------------------------------------------------------------------------------------------

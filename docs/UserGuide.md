@@ -344,7 +344,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 Examples:
 * `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
 * `meet Daily standup h/0900-1000`
-
+  ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
 * **Description is required** and must be the first token, written as plain text with no prefix. A bare `meet h/0900-1000` with no description is invalid.
@@ -387,6 +387,7 @@ Removal is permanent. There is no undo.
   unmeet 1
   ```
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
+  ![unmeet 1'](images/features/unmeetResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
 
