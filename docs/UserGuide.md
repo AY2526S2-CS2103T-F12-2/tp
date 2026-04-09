@@ -414,7 +414,7 @@ Format: `delete INDEX`
 * If the deleted contact appears in any meeting attendees list, they are removed from those meetings automatically.
 * If a meeting has no attendees left after removal, that meeting is deleted automatically.
 * Remaining meetings are reindexed to stay contiguous (1, 2, 3, ...), so there are no blank meeting numbers.
- 
+
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 Deletion is permanent. There is no undo. If you are unsure, consider using `find` first to confirm you have the right contact before deleting.
 </div>
