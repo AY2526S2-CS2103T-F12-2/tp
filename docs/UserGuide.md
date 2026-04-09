@@ -79,6 +79,8 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * For timeslot/available hours, start time and end time are both inclusive and regarded as in the same day, and end time must be after start time.<br>
   e.g. `h/0900-1700` is valid but `h/1700-0900` is invalid.
 
+* Some commands (e.g. `find`, `meet`) filter the contact list displayed. To view all contacts again, use the [`list`](#listing-all-contacts--list) command.
+
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
