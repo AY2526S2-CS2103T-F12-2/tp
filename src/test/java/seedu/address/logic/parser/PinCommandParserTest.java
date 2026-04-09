@@ -20,6 +20,7 @@ public class PinCommandParserTest {
 
     @Test
     public void parse_invalidArgs_throwsParseException() {
-        assertParseFailure(parser, "a", ParserUtil.MESSAGE_INVALID_INDEX + "\n" + String.format(MESSAGE_INVALID_COMMAND_FORMAT, PinCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, "a", ParserUtil.MESSAGE_INVALID_INDEX + "\n"
+                + String.format(MESSAGE_INVALID_COMMAND_FORMAT, PinCommand.MESSAGE_USAGE));
     }
 }
