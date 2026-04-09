@@ -4,15 +4,13 @@ package seedu.address.logic.commands;
  * Represents whether a find segment is compulsory or optional.
  */
 public enum FindFlag {
-    COMPULSORY("c", "-c"),
-    OPTIONAL("o", "-o");
+    COMPULSORY("c"),
+    OPTIONAL("o");
 
     private final String regexGroup;
-    private final String token;
 
-    FindFlag(String regexGroup, String token) {
+    FindFlag(String regexGroup) {
         this.regexGroup = regexGroup;
-        this.token = token;
     }
 
     /**

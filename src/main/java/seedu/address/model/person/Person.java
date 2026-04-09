@@ -39,7 +39,7 @@ public class Person {
     private final FollowUp followUp;
 
     // Whether this person is pinned to the top of the list
-    private final boolean pinned;
+    private final boolean isPinned;
 
     /**
      * Every field must be present and not null.
@@ -74,7 +74,7 @@ public class Person {
      */
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Set<Position> positions,
                   Set<Major> majors, Set<Group> groups, Set<TimeSlot> availableHours, FollowUp followUp,
-                  String profilePicturePath, boolean pinned) {
+                  String profilePicturePath, boolean isPinned) {
         requireAllNonNull(name, phone, email, address, positions, majors, tags, groups, availableHours, followUp);
         this.name = name;
         this.phone = phone;
@@ -88,7 +88,7 @@ public class Person {
         assert this.availableHours.size() <= 1 : "A person should have at most one available hours.";
         this.followUp = followUp;
         this.profilePicturePath = profilePicturePath != null ? profilePicturePath : "";
-        this.pinned = pinned;
+        this.isPinned = isPinned;
     }
 
     public Name getName() {
@@ -156,7 +156,7 @@ public class Person {
     }
 
     public boolean isPinned() {
-        return pinned;
+        return isPinned;
     }
 
     /**
@@ -216,13 +216,15 @@ public class Person {
                 && majors.equals(otherPerson.majors)
                 && groups.equals(otherPerson.groups)
                 && availableHours.equals(otherPerson.availableHours)
-                && followUp.equals(otherPerson.followUp);
+                && followUp.equals(otherPerson.followUp)
+                && profilePicturePath.equals(otherPerson.profilePicturePath);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours, followUp);
+        return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours,
+                followUp, profilePicturePath);
     }
 
     @Override

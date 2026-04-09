@@ -11,7 +11,7 @@ import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 import java.util.Objects;
 
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
+import seedu.address.model.exceptions.WrongTimeFormatException;
 
 /**
  * Represents a person's time slot in the address book.
@@ -33,8 +33,8 @@ public class TimeSlot {
                     .toFormatter()
                     .withResolverStyle(ResolverStyle.STRICT);
 
-    private final LocalTime startTime;
-    private final LocalTime endTime;
+    public final LocalTime startTime;
+    public final LocalTime endTime;
 
     /**
      * Constructs a {@code TimeSlot}.

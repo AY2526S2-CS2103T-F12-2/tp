@@ -1,14 +1,14 @@
 package seedu.address.model.person;
 
-import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.TimeSlot;
-import seedu.address.model.person.exceptions.WrongTimeFormatException;
+import seedu.address.model.exceptions.WrongTimeFormatException;
 
 /**
  * Container for all compulsory or optional keywords of a person.

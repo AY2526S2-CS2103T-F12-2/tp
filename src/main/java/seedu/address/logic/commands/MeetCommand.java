@@ -77,6 +77,8 @@ public class MeetCommand extends Command {
         requireNonNull(meetingDate);
         requireNonNull(meetingSlot);
         requireNonNull(predicate);
+        // Parser is expected to enforce this in normal usage; keep an assertion for developer-time checks.
+        assert !description.isBlank() : "Meeting description should not be blank";
         this.description = description;
         this.meetingDate = meetingDate;
         this.meetingSlot = meetingSlot;
@@ -86,6 +88,7 @@ public class MeetCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        // Reuse find-style predicate filtering so attendee selection logic stays centralized in predicate code.
         model.updateFilteredPersonList(predicate);
 
         if (model.getDisplayedPersonList().isEmpty()) {
@@ -99,6 +102,7 @@ public class MeetCommand extends Command {
             throw new CommandException(MESSAGE_DUPLICATE_MEETING);
         }
 
+        // Index assignment is delegated to model/address book when meeting index is still default.
         model.addMeeting(meeting);
         String listMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, meeting.getAttendees().size());
         return new CommandResult(String.format(MESSAGE_SUCCESS, meeting.toNoIndexString(),

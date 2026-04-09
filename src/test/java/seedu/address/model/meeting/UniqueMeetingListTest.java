@@ -31,27 +31,27 @@ public class UniqueMeetingListTest {
     private final UniqueMeetingList uniqueMeetingList = new UniqueMeetingList();
 
     @Test
-    public void contains_nullMeeting_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> uniqueMeetingList.contains(null));
+    public void isContaining_nullMeeting_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> uniqueMeetingList.isContaining(null));
     }
 
     @Test
-    public void contains_meetingNotInList_returnsFalse() {
-        assertFalse(uniqueMeetingList.contains(FIRST_MEETING));
+    public void isContaining_meetingNotInList_returnsFalse() {
+        assertFalse(uniqueMeetingList.isContaining(FIRST_MEETING));
     }
 
     @Test
-    public void contains_meetingInList_returnsTrue() {
+    public void isContaining_meetingInList_returnsTrue() {
         uniqueMeetingList.add(FIRST_MEETING);
-        assertTrue(uniqueMeetingList.contains(FIRST_MEETING));
+        assertTrue(uniqueMeetingList.isContaining(FIRST_MEETING));
     }
 
     @Test
-    public void contains_meetingWithSameIdentityFieldsInList_returnsTrue() {
+    public void isContaining_meetingWithSameIdentityFieldsInList_returnsTrue() {
         uniqueMeetingList.add(FIRST_MEETING);
         Meeting editedMeeting = new Meeting(99, "Project sync",
                 new Date("2026-04-01"), new TimeSlot("1000-1100"), List.of(BENSON));
-        assertTrue(uniqueMeetingList.contains(editedMeeting));
+        assertTrue(uniqueMeetingList.isContaining(editedMeeting));
     }
 
     @Test
@@ -126,8 +126,8 @@ public class UniqueMeetingListTest {
 
         List<Meeting> replacement = List.of(SECOND_MEETING);
         uniqueMeetingList.setMeetings(replacement);
-
-        assertEquals(replacement, uniqueMeetingList.asUnmodifiableObservableList());
+        Meeting newMeeting = SECOND_MEETING.withIndex(1);
+        assertEquals(List.of(newMeeting), uniqueMeetingList.asUnmodifiableObservableList());
     }
 
     @Test
