@@ -348,13 +348,14 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 Examples:
 * `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
 * `meet Daily standup h/0900-1000`
-
+  ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
 * **Description is required** and must be the first token, written as plain text with no prefix. A bare `meet h/0900-1000` with no description is invalid.
 * **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected.
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
 * **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied filters (`n/`, `g/`, `m/`, `po/`, `t/`).
+* **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
 * **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not overlap the requested slot are excluded.
 * **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
@@ -393,6 +394,7 @@ Removal is permanent. There is no undo.
   unmeet 1
   ```
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
+  ![unmeet 1'](images/features/unmeetResult.png)
 
 ![Ui](images/features/unmeeting.png)
 --------------------------------------------------------------------------------------------------------------------
