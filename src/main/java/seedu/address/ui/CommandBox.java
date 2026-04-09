@@ -51,6 +51,8 @@ public class CommandBox extends UiPart<Region> {
         this.commandExecutor = commandExecutor;
         this.logic = logic;
 
+        commandTextField.clear();
+
         configureAutocompletePopup();
 
         commandTextField.textProperty().addListener((obs, oldVal, newVal) -> {
