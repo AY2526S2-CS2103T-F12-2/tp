@@ -1,0 +1,56 @@
+{
+  "persons" : [ {
+    "name" : "Charlotte Oliveiro",
+    "phone" : "93210283",
+    "email" : "charlotte@example.com",
+    "address" : "Blk 11 Ang Mo Kio Street 74, #11-04",
+    "profilePicturePath" : "",
+    "followUp" : "",
+    "tags" : [ ],
+    "positions" : [ "Student" ],
+    "majors" : [ "ComputerScience" ],
+    "groups" : [ "CS2103T" ],
+    "pinned" : false,
+    "availableHours" : [ ]
+  }, {
+    "name" : "John Doe",
+    "phone" : "98765432",
+    "email" : "johnd@example.com",
+    "address" : "311, Clementi Ave 2, #02-25",
+    "profilePicturePath" : "",
+    "followUp" : "",
+    "tags" : [ "niceGuy", "owesMoneyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy" ],
+    "positions" : [ "AP" ],
+    "majors" : [ "Math" ],
+    "groups" : [ "prof" ],
+    "pinned" : false,
+    "availableHours" : [ "1200-1400" ]
+  }, {
+    "name" : "Betsy Tan",
+    "phone" : "1234567",
+    "email" : "betsycrowe@example.com",
+    "address" : "Newgate Prison",
+    "profilePicturePath" : "",
+    "followUp" : "",
+    "tags" : [ "friend", "criminal" ],
+    "positions" : [ ],
+    "majors" : [ "Law" ],
+    "groups" : [ ],
+    "pinned" : false,
+    "availableHours" : [ ]
+  }, {
+    "name" : "John Tan",
+    "phone" : "12345678",
+    "email" : "johnt@example.com",
+    "address" : "John street, block 123, #01-01",
+    "profilePicturePath" : "",
+    "followUp" : "",
+    "tags" : [ ],
+    "positions" : [ ],
+    "majors" : [ ],
+    "groups" : [ ],
+    "pinned" : false,
+    "availableHours" : [ ]
+  } ],
+  "meetings" : [ ]
+}

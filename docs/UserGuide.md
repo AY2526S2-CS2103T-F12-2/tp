@@ -267,6 +267,8 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 * Under `-c`: **all** keywords for the same field must match (AND semantics). e.g. `-c n/John n/Doe` only returns contacts whose name matches both `John` **and** `Doe`.
 * Under `-o`: **any** keyword for the same field matching is enough (OR semantics). e.g. `-o n/Alex n/David` returns contacts whose name contains `Alex` **or** `David`.
 
+![Ui](images/features/findResult.png)
+
 **Fuzzy Search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
 
 *Details and behavior:*
@@ -321,6 +323,8 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 * **The displayed list is updated**, not the saved data. Running `find` does not delete or modify any contact.
 </div>
 
+![Ui](images/features/fuzzySearchResult.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Scheduling a meeting : `meet`
@@ -357,6 +361,8 @@ Examples:
 * **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
 </div>
 
+![Ui](images/features/meeting.png)
+
 --------------------------------------------------------------------------------------------------------------------
 
 ### Removing a meeting : `unmeet`
@@ -388,6 +394,7 @@ Removal is permanent. There is no undo.
   ```
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
 
+![Ui](images/features/unmeeting.png)
 --------------------------------------------------------------------------------------------------------------------
 
 ### Deleting a contact : `delete`
@@ -730,7 +737,6 @@ Format: `followup INDEX f/NOTE`
   ```
   *Outcome: Any existing reminder on the 3rd contact is replaced with the new note.*
 ![Ui](images/features/setFollowupResult.png)
-![Ui](images/features/followupResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
 
