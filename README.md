@@ -2,10 +2,12 @@
 
 ![Ui](docs/images/Ui.png)
 
-* This is **an address book project** designed for campus students and staff. <br>
+* **CampusLink** is a contact management app designed for NUS students to manage classmates, TAs, professors, and project teammates. <br>
   Example usages:
-  * as a connecting tool among students taking the same course
-  * for university professors to store information such as meeting venues
+  * store and search contacts by name, group, major, position, or tag
+  * track each contact's available hours and schedule meetings with available contacts
+  * pin important contacts, set follow-up reminders, and sort the contact list
+  * import/export contacts across devices
 * For the detailed documentation of this project, see the **[CampusLink Product Website](https://ay2526s2-cs2103t-f12-2.github.io/tp)**.
 
 **Acknowledgement**
