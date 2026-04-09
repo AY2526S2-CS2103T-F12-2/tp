@@ -351,6 +351,7 @@ Examples:
 * **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected.
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
 * **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied filters (`n/`, `g/`, `m/`, `po/`, `t/`).
+* **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
 * **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not overlap the requested slot are excluded.
 * **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.

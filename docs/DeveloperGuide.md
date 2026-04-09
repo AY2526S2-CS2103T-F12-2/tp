@@ -511,7 +511,7 @@ The meet/unmeet feature lets users schedule and remove meetings. A meeting has a
    * The **time slot** from `h/START-END` (required, exactly once).
    * The **date** from `d/YYYY-MM-DD` (optional; defaults to today).
    * Optional **attendee filter** keywords from `n/`, `g/`, `m/`, `po/`, `t/`.
-3. The time slot value is added as a **compulsory** time keyword in a `PersonMatchesKeywordsPredicate`. The remaining keyword filters are added as **optional** fields (any-match). If no optional keywords are given, all contacts pass the optional check.
+3. The time slot value is added as a **compulsory** time keyword in a `PersonMatchesKeywordsPredicate`. The remaining keyword filters are added as **optional** fields (any-match). If no optional keywords are given, all contacts pass the optional check. Matching follows the same rules as `FindCommand`, except fuzzy matching is disabled.
 4. `MeetCommand#execute`:
    * Calls `model.updateFilteredPersonList(predicate)` — this both applies the keyword filters *and* checks that each contact's `availableHours` (if set) contains the requested slot. Contacts with no `availableHours` are always treated as free.
    * Throws `MESSAGE_NO_MATCHING_ATTENDEES` if the filtered list is empty.
