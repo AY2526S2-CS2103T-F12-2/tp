@@ -194,6 +194,8 @@ public class Person {
     /**
      * Returns true if both persons have the same identity and data fields.
      * This defines a stronger notion of equality between two persons.
+     * Note: {@code isPinned} and {@code profilePicturePath} are intentionally excluded
+     * as they are display concerns, not part of a person's identity or data.
      */
     @Override
     public boolean equals(Object other) {
@@ -216,15 +218,14 @@ public class Person {
                 && majors.equals(otherPerson.majors)
                 && groups.equals(otherPerson.groups)
                 && availableHours.equals(otherPerson.availableHours)
-                && followUp.equals(otherPerson.followUp)
-                && profilePicturePath.equals(otherPerson.profilePicturePath);
+                && followUp.equals(otherPerson.followUp);
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
         return Objects.hash(name, phone, email, address, tags, groups, majors, positions, availableHours,
-                followUp, profilePicturePath);
+                followUp);
     }
 
     @Override

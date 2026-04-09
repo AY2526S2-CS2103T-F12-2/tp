@@ -89,6 +89,10 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different pinned status -> returns true (isPinned excluded from equality intentionally)
+        editedAlice = new PersonBuilder(ALICE).withPinned(!ALICE.isPinned()).build();
+        assertTrue(ALICE.equals(editedAlice));
     }
 
     @Test
