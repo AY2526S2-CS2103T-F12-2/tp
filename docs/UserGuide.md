@@ -116,17 +116,17 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 
 **Arguments:**
 
-| Argument | Prefix | Required | Description |
-|---|---|---|---|
-| Name | `n/` | ✅ Yes | Full name of the contact |
-| Phone number | `p/` | ✅ Yes | Contact's phone number |
-| Email | `e/` | ✅ Yes | Contact's email address |
-| Address | `a/` | ✅ Yes | Contact's address |
-| Tag | `t/` | No | A short label (e.g. `friend`, `TA`). Add as many as you like. |
-| Group | `g/` | No | A class or project group (e.g. `CS2103T`). Add as many as you like. |
+| Argument | Prefix | Required | Description                                                              |
+|---|---|---|--------------------------------------------------------------------------|
+| Name | `n/` | ✅ Yes | Full name of the contact                                                 |
+| Phone number | `p/` | ✅ Yes | Contact's phone number                                                   |
+| Email | `e/` | ✅ Yes | Contact's email address                                                  |
+| Address | `a/` | ✅ Yes | Contact's address                                                        |
+| Tag | `t/` | No | A short label (e.g. `friend`, `TA`). Add as many as you like.            |
+| Group | `g/` | No | A class or project group (e.g. `CS2103T`). Add as many as you like.      |
 | Position | `po/` | No | Their role or title (e.g. `Professor`, `Peer`). Add as many as you like. |
 | Major | `m/` | No | Their course of study (e.g. `Computer Science`). Add as many as you like. |
-| Available hours | `h/` | No | When they are typically free (e.g. `Mon 2-4pm`). |
+| Available hours | `h/` | No | When they are typically free (e.g. `0900-1900`).                         |
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A person can have any number of tags, groups, majors, and positions (including 0). You can always add or change these later using the `edit` command.
