@@ -8,7 +8,6 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TIME;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.MeetCommand;
 import seedu.address.model.TimeSlot;
 import seedu.address.model.meeting.Date;
+import seedu.address.model.person.PersonKeywordSet;
 import seedu.address.model.person.PersonMatchesKeywordsPredicate;
 
 public class MeetCommandParserTest {
@@ -24,16 +24,12 @@ public class MeetCommandParserTest {
 
     @Test
     public void parse_allFieldsPresent_returnsMeetCommand() {
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(
-                List.of(), List.of("Alex"),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of("Computer Science"),
-                List.of(), List.of(),
-                List.of(), List.of("project"),
-                List.of(), List.of("TA"),
-                List.of(), List.of("CS2103T"),
-                List.of("1200-1300"), List.of());
+        PersonKeywordSet keywordSet = PersonKeywordSet.withMutableBuckets();
+        keywordSet.addAllKeywords(false, List.of("Alex"), List.of("CS2103T"), List.of(), List.of(),
+                List.of("Computer Science"), List.of(), List.of("project"), List.of("TA"), List.of());
+        keywordSet.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), List.of("1200-1300"));
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(keywordSet, false);
 
         MeetCommand expectedCommand = new MeetCommand(
                 "Project sync",
@@ -48,16 +44,10 @@ public class MeetCommandParserTest {
 
     @Test
     public void parse_missingDate_returnsMeetCommandWithTodayDate() {
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of(), List.of(),
-                List.of("1200-1300"), List.of());
+        PersonKeywordSet keywordSet = PersonKeywordSet.withMutableBuckets();
+        keywordSet.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), List.of("1200-1300"));
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(keywordSet, false);
 
         MeetCommand expectedCommand = new MeetCommand(
                 "Project sync",
@@ -119,16 +109,10 @@ public class MeetCommandParserTest {
 
     @Test
     public void parse_onlyCompulsoryFields_success() {
-        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                List.of("0900-1000"), Collections.emptyList());
+        PersonKeywordSet keywordSet = PersonKeywordSet.withMutableBuckets();
+        keywordSet.addAllKeywords(true, List.of(), List.of(), List.of(), List.of(), List.of(),
+                List.of(), List.of(), List.of(), List.of("0900-1000"));
+        PersonMatchesKeywordsPredicate predicate = new PersonMatchesKeywordsPredicate(keywordSet, false);
 
         MeetCommand expectedCommand = new MeetCommand(
                 "Daily standup",
