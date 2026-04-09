@@ -57,7 +57,7 @@ public class ClearFollowUpCommand extends Command {
                 personToEdit.getName(), personToEdit.getPhone(), personToEdit.getEmail(),
                 personToEdit.getAddress(), personToEdit.getTags(), personToEdit.getPositions(),
                 personToEdit.getMajors(), personToEdit.getGroups(), personToEdit.getAvailableHours(),
-                FollowUp.EMPTY, personToEdit.getProfilePicturePath());
+                FollowUp.EMPTY, personToEdit.getProfilePicturePath(), personToEdit.isPinned());
 
         model.setPerson(personToEdit, editedPerson);
         return new CommandResult(String.format(MESSAGE_SUCCESS, personToEdit.getName()));
