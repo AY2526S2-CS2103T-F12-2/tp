@@ -255,8 +255,7 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 **How matching works:**
 * This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
-* For names, only full words match — `H` does **not** match `Hans`.
-* Keywords for other fields (email, phone, etc.) are partial matches. If a person's available hours are not set, they are always interpreted as available.
+* Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as available.
 * For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
 * When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
@@ -275,8 +274,7 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 * Fuzzy matching allows up to **2 edits** (insert, delete, substitute).
 * Matching is token-based: both the field value and keyword are split by spaces first.
 * For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
-* For name keyword (`n/`), only full-word fuzzy matches are considered. For other fields, substring matches are allowed (e.g. `p/123` matches `91234567`).
-* For `a/`, `p/`, `e/`, exact case-insensitive substring matches are also accepted, then fuzzy match is applied if exact match fails.
+* For all four fields (`n/`, `p/`, `a/`, `e/`), exact case-insensitive substring matches are accepted first; fuzzy matching is applied only if no exact match is found.
 * Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching.
 * Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
@@ -817,6 +815,7 @@ CampusLink's password protects you from casual access through the app itself, bu
 2. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
 3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
+5. **Profile pictures may not load after moving files**: Profile picture paths are stored as absolute file paths. If the image file is moved, renamed, or deleted — or if the app's data file is transferred to another computer — the picture will no longer display. You can reassign the picture using `pic INDEX`.
 
 --------------------------------------------------------------------------------------------------------------------
 

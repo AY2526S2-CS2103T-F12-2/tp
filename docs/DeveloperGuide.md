@@ -486,7 +486,7 @@ The class diagram below shows the key classes involved:
 * If no optional keywords are provided, the optional check is skipped (treated as passed).
 
 **Fuzzy matching** (name, phone, address, email fields only):
-* Implemented via `StringUtil.fuzzyMatchesWord(text, keyword, maxDistance)`. The keyword is split by whitespace into parts; each part must fuzzy-match at least one whitespace-delimited token in the field within the allowed edit distance.
+* For all four fields, exact case-insensitive substring matching is attempted first. Fuzzy matching via `StringUtil.fuzzyMatchesWord(text, keyword, maxDistance)` is applied only if exact matching fails.
 * The edit distance used is **Levenshtein distance**, computed by `StringUtil.levenshteinDistance`. The maximum allowed distance is `StringUtil.FUZZY_MATCH_MAX_DISTANCE` (currently 2).
 * Tag, major, position, and group fields use exact case-insensitive substring matching only.
 
