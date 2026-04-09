@@ -14,6 +14,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_FILE_PATH;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.AMY;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.CARL;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 import static seedu.address.testutil.TypicalPersons.getTypicalPersons;
@@ -44,6 +45,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.meeting.Meeting;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -192,6 +194,134 @@ public class LogicManagerTest {
 
         assertThrows(ParseException.class, () -> logic.execute("find -c a/ -o n/Alice"));
         assertEquals(beforeFailure, logic.getDisplayedPersonList());
+    }
+
+    @Test
+    public void execute_meetUnmeetMiddle_remainingMeetingsReindexedContiguously() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        // Create 3 meetings with distinct single attendees
+        logic.execute("meet Alpha h/1000-1100 n/Alice");
+        logic.execute("meet Beta h/1000-1100 n/Benson");
+        logic.execute("meet Gamma h/1000-1100 n/Daniel");
+
+        List<Meeting> meetings = model.getAddressBook().getMeetingList();
+        assertEquals(3, meetings.size());
+        assertEquals(1, meetings.get(0).getIndex());
+        assertEquals(2, meetings.get(1).getIndex());
+        assertEquals(3, meetings.get(2).getIndex());
+
+        // Unmeet the middle meeting — triggers reindexMeetings() on remaining two
+        CommandResult unmeetBeta = logic.execute("unmeet 2");
+        assertTrue(unmeetBeta.getFeedbackToUser().startsWith("Removed meeting:"));
+
+        meetings = model.getAddressBook().getMeetingList();
+        assertEquals(2, meetings.size());
+        assertEquals(1, meetings.get(0).getIndex());
+        assertEquals(2, meetings.get(1).getIndex());
+        assertEquals("Alpha", meetings.get(0).getDescription());
+        assertEquals("Gamma", meetings.get(1).getDescription());
+
+        // Unmeet the reindexed Gamma (now at index 2) — stale ref would cause MeetingNotFoundException
+        CommandResult unmeetGamma = logic.execute("unmeet 2");
+        assertTrue(unmeetGamma.getFeedbackToUser().startsWith("Removed meeting:"));
+        assertEquals(1, model.getAddressBook().getMeetingList().size());
+        assertEquals("Alpha", model.getAddressBook().getMeetingList().get(0).getDescription());
+    }
+
+    @Test
+    public void execute_editAttendeeAfterMeet_attendeeUpdatedAndUnmeetSucceeds() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        // Meet with Alice as sole attendee
+        logic.execute("meet Project sync h/1000-1100 n/Alice");
+        assertEquals(1, model.getAddressBook().getMeetingList().size());
+
+        // Reset filtered list so edit 1 targets Alice (index 1 in full list)
+        logic.execute(ListCommand.COMMAND_WORD);
+
+        // Edit Alice — replaceAttendeeInMeetings creates a new Meeting object in the list
+        CommandResult editResult = logic.execute("edit 1 p/11111111");
+        assertTrue(editResult.getFeedbackToUser().startsWith("Edited Person:"));
+
+        // Meeting attendee should reflect updated phone
+        List<Meeting> meetings = model.getAddressBook().getMeetingList();
+        assertEquals(1, meetings.size());
+        assertEquals("11111111", meetings.get(0).getAttendees().get(0).getPhone().value);
+
+        // Unmeet — operates on the new Meeting object created by replaceAttendeeInMeetings
+        CommandResult unmeetResult = logic.execute("unmeet 1");
+        assertTrue(unmeetResult.getFeedbackToUser().startsWith("Removed meeting:"));
+        assertEquals(0, model.getAddressBook().getMeetingList().size());
+    }
+
+    @Test
+    public void execute_deleteSoleAttendee_meetingRemovedAndRemainingReindexed() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        // Two meetings: Alice alone, Benson alone
+        logic.execute("meet Alice meeting h/1000-1100 n/Alice");
+        logic.execute("meet Benson meeting h/1000-1100 n/Benson");
+        assertEquals(2, model.getAddressBook().getMeetingList().size());
+
+        // Reset to full list: Alice at index 1, Benson at index 2
+        logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(ALICE, logic.getDisplayedPersonList().get(0));
+        assertEquals(BENSON, logic.getDisplayedPersonList().get(1));
+
+        // Delete Alice — removeAttendeeFromMeetings removes her meeting and reindexes
+        logic.execute("delete 1");
+
+        List<Meeting> meetings = model.getAddressBook().getMeetingList();
+        assertEquals(1, meetings.size());
+        assertEquals(1, meetings.get(0).getIndex());
+        assertEquals("Benson meeting", meetings.get(0).getDescription());
+
+        // Unmeet Benson's meeting at its new index 1
+        CommandResult unmeetResult = logic.execute("unmeet 1");
+        assertTrue(unmeetResult.getFeedbackToUser().startsWith("Removed meeting:"));
+        assertEquals(0, model.getAddressBook().getMeetingList().size());
+    }
+
+    @Test
+    public void execute_meetEditUnmeetDeleteSequence_meetingStateAlwaysConsistent() throws Exception {
+        setUpWithTypicalAddressBook();
+
+        // Create two meetings
+        logic.execute("meet Alpha h/1000-1100 n/Alice");
+        logic.execute("meet Beta h/1000-1100 n/Benson");
+        assertEquals(2, model.getAddressBook().getMeetingList().size());
+
+        // Reset filtered list: Alice at 1, Benson at 2
+        logic.execute(ListCommand.COMMAND_WORD);
+
+        // Edit Alice's phone — triggers replaceAttendeeInMeetings for Alpha
+        logic.execute("edit 1 p/22222222");
+        List<Meeting> meetings = model.getAddressBook().getMeetingList();
+        assertEquals(2, meetings.size());
+        assertEquals("22222222", meetings.get(0).getAttendees().get(0).getPhone().value);
+
+        // Unmeet Beta (index 2) — reindexes remaining meetings
+        logic.execute("unmeet 2");
+        meetings = model.getAddressBook().getMeetingList();
+        assertEquals(1, meetings.size());
+        assertEquals(1, meetings.get(0).getIndex());
+        assertEquals("Alpha", meetings.get(0).getDescription());
+        assertEquals("22222222", meetings.get(0).getAttendees().get(0).getPhone().value);
+
+        // Reset and delete Benson (not Alice's meeting's attendee); Benson is now at index 2
+        logic.execute(ListCommand.COMMAND_WORD);
+        logic.execute("delete 2");
+
+        // Alpha meeting survives Benson's deletion
+        meetings = model.getAddressBook().getMeetingList();
+        assertEquals(1, meetings.size());
+        assertEquals("Alpha", meetings.get(0).getDescription());
+
+        // Final unmeet
+        CommandResult finalUnmeet = logic.execute("unmeet 1");
+        assertTrue(finalUnmeet.getFeedbackToUser().startsWith("Removed meeting:"));
+        assertEquals(0, model.getAddressBook().getMeetingList().size());
     }
 
     /**

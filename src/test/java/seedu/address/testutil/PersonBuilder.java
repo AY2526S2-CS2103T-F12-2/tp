@@ -36,6 +36,7 @@ public class PersonBuilder {
     private Set<Group> groups;
     private Set<TimeSlot> availableHours;
     private FollowUp followUp;
+    private boolean isPinned;
 
     /**
      * Creates a {@code PersonBuilder} with the default details.
@@ -51,6 +52,7 @@ public class PersonBuilder {
         positions = new HashSet<>();
         availableHours = new HashSet<>();
         followUp = FollowUp.EMPTY;
+        isPinned = false;
     }
 
     /**
@@ -67,6 +69,7 @@ public class PersonBuilder {
         majors = new HashSet<>(personToCopy.getMajors());
         availableHours = new HashSet<>(personToCopy.getAvailableHours());
         followUp = personToCopy.getFollowUp();
+        isPinned = personToCopy.isPinned();
     }
 
     /**
@@ -151,11 +154,19 @@ public class PersonBuilder {
     }
 
     /**
+     * Sets the pinned status of the {@code Person} that we are building.
+     */
+    public PersonBuilder withPinned(boolean isPinned) {
+        this.isPinned = isPinned;
+        return this;
+    }
+
+    /**
      * Builds and returns the {@code Person}.
      */
     public Person build() {
         return new Person(name, phone, email, address, tags, positions, majors, groups, availableHours,
-                followUp, "");
+                followUp, "", isPinned);
     }
 
 }
