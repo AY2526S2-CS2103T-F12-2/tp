@@ -57,6 +57,7 @@ public class MainApp extends Application {
     protected Storage storage;
     protected Model model;
     protected Config config;
+    private boolean passwordCancelled = false;
 
     @Override
     public void init() throws Exception {
@@ -187,7 +188,7 @@ public class MainApp extends Application {
         String passwordHash = model.getPasswordHash();
         if (passwordHash != null) {
             boolean authenticated = promptForPassword(passwordHash);
-            if (!authenticated) {
+            if (!authenticated && !passwordCancelled) {
                 eraseAllData();
             }
         }
@@ -205,6 +206,7 @@ public class MainApp extends Application {
 
             if (result.isEmpty()) {
                 logger.info("Password dialog cancelled. Exiting application.");
+                passwordCancelled = true;
                 Platform.exit();
                 return false;
             }

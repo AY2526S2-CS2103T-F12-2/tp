@@ -51,7 +51,7 @@ public class PinCommand extends Command {
         boolean newPinnedStatus = !personToToggle.isPinned();
 
         if (newPinnedStatus) {
-            long currentPinnedCount = lastShownList.stream().filter(Person::isPinned).count();
+            long currentPinnedCount = model.getAddressBook().getPersonList().stream().filter(Person::isPinned).count();
             if (currentPinnedCount >= MAX_PINNED) {
                 throw new CommandException(MESSAGE_MAX_PINS_REACHED);
             }

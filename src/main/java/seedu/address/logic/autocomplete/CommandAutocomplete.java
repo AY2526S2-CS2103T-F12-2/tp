@@ -27,12 +27,14 @@ import seedu.address.logic.commands.FollowUpCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.MeetCommand;
 import seedu.address.logic.commands.PicCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RemovePasswordCommand;
 import seedu.address.logic.commands.SetPasswordCommand;
 import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ToggleColorModeCommand;
+import seedu.address.logic.commands.UnmeetCommand;
 import seedu.address.logic.parser.AddressBookParser;
 
 /**
@@ -123,6 +125,13 @@ public final class CommandAutocomplete {
                 ImportCommand.COMMAND_WORD + " " + PREFIX_FILE_PATH));
 
         list.add(new CommandSuggestion(ListCommand.COMMAND_WORD, "(none)", ListCommand.COMMAND_WORD));
+
+        list.add(new CommandSuggestion(
+                MeetCommand.COMMAND_WORD,
+                "h/START-END [d/DATE] [n/NAME] ...",
+                MeetCommand.COMMAND_WORD + " h/0900-1000"));
+
+        list.add(new CommandSuggestion(UnmeetCommand.COMMAND_WORD, "INDEX", UnmeetCommand.COMMAND_WORD + " 1"));
 
         list.add(new CommandSuggestion(PicCommand.COMMAND_WORD, "INDEX", PicCommand.COMMAND_WORD + " 1"));
 
