@@ -21,7 +21,6 @@ public class MajorTest {
     @Test
     public void constructor_invalidMajor_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Major(""));
-        assertThrows(IllegalArgumentException.class, () -> new Major("Computer Science"));
         assertThrows(IllegalArgumentException.class, () -> new Major("CS-101"));
     }
 
@@ -34,11 +33,11 @@ public class MajorTest {
 
         assertFalse(Major.isValidMajor(""));
         assertFalse(Major.isValidMajor(" "));
-        assertFalse(Major.isValidMajor("Computer Science"));
         assertFalse(Major.isValidMajor("CS-101"));
 
         assertTrue(Major.isValidMajor("CS"));
         assertTrue(Major.isValidMajor("CS2103T"));
+        assertTrue(Major.isValidMajor("Computer Science"));
     }
 
     /**

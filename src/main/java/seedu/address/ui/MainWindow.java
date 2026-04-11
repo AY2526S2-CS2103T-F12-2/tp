@@ -237,8 +237,8 @@ public class MainWindow extends UiPart<Stage> {
     private void applyCurrentColorMode() {
         Scene scene = primaryStage.getScene();
         scene.getStylesheets().clear();
-        String themeCSS = isDarkMode ? DARK_THEME_CSS : LIGHT_THEME_CSS;
-        scene.getStylesheets().add(getClass().getResource(themeCSS).toExternalForm());
+        String themeCss = isDarkMode ? DARK_THEME_CSS : LIGHT_THEME_CSS;
+        scene.getStylesheets().add(getClass().getResource(themeCss).toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
     }
 

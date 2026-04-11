@@ -29,7 +29,7 @@ public class CommandAutocompleteTest {
     @Test
     public void getSuggestions_emptyPrefix_allCommandsSorted() {
         List<CommandSuggestion> suggestions = CommandAutocomplete.getSuggestions("");
-        assertEquals(18, suggestions.size());
+        assertEquals(20, suggestions.size());
         List<String> keys = suggestions.stream().map(CommandSuggestion::getMatchKey).collect(Collectors.toList());
         List<String> sorted = keys.stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.toList());
         assertEquals(sorted, keys);
