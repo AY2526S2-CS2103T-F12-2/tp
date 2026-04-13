@@ -379,7 +379,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * If a contact has no available hours set, they are treated as available by default.
 * `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, **today's date** will be used.
 * `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
-* Prexies not listed above (for example `a/`) are treated as plain description text, instead of usual prefixes.
+* Prefixes not listed above (for example `a/`) are treated as plain description text, instead of usual prefixes.
 * If no filters are provided, all contacts are checked for availability. But empty keywords after a filter is not allowed (e.g., `n/` is invalid).
 * A contact can attend overlapping meetings as long as their available hours allow it (so multitasking is possible).
 * The command fails if no available contacts match the filters. No meeting is created.
