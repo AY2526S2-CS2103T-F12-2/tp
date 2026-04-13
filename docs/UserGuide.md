@@ -334,15 +334,14 @@ Creates a meeting at a specific time with contacts who satisfy your filters and 
 Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
 
 * `DESCRIPTION` is required and must come first as plain text (without a prefix).
-* `h/START-END` is required and must appear exactly once.
-* `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, today's date is used.
-* `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
-* Prefixes not listed above (for example `a/`) are treated as plain description text instead of attendee filters.
-* If no filters are provided, all contacts are checked for availability.
-* Time format must be valid (e.g., `0900-1000`). Date format must be valid (e.g., `2026-04-01`).
-* Empty keywords are not allowed (e.g., `n/` is invalid).
+* `h/START-END` is required and must appear exactly once. Contacts must be available for the entire duration from START to END to be included in the meeting.
 * If a contact has no available hours set, they are treated as available by default.
-* The command fails if no available contacts match the filters.
+* `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, **today's date** will be used.
+* `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
+* Prexies not listed above (for example `a/`) are treated as plain description text, instead of usual prefixes.
+* If no filters are provided, all contacts are checked for availability. But empty keywords after a filter is not allowed (e.g., `n/` is invalid).
+* A contact can attend overlapping meetings as long as their available hours allow it (so multitasking is possible).
+* The command fails if no available contacts match the filters. No meeting is created.
 * The command also fails if an identical meeting already exists.
 
 Examples:
@@ -351,15 +350,12 @@ Examples:
   ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
-* **Description is required** and must be the first token, written as plain text with no prefix. A bare `meet h/0900-1000` with no description is invalid.
-* **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected.
+* **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected. Also start and end time should always be interpreted as in the same day, so `1700-0900` is invalid (no overnight meeting).
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
-* **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied filters (`n/`, `g/`, `m/`, `po/`, `t/`).
+* **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied keywords (`n/`, `g/`, `m/`, `po/`, `t/`).
 * **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
-* **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not overlap the requested slot are excluded.
-* **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
-* **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
-* **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
+* **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description (exact match), date, and time slot as an existing meeting.
+* After executing `meet`, the contacts panel will be changed to contain only the contacts who are attending that meeting (if no matching contact, the list becomes empty). Use `list` to restore the full contact list.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
