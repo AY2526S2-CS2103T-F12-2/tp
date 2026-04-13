@@ -14,8 +14,8 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
 1. Ensure you have Java `17` or above installed in your Computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
-   **Windows users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
-   **Linux users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
+   **Windows users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
+   **Linux users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
 
 1. Download the latest `.jar` file from [here](https://github.com/AY2526S2-CS2103T-F12-2/tp/releases).
 
@@ -30,7 +30,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to CampusLink.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -62,7 +62,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
   e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 
 * Items in square brackets are optional.<br>
-  e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  e.g. `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 
 * Items with `…`​ after them can be used multiple times including zero times.<br>
   e.g. `[t/TAG]…​` can be used as ` ` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
@@ -120,7 +120,8 @@ Format: `help`
 
 Use this command when you meet someone new — a classmate, professor, or project teammate — and want to store their details for later. You must provide their name, phone number, email, and address. Everything else (tags, group, position, major, available hours) is optional and can be added now or edited later.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…`<br>
+`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
 
 **Arguments:**
 
@@ -184,7 +185,8 @@ Format: `list`
 
 Use this when a classmate changes their phone number, you want to add a new tag, or you need to fix a typo in someone's name. You identify the contact by their position number in the currently displayed list, then specify only the fields you want to change.
 
-Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
+Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…`<br>
+`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
 
 **Arguments:**
 
@@ -212,6 +214,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 * **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved.
 * **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
+* **Active filter is cleared on success.** After a successful `edit`, the contact list resets to show **all** contacts, regardless of any `find` filter that was active beforehand. If you need to continue working within a filtered view, re-run your `find` command after editing.
 </div>
 
 **Examples:**
@@ -259,10 +262,10 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
 
 **How matching works:**
-* This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
+* This section introduces the exact match rule, but in general typos are permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
 * Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as available.
-* For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
+* For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space-separated part of a keyword to match.
 * When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
@@ -335,9 +338,10 @@ Fuzzy search is built into the `find` command. When you search by name, phone, a
 
 ### Scheduling a meeting : `meet`
 
-Creates a meeting at a specific time with contacts who satisfy your filters and are available in that time slot.
+**Creates a meeting at a specific time with contacts who satisfy your filters and are available in that time slot.**
 
-Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
+Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD]`<br>
+`[n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
 
 * `DESCRIPTION` is required and must come first as plain text (without a prefix).
 * `h/START-END` is required and must appear exactly once.
@@ -355,16 +359,16 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 
 * Schedule a meeting with specific attendee filters:
   ```
-  meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project
+  meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project
   ```
-  *Outcome: Creates a meeting "Project sync" on 2026-04-01 from 12:00–13:00, including contacts who match any of: named Alex, in group CS2103T, majoring in Computer Science, with position TA, or tagged project — and who are free during that slot.*
+  *Outcome: Creates a meeting "Project sync" on 2026-04-01 from 12:00–13:00, including contacts who match any of: named Alex, in group CS2103T, or tagged project — and who are free during that slot.*
 
 * Schedule a meeting with all available contacts:
   ```
   meet Daily standup h/0900-1000
   ```
   *Outcome: Creates a meeting "Daily standup" for today from 09:00–10:00, including all contacts who are free during that slot.*
-  ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
+  ![meet Daily standup h/0900-1000](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
 * **Description is required** and must be the first token, written as plain text with no prefix. A bare `meet h/0900-1000` with no description is invalid.
@@ -376,7 +380,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
 * **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
-* **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added. Run [`list`] to restore the full contact list.
+* **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added. Run `list` to restore the full contact list.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -409,7 +413,7 @@ Removal is permanent. There is no undo.
   unmeet 1
   ```
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
-  ![unmeet 1'](images/features/unmeetResult.png)
+  ![unmeet 1](images/features/unmeetResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -535,7 +539,7 @@ Format: `sort CONDITION ORDER`
 
 ### Setting a profile picture : `pic`
 
-**Attaches a photo to a contact so you can recognise them at a glance.**
+**Attaches a photo to a contact so you can recognize them at a glance.**
 
 Use this to add a face to a name — useful when your contact list grows large or when you want to quickly identify someone on campus. Running the command opens a file picker where you can choose an image from your computer.
 
@@ -570,13 +574,13 @@ Format: `pic INDEX`
 
 ### Toggling dark / light mode : `toggle color mode`
 
-**Switches the app's colour theme between dark mode and light mode.**
+**Switches the app's color theme between dark mode and light mode.**
 
 Use this to make CampusLink more comfortable to read depending on your environment — dark mode for low-light settings, light mode for bright rooms. You can also click the ☀ / 🌙 button at the top-right corner of the window to do the same thing.
 
 Format: `toggle color mode`
 
-**What happens:** The entire app switches colour theme instantly. Your preference is saved and applied the next time you open CampusLink.
+**What happens:** The entire app switches color theme instantly. Your preference is saved and applied the next time you open CampusLink.
 ![Ui](images/features/darkMode.png)
 ![Ui](images/features/lightMode.png)
 
@@ -738,6 +742,11 @@ Format: `followup INDEX f/NOTE`
 
 * If a reminder already exists on that contact, it is **replaced** by the new note.
 * Reminders are shown automatically in the result display every time the app starts.
+* **Active filter is preserved on success.** After a successful `followup`, the contact list continues to show only the contacts that matched the previous `find` filter (if any). The filter is not cleared.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:**
+`followup` preserves the active `find` filter, while `edit` clears it. If you run `edit` and then want to continue working within a filtered view, re-run your `find` command.
+</div>
 
 **Examples:**
 
@@ -771,6 +780,7 @@ Format: `clearfollowup INDEX`
 | `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
 
 * If the contact has no active reminder, an error message is shown and nothing changes.
+* **Active filter is preserved on success.** After a successful `clearfollowup`, the contact list continues to show only the contacts that matched the previous `find` filter (if any). The filter is not cleared.
 
 **Examples:**
 
@@ -823,8 +833,8 @@ CampusLink's password protects you from casual access through the app itself, bu
 
 ## FAQ
 
-**Q**: How do I transfer my data to another Computer?<br>
-**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
+**Q**: How do I transfer my data to another computer?<br>
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/campuslink.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -833,7 +843,7 @@ CampusLink's password protects you from casual access through the app itself, bu
 1. **Pressing Enter twice for templated commands**: When you type a partial command word (e.g. `sort`) and press `Enter` to accept the autocomplete suggestion, the command field is filled with a template (e.g. `sort firstname a`). Edit the placeholders and press `Enter` **once** to execute. The first `Enter` only applies the template; it does not execute the command.
 2. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
 3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
-4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
+4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/campuslink.json` (removes all contacts) from the app's home folder.
 5. **Profile pictures may not load after moving files**: Profile picture paths are stored as absolute file paths. If the image file is moved, renamed, or deleted — or if the app's data file is transferred to another computer — the picture will no longer display. You can reassign the picture using `pic INDEX`.
 
 --------------------------------------------------------------------------------------------------------------------
