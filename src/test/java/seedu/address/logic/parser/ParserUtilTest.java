@@ -217,8 +217,7 @@ public class ParserUtilTest {
 
     @Test
     public void parseFilePath_invalidPath_throwsParseException() {
-        assertThrows(ParseException.class, MESSAGE_INVALID_FILE_PATH,
-                () -> ParserUtil.parseFilePath("bad\u0000path"));
+        assertThrows(ParseException.class, MESSAGE_INVALID_FILE_PATH, () -> ParserUtil.parseFilePath("bad\u0000path"));
     }
 
     @Test
