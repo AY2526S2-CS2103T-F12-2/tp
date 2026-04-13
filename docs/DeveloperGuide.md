@@ -36,7 +36,7 @@ Given below is a quick overview of main components and how they interact with ea
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [`Main`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -68,20 +68,20 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/ui/Ui.java)
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
+The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `MeetingListPanel`, `ContactDetailPanel`, `MeetingDetailPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
-The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
+The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/resources/view/MainWindow.fxml)
 
 The `UI` component,
 
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component, as it displays `Person` object residing in the `Model`.
+* depends on some classes in the `Model` component, as it displays `Person` and `Meeting` objects residing in the `Model`.
 
 #### CommandBox and autocomplete
 
@@ -104,7 +104,7 @@ The `UI` component,
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/logic/Logic.java)
 
 Here's a (partial) class diagram of the `Logic` component:
 
@@ -134,7 +134,7 @@ How the parsing works:
 * All `XYZCommandParser` classes (e.g., `AddCommandParser`, `DeleteCommandParser`, ...) inherit from the `Parser` interface so that they can be treated similarly where possible e.g, during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="450" />
 
@@ -155,7 +155,7 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2526S2-CS2103T-F12-2/tp/tree/master/src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="550" />
 
@@ -1052,6 +1052,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Position**: The role of a contact in an academic context (e.g., Student, TA, Professor)
 * **Duplicate contact**: Two contacts are considered duplicates if they share the same name, phone number, or email address (any one match is sufficient)
 * **MVP**: Minimum Viable Product — the smallest set of features that delivers core value to the user
+* **Meeting**: An organized event scheduling up to multiple contacts (attendees) for a specific time and date
+* **Color Mode / Theme**: The global visual style (Dark or Light) applied contextually across the JavaFX visual application
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1257,4 +1259,69 @@ testers are expected to do more *exploratory* testing.
 
    1. _{explain how to simulate a missing/corrupted file, and the expected behavior}_
 
+### Meetings and Scheduling
+
+1. Scheduling a meeting with a group filter
+
+   1. Prerequisites: Multiple contacts exist, with at least one having the group `CS2103T`.
+
+   1. Test case: `meet Project sync t/1200-1300 d/2026-04-01 g/CS2103T`<br>
+      Expected: A meeting named "Project sync" is created for 2026-04-01 at 12:00-13:00. Any contact matching the `CS2103T` group is successfully added as an attendee.
+
+   1. Test case: `unmeet 1`<br>
+      Expected: The first meeting in the meeting list is deleted. Expected success message shown.
+
+### Profile Pictures
+
+1. Attaching a picture to a contact
+
+   1. Prerequisites: A contact exists at index 1.
+
+   1. Test case: `pic 1`<br>
+      Expected: A system file dialog opens. Allow the user to select an image from the filesystem. Once selected, the 1st contact's profile picture updates to the specified image.
+
+### Follow-up Reminders
+
+1. Setting a follow-up date for a contact
+
+   1. Prerequisites: A contact exists at index 1.
+
+   1. Test case: `followup 1 f/Email about internship by Friday`<br>
+      Expected: A follow-up note is assigned to the 1st contact and appears in their contact detail panel.
+
+   1. Test case: `clearfollowup 1`<br>
+      Expected: The follow-up reminder for the 1st contact is cleared.
+
+### UI Theming
+
+1. Toggling the application color mode
+
+   1. Prerequisites: App is running in the default Light (or Dark) theme.
+
+   1. Test case: `toggle`<br>
+      Expected: The interface immediately switches to the opposite color mode (e.g., from Light to Dark mode), applying new colors to all panels and fonts.
+
+### Advanced Fuzzy Find
+
+1. Finding a contact with typos
+
+   1. Prerequisites: Address book contains a contact named "Alexander".
+
+   1. Test case: `find -o n/Alexandr`<br>
+      Expected: The contact "Alexander" is shown in the search results despite the minor typo, leveraging the integrated fuzzy search.
+
 1. _{ more test cases …​ }_
+
+--------------------------------------------------------------------------------
+
+## **Appendix: Effort**
+
+TBD
+
+--------------------------------------------------------------------------------
+
+## **Appendix: Planned Enhancements**
+
+Team size: 4
+
+TBD
