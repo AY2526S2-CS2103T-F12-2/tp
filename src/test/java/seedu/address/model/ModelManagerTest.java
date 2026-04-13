@@ -114,35 +114,35 @@ public class ModelManagerTest {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getDisplayedPersonList().remove(0));
     }
 
-        @Test
-        public void setPerson_followUpEdited_keepsDisplayedOrder() {
+    @Test
+    public void setPerson_followUpEdited_keepsDisplayedOrder() {
         Person first = new PersonBuilder().withName("Yeoh")
-            .withPhone("87438807")
-            .withEmail("yeoh@example.com")
-            .build();
+                .withPhone("87438807")
+                .withEmail("yeoh@example.com")
+                .build();
         Person second = new PersonBuilder().withName("Charlotte Oliveira")
-            .withPhone("93210283")
-            .withEmail("charlotte@example.com")
-            .withFollowUp("Ping next week")
-            .build();
+                .withPhone("93210283")
+                .withEmail("charlotte@example.com")
+                .withFollowUp("Ping next week")
+                .build();
         Person third = new PersonBuilder().withName("Bernice Yu")
-            .withPhone("99272758")
-            .withEmail("bernice@example.com")
-            .withFollowUp("Prepare notes")
-            .build();
+                .withPhone("99272758")
+                .withEmail("bernice@example.com")
+                .withFollowUp("Prepare notes")
+                .build();
 
         AddressBook addressBook = new AddressBookBuilder()
-            .withPerson(first)
-            .withPerson(second)
-            .withPerson(third)
-            .build();
+                .withPerson(first)
+                .withPerson(second)
+                .withPerson(third)
+                .build();
         ModelManager localModel = new ModelManager(addressBook, new UserPrefs());
 
         Person editedSecond = new PersonBuilder(second).withFollowUp("").build();
         localModel.setPerson(second, editedSecond);
 
         assertEquals(List.of(first, editedSecond, third), localModel.getDisplayedPersonList());
-        }
+    }
 
     @Test
     public void equals() {

@@ -45,30 +45,30 @@ public class AddCommandIntegrationTest {
                 String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, "name, phone, email"));
     }
 
-        @Test
-        public void execute_duplicateNameDifferentCase_throwsCommandException() {
+    @Test
+    public void execute_duplicateNameDifferentCase_throwsCommandException() {
         Person personInList = model.getAddressBook().getPersonList().get(0);
         Person sameNameDifferentCase = new PersonBuilder(personInList)
-            .withName(personInList.getName().fullName.toUpperCase())
-            .withPhone("91112223")
-            .withEmail("different@example.com")
-            .build();
+                .withName(personInList.getName().fullName.toUpperCase())
+                .withPhone("91112223")
+                .withEmail("different@example.com")
+                .build();
 
         assertCommandFailure(new AddCommand(sameNameDifferentCase), model,
-            String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, "name"));
-        }
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, "name"));
+    }
 
-        @Test
-        public void execute_duplicateEmailDifferentCase_throwsCommandException() {
+    @Test
+    public void execute_duplicateEmailDifferentCase_throwsCommandException() {
         Person personInList = model.getAddressBook().getPersonList().get(0);
         Person sameEmailDifferentCase = new PersonBuilder(personInList)
-            .withName("Unique Person")
-            .withPhone("92223334")
-            .withEmail(personInList.getEmail().value.toUpperCase())
-            .build();
+                .withName("Unique Person")
+                .withPhone("92223334")
+                .withEmail(personInList.getEmail().value.toUpperCase())
+                .build();
 
         assertCommandFailure(new AddCommand(sameEmailDifferentCase), model,
-            String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, "email"));
-        }
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, "email"));
+    }
 
 }
