@@ -72,7 +72,7 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/se-
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
+The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `MeetingListPanel`, `ContactDetailPanel`, `MeetingDetailPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
 The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
 
@@ -81,7 +81,7 @@ The `UI` component,
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component, as it displays `Person` object residing in the `Model`.
+* depends on some classes in the `Model` component, as it displays `Person` and `Meeting` objects residing in the `Model`.
 
 #### CommandBox and autocomplete
 
@@ -1052,6 +1052,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Position**: The role of a contact in an academic context (e.g., Student, TA, Professor)
 * **Duplicate contact**: Two contacts are considered duplicates if they share the same name, phone number, or email address (any one match is sufficient)
 * **MVP**: Minimum Viable Product — the smallest set of features that delivers core value to the user
+* **Meeting**: An organized event scheduling up to multiple contacts (attendees) for a specific time and date
+* **Color Mode / Theme**: The global visual style (Dark or Light) applied contextually across the JavaFX visual application
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -1257,4 +1259,83 @@ testers are expected to do more *exploratory* testing.
 
    1. _{explain how to simulate a missing/corrupted file, and the expected behavior}_
 
+### Meetings and Scheduling
+
+1. Scheduling a meeting with a group filter
+
+   1. Prerequisites: Multiple contacts exist, with at least one having the group `CS2103T`.
+
+   1. Test case: `meet Project sync t/1200-1300 d/2026-04-01 g/CS2103T`<br>
+      Expected: A meeting named "Project sync" is created for 2026-04-01 at 12:00-13:00. Any contact matching the `CS2103T` group is successfully added as an attendee.
+
+   1. Test case: `unmeet 1`<br>
+      Expected: The first meeting in the meeting list is deleted. Expected success message shown.
+
+### Profile Pictures
+
+1. Attaching a picture to a contact
+
+   1. Prerequisites: A contact exists at index 1.
+
+   1. Test case: `pic 1`<br>
+      Expected: A system file dialog opens. Allow the user to select an image from the filesystem. Once selected, the 1st contact's profile picture updates to the specified image.
+
+### Follow-up Reminders
+
+1. Setting a follow-up date for a contact
+
+   1. Prerequisites: A contact exists at index 1.
+
+   1. Test case: `followup 1 f/Email about internship by Friday`<br>
+      Expected: A follow-up note is assigned to the 1st contact and appears in their contact detail panel.
+
+   1. Test case: `clearfollowup 1`<br>
+      Expected: The follow-up reminder for the 1st contact is cleared.
+
+### UI Theming
+
+1. Toggling the application color mode
+
+   1. Prerequisites: App is running in the default Light (or Dark) theme.
+
+   1. Test case: `toggle`<br>
+      Expected: The interface immediately switches to the opposite color mode (e.g., from Light to Dark mode), applying new colors to all panels and fonts.
+
+### Advanced Fuzzy Find
+
+1. Finding a contact with typos
+
+   1. Prerequisites: Address book contains a contact named "Alexander".
+
+   1. Test case: `find -o n/Alexandr`<br>
+      Expected: The contact "Alexander" is shown in the search results despite the minor typo, leveraging the integrated fuzzy search.
+
 1. _{ more test cases …​ }_
+
+--------------------------------------------------------------------------------
+
+## **Appendix: Effort**
+
+The project involved extending an existing Address Book codebase meant for single-type entities (Contacts) into an application that concurrently tracks Meetings and their relationships with Contacts. 
+
+- **Difficulty & Challenges:** The core challenge was refactoring the application architecture structurally at all levels (UI, Model, Logic, and Storage) to support a secondary entity. Managing the lifecycle of `Meeting` objects and keeping them synchronized with `Person` edits/deletions introduced significant complexity over AB3.
+- **Effort Required:** Significant effort was required to build custom JavaFX UI panels (`MeetingListPanel`, `ContactDetailPanel`) that react smoothly to state changes. Features such as fuzzy searching, complex sorting, and data security (passwords) scaled the difficulty further.
+- **Achievements:** Successfully modernized AB3 into a comprehensive meeting application that elegantly tracks and cross-references user interactions without degrading original features.
+- **Reuse:** Around 5-10% of the user interface skeleton was reused from AB3, while everything from the dual-panel design to the model integration was newly crafted by the team.
+
+--------------------------------------------------------------------------------
+
+## **Appendix: Planned Enhancements**
+
+Team size: 5
+
+1. **Enhance duplicate contact detection:** Currently, the system strictly matches contacts based on exact name spelling. We plan to improve the `AddCommand` to detect similar contacts using case-insensitivity and minor typo boundaries (e.g., checking if `Alan Turing` and `alan turing` are the same).
+2. **More informative Meeting clash errors:** When a meeting overlaps with another, the error message could be more descriptive by specifying the exact meeting name and time that it clashes with, rather than a generic overlap warning.
+3. **Graceful handling of deleted profile pictures:** If a user links a profile picture via the `PicCommand` but the source image is later deleted from the OS file system, we plan to show a placeholder default image instead of generating a broken UI element or silent warning.
+4. **Timezone support for Meetings:** Currently, all meeting times are assumed to be local. We plan to explicitly support timezone fields during `MeetCommand` so remote meetings display correctly regardless of the user's system timezone.
+5. **Bulk delete capability:** Users with many meetings often want to clear past events. We plan to update `DeleteCommand` to accept a range (e.g., `delete m/ 1-5`) to streamline list management.
+6. **Enhanced fuzzy search sorting:** The `FindCommand` fuzzy search currently returns matches as they appear in the active list. We plan to sort the search results by relevance/Levenshtein distance so the most accurate match appears strictly at the top.
+7. **Password recovery mechanism:** The `SetPasswordCommand` currently relies strictly on the user remembering the master password. We plan to add a backup recovery key mechanism for safer data security in case of lockouts.
+8. **Export format selection:** The `ExportCommand` is currently hardcoded to export raw JSON. We plan to introduce parameters to export into readable formats like CSV to increase utility for corporate users.
+9. **Follow-up reminders on startup:** The `FollowUpCommand` successfully tracks dates, but we plan to implement an automatic prompt box that displays all due follow-ups immediately when the user logs in to the application.
+10. **Customizable theme colors:** The `ToggleColorModeCommand` supports strict Light and Dark modes. We plan to expose the CSS properties to a user-editable configuration file, allowing for deeper customized theme experiences.
