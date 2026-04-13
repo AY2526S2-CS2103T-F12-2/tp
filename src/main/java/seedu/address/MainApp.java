@@ -61,7 +61,7 @@ public class MainApp extends Application {
 
     @Override
     public void init() throws Exception {
-        logger.info("=============================[ Initializing CampusLink ]===========================");
+        logger.info("=============================[ Initializing AddressBook ]===========================");
         super.init();
 
         AppParameters appParameters = AppParameters.parse(getParameters());
@@ -183,7 +183,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        logger.info("Starting CampusLink " + MainApp.VERSION);
+        logger.info("Starting AddressBook " + MainApp.VERSION);
 
         String passwordHash = model.getPasswordHash();
         if (passwordHash != null) {
