@@ -147,12 +147,9 @@ public class ModelManagerTest {
 
     @Test
     public void sortedPersons_comparator_handlesStaleObjects() {
-        Person first = new seedu.address.testutil.PersonBuilder().withName("Yeoh")
-                .withEmail("1@example.com").withPhone("12345678").build();
-        Person second = new seedu.address.testutil.PersonBuilder().withName("Charlotte Oliveira")
-                .withEmail("2@example.com").withPhone("23456789").build();
-        Person notInList = new seedu.address.testutil.PersonBuilder().withName("Bernice Yu")
-                .withEmail("3@example.com").withPhone("34567890").build();
+        Person first = new seedu.address.testutil.PersonBuilder().withName("Yeoh").withEmail("1@a.c").withPhone("123").build();
+        Person second = new seedu.address.testutil.PersonBuilder().withName("Charlotte Oliveira").withEmail("2@a.c").withPhone("234").build();
+        Person notInList = new seedu.address.testutil.PersonBuilder().withName("Bernice Yu").withEmail("3@a.c").withPhone("345").build();
 
         AddressBook addressBook = new AddressBookBuilder()
                 .withPerson(first)
