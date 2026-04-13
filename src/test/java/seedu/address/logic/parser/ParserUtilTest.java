@@ -204,8 +204,20 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseFilePath_validValueWithWhitespaceAndParentSegments_returnsTrimmedNormalizedPath()
+            throws Exception {
+        Path expected = Paths.get("data", "book.json").normalize();
+        assertEquals(expected, ParserUtil.parseFilePath("  data/../data/book.json  "));
+    }
+
+    @Test
     public void parseFilePath_blank_throwsParseException() {
         assertThrows(ParseException.class, MESSAGE_INVALID_FILE_PATH, () -> ParserUtil.parseFilePath("   "));
+    }
+
+    @Test
+    public void parseFilePath_invalidPath_throwsParseException() {
+        assertThrows(ParseException.class, MESSAGE_INVALID_FILE_PATH, () -> ParserUtil.parseFilePath("bad\u0000path"));
     }
 
     @Test

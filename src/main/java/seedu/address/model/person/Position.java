@@ -9,11 +9,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Position {
 
-    public static final String MESSAGE_CONSTRAINTS = "Position should be a text string, "
-            + "spaces are allowed but leading/trailing spaces will be automatically trimmed.";
-    // alphanumeric and special characters
-    private static final String LETTERS_WITH_SPACES = "^[A-Za-z]+(?: [A-Za-z]+)*$"; // letters and spaces
-    public static final String VALIDATION_REGEX = LETTERS_WITH_SPACES;
+    public static final String MESSAGE_CONSTRAINTS =
+            "Positions should only contain alphanumeric characters and spaces. "
+            + "Multiple consecutive spaces are collapsed into one.";
+    public static final String VALIDATION_REGEX = "[A-Za-z0-9][A-Za-z0-9 ]*";
 
     public final String value;
 

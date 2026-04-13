@@ -52,7 +52,7 @@ public class ParserUtil {
      */
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
-        String trimmedName = name.trim();
+        String trimmedName = name.trim().replaceAll(" +", " ");
         if (!Name.isValidName(trimmedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
@@ -139,7 +139,7 @@ public class ParserUtil {
      */
     public static Position parsePosition(String position) throws ParseException {
         requireNonNull(position);
-        String trimmedPosition = position.trim();
+        String trimmedPosition = position.trim().replaceAll(" +", " ");
         if (!Position.isValidPosition(trimmedPosition)) {
             throw new ParseException(Position.MESSAGE_CONSTRAINTS);
         }
@@ -166,7 +166,7 @@ public class ParserUtil {
      */
     public static Major parseMajor(String major) throws ParseException {
         requireNonNull(major);
-        String trimmedMajor = major.trim();
+        String trimmedMajor = major.trim().replaceAll(" +", " ");
         if (!Major.isValidMajor(trimmedMajor)) {
             throw new ParseException(Major.MESSAGE_CONSTRAINTS);
         }

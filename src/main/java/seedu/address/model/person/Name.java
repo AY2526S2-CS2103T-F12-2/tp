@@ -11,7 +11,7 @@ public class Name {
 
     public static final String MESSAGE_CONSTRAINTS =
         "Names should start and end with alphanumeric characters, and can contain spaces, apostrophes, "
-            + "and hyphens";
+            + "and hyphens. Multiple consecutive spaces are collapsed into one.";
 
     /*
      * The first character of the address must not be a whitespace,
