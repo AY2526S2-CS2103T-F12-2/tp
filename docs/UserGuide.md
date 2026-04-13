@@ -21,7 +21,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
 1. Copy the file to the folder you want to use as the _home folder_ for CampusLink.
 
-1. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar addressbook.jar` command to run the application.<br>
+1. Open a command terminal, `cd` into the folder you put the jar file in, and use the `java -jar campuslink.jar` command to run the application.<br>
    A GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
@@ -140,6 +140,10 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 A person can have any number of tags, groups, majors, and positions (including 0). You can always add or change these later using the `edit` command.
 </div>
 
+<div markdown="block" class="alert alert-warning">:exclamation: **Name format restriction:**
+Names must contain **only alphanumeric characters and spaces**. Names containing `/` (e.g. `Ramesh s/o Kumar`) are not supported — the `/` character is reserved as a prefix separator in CampusLink's command syntax and cannot appear inside a field value. As a workaround, you can omit the slash (e.g. `Ramesh so Kumar`) or replace it with a space (e.g. `Ramesh s o Kumar`).
+</div>
+
 <div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
 CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
 </div>
@@ -154,7 +158,7 @@ CampusLink automatically detects duplicate contacts. A contact is considered a d
 
 * Adding a contact with optional fields (major and tags):
   ```
-  add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal m/Law
+  add n/Betsy Crowe t/friend t/criminal e/betsy@example.com a/Blk 5 p/1234567 m/Law
   ```
   *Outcome: Betsy Crowe is added with two tags (`friend`, `criminal`) and her major set to `Law`.*
 
@@ -270,14 +274,16 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 
 ![Ui](images/features/findResult.png)
 
-**Fuzzy Search** (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
+**Fuzzy Search** — `find` also tolerates typos (name `n/`, phone `p/`, address `a/`, email `e/` fields only):
+
+Fuzzy search is built into the `find` command. When you search by name, phone, address, or email, CampusLink automatically tries to match your keyword even if it contains small typos or misspellings — you do not need to do anything special to activate it.
 
 *Details and behavior:*
-* Fuzzy matching allows up to **2 edits** (insert, delete, substitute).
+* Fuzzy matching allows up to **2 edits**. An "edit" is a single character-level change: inserting a character (e.g. `Aelx` → `Alex`), deleting a character (e.g. `Alx` → `Alex`), or substituting one character for another (e.g. `Alox` → `Alex`). A keyword with up to 2 such changes will still match the intended contact.
 * Matching is token-based: both the field value and keyword are split by spaces first.
 * For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
 * For all four fields (`n/`, `p/`, `a/`, `e/`), exact case-insensitive substring matches are accepted first; fuzzy matching is applied only if no exact match is found.
-* Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching.
+* Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching — these must match exactly (case-insensitive).
 * Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
 **Examples:**
@@ -345,9 +351,19 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * The command fails if no available contacts match the filters.
 * The command also fails if an identical meeting already exists.
 
-Examples:
-* `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project`
-* `meet Daily standup h/0900-1000`
+**Examples:**
+
+* Schedule a meeting with specific attendee filters:
+  ```
+  meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project
+  ```
+  *Outcome: Creates a meeting "Project sync" on 2026-04-01 from 12:00–13:00, including contacts who match any of: named Alex, in group CS2103T, majoring in Computer Science, with position TA, or tagged project — and who are free during that slot.*
+
+* Schedule a meeting with all available contacts:
+  ```
+  meet Daily standup h/0900-1000
+  ```
+  *Outcome: Creates a meeting "Daily standup" for today from 09:00–10:00, including all contacts who are free during that slot.*
   ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
@@ -360,6 +376,7 @@ Examples:
 * **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
 * **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
+* **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added. Run [`list`] to restore the full contact list.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -783,7 +800,7 @@ CampusLink saves your data automatically to the hard disk after every command th
 
 ### Editing the data file
 
-Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users are welcome to edit this file directly.
+Your contacts are saved as a JSON file at `[JAR file location]/data/campuslink.json`. Advanced users are welcome to edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If the data file is edited incorrectly, CampusLink may discard all data and start with an empty contact list, or exhibit unexpected behavior even if the file appears valid. Keep a backup before making any direct edits.
@@ -796,8 +813,8 @@ If the data file is edited incorrectly, CampusLink may discard all data and star
 CampusLink's password protects you from casual access through the app itself, but it does **not** encrypt the underlying files. Anyone with direct access to your file system can bypass or reset the password without ever opening CampusLink:
 
 * **Bypassing the password:** The password hash is stored in `preferences.json` in the app's home folder. Deleting or editing this file removes password protection entirely — no password will be required on the next launch.
-* **Reading contact data directly:** All contacts are stored as plain JSON in `data/addressbook.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
-* **Corrupting or wiping data:** Deleting or truncating `data/addressbook.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
+* **Reading contact data directly:** All contacts are stored as plain JSON in `data/campuslink.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
+* **Corrupting or wiping data:** Deleting or truncating `data/campuslink.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
 
 **What this means:** CampusLink's password is a convenience lock, not a security boundary. If you store sensitive contact information, you should protect the entire folder at the operating system level — for example, using BitLocker (Windows), FileVault (macOS), or equivalent filesystem-level encryption. Do not rely on the in-app password alone as a substitute for OS-level access control.
 </div>
@@ -825,13 +842,13 @@ CampusLink's password protects you from casual access through the app itself, bu
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…`<br>`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`<br> e.g., `add n/James Ho p/22224444 e/james@example.com a/123 Clementi Rd t/friend t/colleague`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g.,`edit -r 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…`<br>`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`<br> e.g., `edit -r 2 n/James Lee e/jameslee@example.com`
 **Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
-**Find** | `find [[FLAG] [PREFIX/KEYWORDS]]`<br> e.g., `find n/James Jake`
-**Meet** | `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
+**Find** | `find [-c/-o] PREFIX/KEYWORD… (at least one required)`<br> e.g., `find n/James Jake`
+**Meet** | `meet DESC h/START-END [d/DATE] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
 **Unmeet** | `unmeet INDEX`<br> e.g., `unmeet 1`
 **Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
 **Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`
