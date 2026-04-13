@@ -1312,7 +1312,20 @@ testers are expected to do more *exploratory* testing.
 
 ## **Appendix: Effort**
 
-The development of CampusLink required significant effort in adapting the base AddressBook-Level3 architecture to manage campus-wide contacts and scheduling meetings. The team reorganized existing parsers and commands, integrated advanced fuzzy search capabilities, added support for image uploads, and implemented a UI theming system from scratch. Additionally, robust security via a password protection feature was built into the app's foundation, creating challenges in testing and UI flow that the team successfully navigated.
+**Difficulty Level and Reference to AB3**
+AddressBook-Level 3 (AB3) served as the baseline for this project. While AB3 manages a single standard entity (`Person`) with basic CRUD operations, CampusLink significantly increases the complexity by introducing a secondary entity (`Meeting`) and establishing relationships between them. This required a major overhaul of the `Model` and `Storage` components to handle relational constraints, such as cascading updates (e.g., when a contact is deleted or edited, their attendee records in meetings must automatically update).
+
+**Challenges Faced**
+1. **Relational Data Management:** Ensuring that `Meeting` attendees were perfectly synchronized with the `UniquePersonList` was challenging. It required designing strict immutability and cascading deletion logic to prevent dangling references in the event of contact modifications.
+2. **Advanced Search Mechanisms:** Moving beyond AB3's exact sub-string matching to implement a custom Fuzzy Search (using Levenshtein distance) required complex algorithmic integration within the existing `Predicate` and `Comparator` architectures, balancing performance with accuracy.
+3. **Security Integration:** Implementing the Password Protection feature presented a unique challenge in managing the application lifecycle (locked vs. unlocked states). Securely hashing passwords, intercepting the normal startup flow, and handling testing for these state changes added significant difficulty.
+4. **Dynamic UI:** Building a comprehensive UI theming system (Light/Dark mode) and adding support for local profile picture uploads required deep diving into JavaFX styling and filesystem interactions, which were completely absent in AB3.
+
+**Effort Required and Achievements**
+The project required substantial effort across all layers of the application—from deep algorithmic enhancements in the `Logic` and `Model` components to completely replacing the `UI` layer's aesthetic. Despite the increased complexity of managing multiple entities, maintaining robust security, and adding sophisticated search capabilities, the team successfully maintained a high level of code quality and test coverage.
+
+**Reuse**
+A significant part of the effort (~20%) was saved by reusing the core Model-View-Controller (MVC) architecture, the `LogicManager` scaffolding, and the JSON storage abstractions from AB3. Leveraging external libraries like `Jackson` (for JSON serialization) and `JavaFX` (for the GUI) allowed the team to focus on feature implementation and architectural extensions rather than building foundational boilerplate from scratch.
 
 --------------------------------------------------------------------------------
 
