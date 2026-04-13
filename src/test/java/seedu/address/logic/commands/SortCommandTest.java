@@ -79,7 +79,7 @@ public class SortCommandTest {
         Person p2 = new PersonBuilder().withName("John Alpha").withPhone("222222").withEmail("a@a.com").withPinned(true).build();
         Person p3 = new PersonBuilder().withName("Alice Beta").withPhone("333333").withEmail("c@c.com").withPinned(false).build();
         Person p4 = new PersonBuilder().withName("Alice Alpha").withPhone("444444").withEmail("d@d.com").withPinned(false).build();
-        
+
         model.addPerson(p1);
         model.addPerson(p2);
         model.addPerson(p3);
