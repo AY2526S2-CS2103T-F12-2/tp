@@ -1,6 +1,6 @@
 ---
 layout: page
-title: AddressBook Level-3
+title: CampusLink
 ---
 
 [![CI Status](https://github.com/AY2526S2-CS2103T-F12-2/tp/workflows/Java%20CI/badge.svg)](https://github.com/AY2526S2-CS2103T-F12-2/tp/actions)
