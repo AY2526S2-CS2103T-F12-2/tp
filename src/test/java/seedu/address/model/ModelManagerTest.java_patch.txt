@@ -1,0 +1,15 @@
+--- src/test/java/seedu/address/model/ModelManagerTest.java
++++ src/test/java/seedu/address/model/ModelManagerTest.java
+@@ -148,9 +148,9 @@
+ 
+     @Test
+     public void sortedPersons_comparator_handlesStaleObjects() {
+-        Person first = new seedu.address.testutil.PersonBuilder().withName("Yeoh").build();
+-        Person second = new seedu.address.testutil.PersonBuilder().withName("Charlotte Oliveira").build();
+-        Person notInList = new seedu.address.testutil.PersonBuilder().withName("Bernice Yu").build();
++        Person first = new seedu.address.testutil.PersonBuilder().withName("Yeoh").withEmail("1@a.c").withPhone("123").build();
++        Person second = new seedu.address.testutil.PersonBuilder().withName("Charlotte Oliveira").withEmail("2@a.c").withPhone("234").build();
++        Person notInList = new seedu.address.testutil.PersonBuilder().withName("Bernice Yu").withEmail("3@a.c").withPhone("345").build();
+ 
+         AddressBook addressBook = new AddressBookBuilder()
+                 .withPerson(first)
