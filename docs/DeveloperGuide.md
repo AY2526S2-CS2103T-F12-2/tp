@@ -1,7 +1,9 @@
 ---
 layout: page
-title: Developer Guide
+title: CampusLink Developer Guide
 ---
+# CampusLink Developer Guide
+
 * Table of Contents
 {:toc}
 
@@ -408,6 +410,11 @@ Outcome matrix:
 | Correct password | App opens normally |
 | Cancel dialog | `Platform.exit()` — app closes, no data wiped |
 | 3 wrong entries | `eraseAllData()` — contacts cleared, hash set to null, both files saved |
+
+#### Limitations
+
+* **Local Storage Vulnerability:** Because CampusLink is a local desktop application without a remote authentication server, the password hash is stored locally in the `preferences.json` file. A user with direct file system access can bypass the password protection by opening `preferences.json` and deleting or clearing the `passwordHash` field. This feature is intended to prevent casual snooping when the app is launched rather than secure the data against a malicious user with local file system access.
+
 
 ### Follow-up reminder feature
 
