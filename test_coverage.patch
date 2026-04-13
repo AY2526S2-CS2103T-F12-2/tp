@@ -1,0 +1,13 @@
+--- a/src/test/java/seedu/address/logic/commands/SortCommandTest.java
++++ b/src/test/java/seedu/address/logic/commands/SortCommandTest.java
+@@ -8,6 +8,8 @@
+ import org.junit.jupiter.api.Test;
+ 
+ import seedu.address.logic.commands.SortCommand.SortField;
+ import seedu.address.model.Model;
+ import seedu.address.model.ModelManager;
+ import seedu.address.model.UserPrefs;
++import seedu.address.model.person.Person;
++import seedu.address.testutil.PersonBuilder;
+ 
+ public class SortCommandTest {
