@@ -14,8 +14,8 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
 1. Ensure you have Java `17` or above installed in your Computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
-   **Windows users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
-   **Linux users** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
+   **Windows users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationWindows.html).
+   **Linux users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationLinux.html).
 
 1. Download the latest `.jar` file from [here](https://github.com/AY2526S2-CS2103T-F12-2/tp/releases).
 
@@ -294,11 +294,11 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 * When multiple flags appear, each keyword follows the last flag before it. E.g., `-c -o n/James -c po/Principal` → optional name "James", compulsory position "Principal".
 
 **How matching works:**
-* This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
+* This section introduces the exact match rule, but in general typos are permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
 * Keywords have leading/trailing spaces trimmed, but internal multiple consecutive spaces are **not** collapsed — `John  Doe` (double space) is a different keyword from `John Doe`.
 * Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as matched for `h/` filter.
-* For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
+* For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space-separated part of a keyword to match.
 * When both compulsory and optional prefixes are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
 * If only optional keywords are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
@@ -348,7 +348,7 @@ Fuzzy search is built into the `find` command. When you search by name, phone, a
   ```
   *Outcome: Shows only contacts whose name contains both `John` and `Doe`, e.g. `John Doe`.*
 
-* `find n/Alex Yeaa` returns `Alex Yeoh` (2 edits: `Yeaa` → `Yeoh`)
+* `find n/Alex Yeaa` returns `Alex Yeoh` (`Yeaa` is within 1 edit of `Yeoh`)
 
 * Find contacts in the CS2103T group, with the optional tag `project` or `friend`, but with typos in between:
   ```
@@ -380,7 +380,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * `d/YYYY-MM-DD` is optional and must appear at most once. If omitted, **today's date** will be used.
 * `n/`, `g/`, `m/`, `po/`, and `t/` are optional filters. If you provide multiple filters, a contact is included if they match **at least one** provided filter.
 * Prefixes not listed above (for example `a/`) are treated as plain description text, instead of usual prefixes.
-* If no filters are provided, all contacts are checked for availability. But empty keywords after a filter is not allowed (e.g., `n/` is invalid).
+* If no filters are provided, all contacts are checked for availability. But empty keywords after a filter are not allowed (e.g., `n/` is invalid).
 * A contact can attend overlapping meetings as long as their available hours allow it (so multitasking is possible).
 * The command fails if no available contacts match the filters. No meeting is created.
 * The command also fails if an identical meeting already exists.
@@ -398,7 +398,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
   meet Daily standup h/0900-1000
   ```
   *Outcome: Creates a meeting "Daily standup" for today from 09:00–10:00, including all contacts who are free during that slot.*
-  ![meet Daily standup h/0900-1000'](images/features/meetResult.png)
+  ![meet Daily standup h/0900-1000](images/features/meetResult.png)
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
 * **`h/` time format must be `HHMM-HHMM`** (24-hour, four digits each side, e.g. `0900-1000`). Formats like `9am-10am` or `9:00-10:00` are rejected. Also start and end time should always be interpreted as in the same day, so `1700-0900` is invalid (no overnight meeting).
@@ -440,7 +440,7 @@ Removal is permanent. There is no undo.
   unmeet 1
   ```
   *Outcome: The 1st meeting is deleted from the meeting list. All subsequent meetings shift up by one index.*
-  ![unmeet 1'](images/features/unmeetResult.png)
+  ![unmeet 1](images/features/unmeetResult.png)
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -854,8 +854,8 @@ CampusLink's password protects you from casual access through the app itself, bu
 
 ## FAQ
 
-**Q**: How do I transfer my data to another Computer?<br>
-**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
+**Q**: How do I transfer my data to another computer?<br>
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/campuslink.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
