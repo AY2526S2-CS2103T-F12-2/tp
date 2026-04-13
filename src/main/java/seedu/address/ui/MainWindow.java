@@ -46,6 +46,7 @@ public class MainWindow extends UiPart<Stage> {
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
     private CommandBox commandBox;
+    private ContactDetailPanel contactDetailPanel;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -83,6 +84,7 @@ public class MainWindow extends UiPart<Stage> {
 
         // Configure the UI
         setWindowDefaultSize(logic.getGuiSettings());
+        this.isDarkMode = logic.getGuiSettings().isDarkMode();
 
         setAccelerators();
 
@@ -131,7 +133,7 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        ContactDetailPanel contactDetailPanel = new ContactDetailPanel();
+        contactDetailPanel = new ContactDetailPanel();
         contactDetailPanel.setOnDelete(index -> {
             try {
                 executeCommand("delete " + index);
@@ -229,6 +231,15 @@ public class MainWindow extends UiPart<Stage> {
 
     void show() {
         primaryStage.show();
+        applyCurrentColorMode();
+    }
+
+    private void applyCurrentColorMode() {
+        Scene scene = primaryStage.getScene();
+        scene.getStylesheets().clear();
+        String themeCss = isDarkMode ? DARK_THEME_CSS : LIGHT_THEME_CSS;
+        scene.getStylesheets().add(getClass().getResource(themeCss).toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/view/Extensions.css").toExternalForm());
     }
 
     /**
@@ -245,6 +256,10 @@ public class MainWindow extends UiPart<Stage> {
                 logger.info("Setting up picture...");
                 logic.setPicture(index, file.getAbsolutePath());
                 resultDisplay.setFeedbackToUser("Profile picture updated for person " + index.getOneBased() + ".");
+                if (contactDetailPanel != null && index.getZeroBased() < logic.getDisplayedPersonList().size()) {
+                    Person updatedPerson = logic.getDisplayedPersonList().get(index.getZeroBased());
+                    contactDetailPanel.updatePerson(updatedPerson, index.getOneBased());
+                }
             } catch (CommandException e) {
                 logger.warning("An error occurred while setting picture!");
                 resultDisplay.setFeedbackToUser("Failed to update picture: " + e.getMessage());
@@ -275,7 +290,7 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
-                (int) primaryStage.getX(), (int) primaryStage.getY());
+                (int) primaryStage.getX(), (int) primaryStage.getY(), isDarkMode);
         logic.setGuiSettings(guiSettings);
         helpWindow.hide();
         primaryStage.hide();

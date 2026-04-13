@@ -28,7 +28,7 @@ public class ImportCommand extends StorageCommand {
             + "Parameters: " + PREFIX_FILE_PATH + "FILE_PATH\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_FILE_PATH + "backup.json";
 
-    public static final String MESSAGE_SUCCESS = "Import complete: added %1$d, skipped %2$d (duplicate name).";
+    public static final String MESSAGE_SUCCESS = "Import complete: added %1$d, skipped %2$d (duplicate detected).";
 
     public static final String MESSAGE_FILE_NOT_FOUND = "Import file not found: %1$s";
     public static final String MESSAGE_FILE_NOT_READABLE =

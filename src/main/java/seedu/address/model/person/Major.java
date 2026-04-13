@@ -9,10 +9,8 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Major {
 
-    public static final String MESSAGE_CONSTRAINTS = "Majors should only contain alphanumeric characters, "
-            + "and no spaces or special characters allowed.";
-    // alphanumeric and special characters
-    private static final String ALPHANUMERIC_ONLY = "[A-Za-z0-9]+"; // alphanumeric characters only
+    public static final String MESSAGE_CONSTRAINTS = "Majors should only contain alphanumeric characters and spaces.";
+    private static final String ALPHANUMERIC_ONLY = "[A-Za-z0-9][A-Za-z0-9 ]*";
     public static final String VALIDATION_REGEX = ALPHANUMERIC_ONLY;
 
     public final String value;
