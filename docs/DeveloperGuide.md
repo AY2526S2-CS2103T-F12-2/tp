@@ -9,7 +9,8 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* {list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
+* This project is based on the [AddressBook-Level3](https://se-education.org/addressbook-level3/) project created by the [SE-EDU initiative](https://se-education.org).
+* Libraries used: [JavaFX](https://openjfx.io/), [Jackson](https://github.com/FasterXML/jackson), [JUnit5](https://github.com/junit-team/junit5)
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -143,7 +144,7 @@ The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object) and all `Meeting` objects (which are contained in a `UniqueMeetingList` object).
 * stores the currently ‘selected’ `Person` objects (e.g., results of a search query) as a separate _filtered_ list, which is further wrapped in a `SortedList` to support ordering (e.g. pinned contacts first, fuzzy score). This combined view is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be ‘observed’ e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
-* stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
+* stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
@@ -256,7 +257,7 @@ The following activity diagram summarizes what happens when a user executes a ne
   * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command are correct.
 
-_{more aspects and alternatives to be added}_
+
 
 ### Import and Export feature
 
@@ -292,10 +293,6 @@ Both `ExportCommand` and `ImportCommand` need access to the `Storage` component 
 3. `LogicManager` detects `ExportCommand` is a `StorageCommand` and calls `execute(model, storage)`.
 4. `ExportCommand.execute` calls `storage.saveAddressBook(model.getAddressBook(), targetFilePath)`.
 5. Because `shouldAutoSaveAddressBook()` returns `false`, `LogicManager` skips the default auto-save.
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
 ### Pin feature
 
 #### Implementation
@@ -611,6 +608,7 @@ The sequence below shows the flow for a user typing `so` and pressing `Enter` to
 6. User presses `Enter` → popup not showing → `handleAutocompleteKeyPress` returns early → FXML `onAction` fires `handleCommandEntered` → `skipNextTextFieldAction` is `false` → command is executed.
 
 For no-argument commands (e.g. `list`, `clear`), the `insertText` equals the `matchKey`. At step 3, the text already matches the suggestion exactly, so the command executes immediately on the first `Enter`.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, configuration, dev-ops**
@@ -686,7 +684,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User enters the add command with the contact's details (name, email, and optional fields such as position, major, available hours, and group)
+1.  User enters the add command with the contact's details (required fields: name, phone, email, and address, and optional fields such as position, major, available hours, and group)
 2.  AddressBook validates the input
 3.  AddressBook adds the contact and displays a success message
 
@@ -694,7 +692,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions**
 
-* 2a. A required field (name or email) is missing or invalid.
+* 2a. A required field (name, phone, email, or address) is missing or in an invalid format.
 
     * 2a1. AddressBook shows an error message indicating the invalid field.
 
@@ -703,12 +701,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2b. A contact with the same name, phone number, or email already exists.
 
     * 2b1. AddressBook shows a duplicate contact error message indicating which fields are duplicated.
-
-      Use case resumes at step 1.
-
-* 2c. A required field (name, phone, email, or address) is missing or in an invalid format.
-
-    * 2c1. AddressBook shows an error message indicating the invalid field.
 
       Use case resumes at step 1.
 
@@ -1072,7 +1064,8 @@ testers are expected to do more *exploratory* testing.
 
    1. Download the jar file and copy into an empty folder
 
-   1. Double-click the jar file Expected: Shows the GUI with a set of sample contacts. The window size may not be optimum.
+   1. Double-click the jar file<br>
+      Expected: Shows the GUI with a set of sample contacts. The window size may not be optimum.
 
 1. Saving window preferences
 
@@ -1081,7 +1074,6 @@ testers are expected to do more *exploratory* testing.
    1. Re-launch the app by double-clicking the jar file.<br>
        Expected: The most recent window size and location is retained.
 
-1. _{ more test cases …​ }_
 
 ### Deleting a person
 
@@ -1098,7 +1090,6 @@ testers are expected to do more *exploratory* testing.
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
-1. _{ more test cases …​ }_
 
 ### Password protection
 
@@ -1157,15 +1148,17 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `export fp/test_export.json` (run again)<br>
       Expected: The file is overwritten with the current contacts. Success message displayed.
 
-   1. Test case: `export`<br>
-      Expected: No file is created. Error message showing correct usage format.
-
 1. Exporting with an empty address book
 
    1. Prerequisites: Run `clear` to empty the address book.
 
    1. Test case: `export fp/empty_export.json`<br>
       Expected: File `empty_export.json` is created with an empty persons list. Success message shows 0 contacts exported.
+
+1. Missing file path
+
+   1. Test case: `export`<br>
+      Expected: No file is created. Error message showing correct usage format.
 
 ### Importing contacts
 
@@ -1257,7 +1250,11 @@ testers are expected to do more *exploratory* testing.
 
 1. Dealing with missing/corrupted data files
 
-   1. _{explain how to simulate a missing/corrupted file, and the expected behavior}_
+   1. Simulation: Navigate to the `data/` folder and manually edit `addressbook.json` to introduce a syntax error (e.g. remove a curly brace).
+      Expected behavior: When the application starts, it detects the corrupted file and initializes an empty AddressBook (or shows a warning).
+
+   1. Missing file: Delete the `data/addressbook.json` file completely, then start the application.
+      Expected behavior: A new empty AddressBook will be initialized, creating a new JSON file on first exit or command.
 
 ### Meetings and Scheduling
 
@@ -1310,13 +1307,12 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `find -o n/Alexandr`<br>
       Expected: The contact "Alexander" is shown in the search results despite the minor typo, leveraging the integrated fuzzy search.
 
-1. _{ more test cases …​ }_
 
 --------------------------------------------------------------------------------
 
 ## **Appendix: Effort**
 
-TBD
+The development of CampusLink required significant effort in adapting the base AddressBook-Level3 architecture to manage campus-wide contacts and scheduling meetings. The team reorganized existing parsers and commands, integrated advanced fuzzy search capabilities, added support for image uploads, and implemented a UI theming system from scratch. Additionally, robust security via a password protection feature was built into the app's foundation, creating challenges in testing and UI flow that the team successfully navigated.
 
 --------------------------------------------------------------------------------
 
@@ -1324,4 +1320,11 @@ TBD
 
 Team size: 4
 
-TBD
+1. **Prevent multiple application instances**: Currently, multiple instances of CampusLink can be launched simultaneously. This can lead to data loss or overwriting if changes are made concurrently in separate windows. We plan to add a single-instance check to prevent opening concurrent instances of the application.
+2. **Allow duplicate names for different contacts**: Currently, contacts cannot share the exact same name, even though in a real-world campus setting, different students might have identical names. We plan to update the duplicate detection to strictly mandate unique phone numbers and email addresses, while providing a helpful warning (without blocking the addition outright) if a newly added contact shares a name with an existing one.
+3. **Allow multiple follow-up reminders per contact**: Currently, the `followup` command limits users to storing only a single reminder per contact. This is often too limiting for tracking multiple tasks for a professor or peer (e.g., "Email project files" and "Return borrowed book"). We plan to update the `Person` model to store a list of reminders instead of a single string, allowing users to add, view, and incrementally clear multiple follow-up tasks.
+4. **Prevent irreversible data loss on wrong password entries**: Currently, entering the wrong password three times at startup silently wipes the entire address book and removes the password. We plan to address this harsh feature flaw by locking the app temporarily or providing a separate recovery step, rather than permanently destroying all user data without an explicit confirmation warning.
+5. **Support overnight meetings**: Currently, the `meet` command restricts a meeting's time slot to occur entirely on the same calendar day. This prevents users from scheduling events that straddle the midnight point (e.g., an overnight hackathon from `2300-0800`). We plan to update the time slot parsing logic in the `meet` command to detect if an end time is smaller than the start time and correctly infer that the meeting concludes on the following day.
+6. **Preserve contact list order after `find` operations**: Currently, executing a `list` command after a `find` operation does not appropriately reset the active list to its default unsorted chronological order. We plan to update the `list` command execution so that it correctly resets the underlying `SortedList` comparator back to the default ordering whenever the search filter is cleared.
+7. **Allow appending text to existing fields during an edit**: Currently, the `edit` command requires users to retype an entire entry if they merely wish to add a last name to an existing first name (e.g., editing "Alice" to "Alice Tan"). We plan to introduce an append syntax (such as prepending a `+` sign: `edit 1 n/+ Tan`) that directly appends the provided text to the existing contact's field value.
+8. **Extend fuzzy search capabilities to the `meet` command**: Currently, the advanced fuzzy search logic is exclusively implemented in the `find` command. This limits usability when users have minor typos in contact names while attempting to schedule a meeting. We plan to integrate the fuzzy matching component within the `meet` command's attendee filtering process so that it handles minor typos seamlessly.
