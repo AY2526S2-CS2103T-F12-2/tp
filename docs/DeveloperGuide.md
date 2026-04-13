@@ -1316,26 +1316,12 @@ testers are expected to do more *exploratory* testing.
 
 ## **Appendix: Effort**
 
-The project involved extending an existing Address Book codebase meant for single-type entities (Contacts) into an application that concurrently tracks Meetings and their relationships with Contacts. 
-
-- **Difficulty & Challenges:** The core challenge was refactoring the application architecture structurally at all levels (UI, Model, Logic, and Storage) to support a secondary entity. Managing the lifecycle of `Meeting` objects and keeping them synchronized with `Person` edits/deletions introduced significant complexity over AB3.
-- **Effort Required:** Significant effort was required to build custom JavaFX UI panels (`MeetingListPanel`, `ContactDetailPanel`) that react smoothly to state changes. Features such as fuzzy searching, complex sorting, and data security (passwords) scaled the difficulty further.
-- **Achievements:** Successfully modernized AB3 into a comprehensive meeting application that elegantly tracks and cross-references user interactions without degrading original features.
-- **Reuse:** Around 5-10% of the user interface skeleton was reused from AB3, while everything from the dual-panel design to the model integration was newly crafted by the team.
+TBD
 
 --------------------------------------------------------------------------------
 
 ## **Appendix: Planned Enhancements**
 
-Team size: 5
+Team size: 4
 
-1. **Enhance duplicate contact detection:** Currently, the system strictly matches contacts based on exact name spelling. We plan to improve the `AddCommand` to detect similar contacts using case-insensitivity and minor typo boundaries (e.g., checking if `Alan Turing` and `alan turing` are the same).
-2. **More informative Meeting clash errors:** When a meeting overlaps with another, the error message could be more descriptive by specifying the exact meeting name and time that it clashes with, rather than a generic overlap warning.
-3. **Graceful handling of deleted profile pictures:** If a user links a profile picture via the `PicCommand` but the source image is later deleted from the OS file system, we plan to show a placeholder default image instead of generating a broken UI element or silent warning.
-4. **Timezone support for Meetings:** Currently, all meeting times are assumed to be local. We plan to explicitly support timezone fields during `MeetCommand` so remote meetings display correctly regardless of the user's system timezone.
-5. **Bulk delete capability:** Users with many meetings often want to clear past events. We plan to update `DeleteCommand` to accept a range (e.g., `delete m/ 1-5`) to streamline list management.
-6. **Enhanced fuzzy search sorting:** The `FindCommand` fuzzy search currently returns matches as they appear in the active list. We plan to sort the search results by relevance/Levenshtein distance so the most accurate match appears strictly at the top.
-7. **Password recovery mechanism:** The `SetPasswordCommand` currently relies strictly on the user remembering the master password. We plan to add a backup recovery key mechanism for safer data security in case of lockouts.
-8. **Export format selection:** The `ExportCommand` is currently hardcoded to export raw JSON. We plan to introduce parameters to export into readable formats like CSV to increase utility for corporate users.
-9. **Follow-up reminders on startup:** The `FollowUpCommand` successfully tracks dates, but we plan to implement an automatic prompt box that displays all due follow-ups immediately when the user logs in to the application.
-10. **Customizable theme colors:** The `ToggleColorModeCommand` supports strict Light and Dark modes. We plan to expose the CSS properties to a user-editable configuration file, allowing for deeper customized theme experiences.
+TBD
