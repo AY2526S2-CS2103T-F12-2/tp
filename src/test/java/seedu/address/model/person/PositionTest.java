@@ -22,8 +22,8 @@ public class PositionTest {
     public void constructor_invalidPosition_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Position(""));
         assertThrows(IllegalArgumentException.class, () -> new Position(" "));
-        assertThrows(IllegalArgumentException.class, () -> new Position("Teaching  Assistant"));
-        assertThrows(IllegalArgumentException.class, () -> new Position("TA1"));
+        assertThrows(IllegalArgumentException.class, () -> new Position("Teaching+Assistant"));
+        assertThrows(IllegalArgumentException.class, () -> new Position("TA/Lead"));
     }
 
     /**
@@ -35,8 +35,8 @@ public class PositionTest {
 
         assertFalse(Position.isValidPosition(""));
         assertFalse(Position.isValidPosition(" "));
-        assertFalse(Position.isValidPosition("Teaching  Assistant"));
-        assertFalse(Position.isValidPosition("TA1"));
+        assertTrue(Position.isValidPosition("Teaching  Assistant"));
+        assertTrue(Position.isValidPosition("TA1"));
         assertFalse(Position.isValidPosition("TA-Lead"));
 
         assertTrue(Position.isValidPosition("Teaching Assistant"));

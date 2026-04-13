@@ -140,12 +140,46 @@ Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po
 A person can have any number of tags, groups, majors, and positions (including 0). You can always add or change these later using the `edit` command.
 </div>
 
-<div markdown="block" class="alert alert-warning">:exclamation: **Name format restriction:**
-Names must contain **only alphanumeric characters and spaces**. Names containing `/` (e.g. `Ramesh s/o Kumar`) are not supported — the `/` character is reserved as a prefix separator in CampusLink's command syntax and cannot appear inside a field value. As a workaround, you can omit the slash (e.g. `Ramesh so Kumar`) or replace it with a space (e.g. `Ramesh s o Kumar`).
+<div markdown="block" class="alert alert-info">:information_source: **How CampusLink cleans up field input:**
+
+Before any field value is saved, CampusLink applies two automatic clean-ups:
+
+1. **All fields** — leading and trailing spaces are trimmed (e.g. `  John Doe  ` → `John Doe`).
+2. **Name, Position, and Major only** — multiple consecutive internal spaces are collapsed into one (e.g. `John  Doe` → `John Doe`).
+
+Fields like **Address** are intentionally left untouched after trimming, because internal spacing may carry meaning (e.g. a building name with deliberate formatting). **Group** and **Tag** disallow spaces entirely, so collapsing does not apply.
 </div>
 
-<div markdown="span" class="alert alert-warning">:exclamation: **Duplicate Detection:**
-CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
+<div markdown="block" class="alert alert-warning">:exclamation: **Name format restriction:**
+Names must **start and end with alphanumeric characters** (letters or digits, including non-ASCII characters such as accented letters). Spaces, apostrophes (`'`), and hyphens (`-`) are allowed in between, but the name cannot begin or end with them. Names containing `/` (e.g. `Ramesh s/o Kumar`) are not supported — the `/` character is reserved as a prefix separator in CampusLink's command syntax and cannot appear inside a field value. As a workaround, you can omit the slash (e.g. `Ramesh so Kumar`) or replace it with a space (e.g. `Ramesh s o Kumar`).
+</div>
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Phone number format:**
+Phone numbers must contain **3 to 15 digits**. They may optionally include a leading `+` (for country codes), and formatting characters such as spaces, dashes (`-`), and parentheses are allowed (e.g. `+65 9123-4567`, `(65) 91234567`). At least 3 and at most 15 digit characters must be present.
+</div>
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Other field formats:**
+
+* **Email**: Must follow `local-part@domain` format. The local-part may contain alphanumeric characters and the special characters `+`, `_`, `.`, `-`, but cannot start or end with any of these special characters. The domain must be a valid domain name whose final label is at least 2 characters long (e.g. `example.com`, `nus.edu.sg`).
+* **Address**: Any non-blank value is accepted — no character restrictions apply.
+* **Tag**: Must be alphanumeric (Unicode letters and digits). No spaces or special characters allowed.
+* **Group**: Must contain ASCII alphanumeric characters only (`A`–`Z`, `a`–`z`, `0`–`9`). No spaces or special characters allowed.
+* **Position**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
+* **Major**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
+* **Available hours**: Must be in `HHMM-HHMM` (24-hour) format with start time strictly before end time; both times are in the same day (e.g. `0900-1700`).
+</div>
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Field validation is intentionally permissive:**
+CampusLink's validation rules prioritize flexibility and do not reject all semantically odd inputs. For example, a name like `J---D` (consecutive hyphens), a phone like `+((91234567))` (excessive parentheses), or an address like `!!!` will all be accepted. If you accidentally enter a malformed value, use the [`edit`](#editing-a-contact--edit) command to correct it.
+</div>
+
+<div markdown="block" class="alert alert-warning">:exclamation: **Duplicate Detection:**
+CampusLink automatically detects duplicate contacts. A contact is considered a duplicate if it shares the same **name**, **phone number**, or **email** as an existing contact — matching on **any one** of these three fields is sufficient to flag a duplicate. If a duplicate is detected, the contact will **not** be added and a warning will indicate which fields are duplicated (e.g. `duplicate name, phone detected`).
+
+Phone numbers and email addresses are usually unique to one individual — two different people rarely share them, so a match on either field is a strong signal of a duplicate entry. Name matching is an additional safety net: while two people can share the same name, accidentally re-entering the same contact twice is a far more common mistake than having two genuinely distinct contacts with identical names. The OR rule therefore catches the most likely accidents while keeping you informed of exactly which field triggered the warning.
+
+* **Name** and **email** matching is **case-insensitive** — `john doe` and `John Doe` are treated as the same name; `Alice@Example.com` and `alice@example.com` are treated as the same email.
+* **Phone** matching is **exact** — `91234567` and `9123 4567` are treated as different phone numbers.
 </div>
 
 **Examples:**
@@ -209,7 +243,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 <div markdown="block" class="alert alert-warning">:exclamation: **Important behaviors:**
 
 * **INDEX is relative to the displayed list.** After a `find` command, index 1 refers to the first contact *shown*, not the first contact in the full list. Always confirm which contact is at a given index before editing.
-* **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved.
+* **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved. Name and email matching is case-insensitive; phone matching is exact (e.g. `91234567` and `9123 4567` are not considered the same).
 * **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
 </div>
@@ -261,10 +295,10 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 **How matching works:**
 * This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
-* Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as available.
+* Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as matched for `h/` filter.
 * For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
-* When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
-* If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
+* When both compulsory and optional prefixes are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
+* If only optional keywords are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
 * Repeated flags with no meaningful content between them are allowed. Blank space and intermediate chunks without any prefixes are ignored by later parsing.
 * A valid flag marks the end of the previous flagged segment. Once a valid flag appears, subsequent text is interpreted under the new flag.
@@ -279,10 +313,9 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 Fuzzy search is built into the `find` command. When you search by name, phone, address, or email, CampusLink automatically tries to match your keyword even if it contains small typos or misspellings — you do not need to do anything special to activate it.
 
 *Details and behavior:*
-* Fuzzy matching allows up to **2 edits**. An "edit" is a single character-level change: inserting a character (e.g. `Aelx` → `Alex`), deleting a character (e.g. `Alx` → `Alex`), or substituting one character for another (e.g. `Alox` → `Alex`). A keyword with up to 2 such changes will still match the intended contact.
-* Matching is token-based: both the field value and keyword are split by spaces first.
+* Fuzzy matching allows up to **1 edit**. An "edit" is a single character-level change: inserting a character (e.g. `Aelx` → `Alex`), deleting a character (e.g. `Alx` → `Alex`), or substituting one character for another (e.g. `Alox` → `Alex`). A keyword with up to 1 such change will still match the intended field.
+* Fuzzy match will be applied only after exact match fails, and it is token-based: both the field value and keyword are split by spaces first.
 * For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
-* For all four fields (`n/`, `p/`, `a/`, `e/`), exact case-insensitive substring matches are accepted first; fuzzy matching is applied only if no exact match is found.
 * Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching — these must match exactly (case-insensitive).
 * Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
@@ -530,7 +563,7 @@ Format: `sort CONDITION ORDER`
 
 ### Setting a profile picture : `pic`
 
-**Attaches a photo to a contact so you can recognise them at a glance.**
+**Attaches a photo to a contact so you can recognize them at a glance.**
 
 Use this to add a face to a name — useful when your contact list grows large or when you want to quickly identify someone on campus. Running the command opens a file picker where you can choose an image from your computer.
 
@@ -691,7 +724,7 @@ Format: `import fp/FILE_PATH`
 | File path | `fp/` | The path to a `.json` file previously exported from CampusLink. |
 
 * The import is **additive** — existing contacts are kept as-is.
-* If an imported contact has the same name as an existing contact, it is **skipped** (not added again).
+* If an imported contact shares the same **name** (case-insensitive), **phone number** (exact), or **email** (case-insensitive) as an existing contact, it is **skipped** (not added again).
 * Newly imported contacts are added to the **top** of the list, preserving their relative order from the file.
 * After the command, the result message tells you how many contacts were added and how many were skipped.
 
@@ -843,7 +876,7 @@ Action | Format, Examples
 **Edit** | `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…`<br>`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`<br> e.g., `edit -r 2 n/James Lee e/jameslee@example.com`
 **Export** | `export fp/FILE_PATH`<br> e.g., `export fp/backup.json`
 **Find** | `find [-c/-o] PREFIX/KEYWORD… (at least one required)`<br> e.g., `find n/James Jake`
-**Meet** | `meet DESC h/START-END [d/DATE] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
+**Meet** | `meet DESCRIPTION h/START-END [d/DATE] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`<br> e.g., `meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project`
 **Unmeet** | `unmeet INDEX`<br> e.g., `unmeet 1`
 **Follow-up** | `followup INDEX f/NOTE`<br> e.g., `followup 1 f/Email about internship by Friday`
 **Clear Follow-up** | `clearfollowup INDEX`<br> e.g., `clearfollowup 1`

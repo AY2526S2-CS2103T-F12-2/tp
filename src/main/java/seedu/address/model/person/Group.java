@@ -9,8 +9,8 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Group {
 
-    public static final String MESSAGE_CONSTRAINTS = "Groups should only contain alphanumeric characters, "
-            + "and no spaces or special characters allowed.";
+    public static final String MESSAGE_CONSTRAINTS = "Groups should only contain alphanumeric characters. "
+            + "No spaces or special characters are allowed.";
     // alphanumeric and special characters
     private static final String ALPHANUMERIC_ONLY = "[A-Za-z0-9]+"; // alphanumeric characters only
     public static final String VALIDATION_REGEX = ALPHANUMERIC_ONLY;
