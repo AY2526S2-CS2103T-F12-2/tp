@@ -246,6 +246,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 * **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved. Name and email matching is case-insensitive; phone matching is exact (e.g. `91234567` and `9123 4567` are not considered the same).
 * **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
+* **Input clean-up applies.** The same trimming and space-collapsing rules as `add` apply here — leading/trailing spaces are trimmed from all fields, and multiple consecutive internal spaces in **Name**, **Position**, and **Major** are collapsed into one.
 </div>
 
 **Examples:**
@@ -295,6 +296,7 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 **How matching works:**
 * This section introduces exact match rule, but in general typo is permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
+* Keywords have leading/trailing spaces trimmed, but internal multiple consecutive spaces are **not** collapsed — `John  Doe` (double space) is a different keyword from `John Doe`.
 * Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as matched for `h/` filter.
 * For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space separated part of a keyword to match.
 * When both compulsory and optional prefixes are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
@@ -403,6 +405,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
 * **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied keywords (`n/`, `g/`, `m/`, `po/`, `t/`).
 * **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
+* **Filter keywords are not space-collapsed.** Leading/trailing spaces are trimmed, but internal multiple consecutive spaces are preserved — `John  Doe` (double space) will not match a contact named `John Doe`.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description (exact match), date, and time slot as an existing meeting.
 * **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added (if no matching contact, the list becomes empty). Run [`list`] to restore the full contact list.
 </div>
