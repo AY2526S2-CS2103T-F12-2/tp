@@ -206,6 +206,17 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_duplicateNameDifferentCase_failure() {
+        Person firstPerson = model.getDisplayedPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withName(firstPerson.getName().fullName.toUpperCase())
+                .build();
+
+        EditCommand editCommand = new EditCommand(INDEX_SECOND_PERSON, descriptor);
+        assertCommandFailure(editCommand, model, EditCommand.MESSAGE_DUPLICATE_PERSON);
+    }
+
+    @Test
     public void execute_invalidPersonIndexUnfilteredList_failure() {
         Index outOfBoundIndex = Index.fromOneBased(model.getDisplayedPersonList().size() + 1);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();

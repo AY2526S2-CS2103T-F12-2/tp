@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -169,9 +170,11 @@ public class Person {
         }
 
         return otherPerson != null && (
-                otherPerson.getName().equals(getName())
+            otherPerson.getName().fullName.toLowerCase(Locale.ROOT)
+                .equals(getName().fullName.toLowerCase(Locale.ROOT))
                 || otherPerson.getPhone().equals(getPhone())
-                || otherPerson.getEmail().equals(getEmail()));
+            || otherPerson.getEmail().value.toLowerCase(Locale.ROOT)
+                .equals(getEmail().value.toLowerCase(Locale.ROOT)));
     }
 
     /**
@@ -179,13 +182,15 @@ public class Person {
      */
     public List<String> getDuplicateFields(Person other) {
         List<String> fields = new ArrayList<>();
-        if (other.getName().equals(getName())) {
+        if (other.getName().fullName.toLowerCase(Locale.ROOT)
+                .equals(getName().fullName.toLowerCase(Locale.ROOT))) {
             fields.add("name");
         }
         if (other.getPhone().equals(getPhone())) {
             fields.add("phone");
         }
-        if (other.getEmail().equals(getEmail())) {
+        if (other.getEmail().value.toLowerCase(Locale.ROOT)
+                .equals(getEmail().value.toLowerCase(Locale.ROOT))) {
             fields.add("email");
         }
         return fields;
