@@ -14,7 +14,7 @@ import java.util.Locale;
 public class StringUtil {
 
     /** Maximum Levenshtein distance allowed for a fuzzy match. */
-    public static final int FUZZY_MATCH_MAX_DISTANCE = 2;
+    public static final int FUZZY_MATCH_MAX_DISTANCE = 1;
 
     /**
      * Returns true if the {@code sentence} contains the {@code word}.

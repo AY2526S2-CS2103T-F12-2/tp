@@ -50,6 +50,27 @@ public class PersonTest {
         Person editedBob = new PersonBuilder(BOB).withName(VALID_NAME_BOB.toLowerCase())
                 .withEmail(VALID_EMAIL_BOB + ".au").build();
         assertTrue(BOB.isSamePerson(editedBob));
+
+        // same name with different casing, all other attributes different -> returns true
+        editedAlice = new PersonBuilder(ALICE).withName(ALICE.getName().fullName.toUpperCase())
+                .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
+        assertTrue(ALICE.isSamePerson(editedAlice));
+
+        // same email with different casing, all other attributes different -> returns true
+        editedAlice = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
+                .withEmail(ALICE.getEmail().value.toUpperCase()).build();
+        assertTrue(ALICE.isSamePerson(editedAlice));
+    }
+
+    @Test
+    public void getDuplicateFields_caseInsensitiveNameAndEmail_detectsDuplicates() {
+        Person sameNameDifferentCase = new PersonBuilder(ALICE).withName(ALICE.getName().fullName.toUpperCase())
+                .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
+        assertTrue(ALICE.getDuplicateFields(sameNameDifferentCase).contains("name"));
+
+        Person sameEmailDifferentCase = new PersonBuilder(ALICE).withName(VALID_NAME_BOB).withPhone(VALID_PHONE_BOB)
+                .withEmail(ALICE.getEmail().value.toUpperCase()).build();
+        assertTrue(ALICE.getDuplicateFields(sameEmailDifferentCase).contains("email"));
     }
 
     @Test
