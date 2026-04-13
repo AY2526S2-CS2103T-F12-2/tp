@@ -5,6 +5,8 @@ title: User Guide
 
 CampusLink is a **desktop app for managing contacts, optimized for use via a Command Line Interface** (CLI) while still having the benefits of a Graphical User Interface (GUI). If you can type fast, CampusLink can get your contact management tasks done faster than traditional GUI apps.
 
+Your data is saved automatically after every command — no manual saving needed. Contacts are stored at `[JAR file location]/data/addressbook.json`. Advanced users may edit this file directly, but doing so incorrectly may cause CampusLink to discard all data or behave unexpectedly — keep a backup before making any direct edits.
+
 * Table of Contents
 {:toc}
 
@@ -246,6 +248,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 * **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved. Name and email matching is case-insensitive; phone matching is exact (e.g. `91234567` and `9123 4567` are not considered the same).
 * **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
+* **Editing available hours does not affect existing meetings.** If you change a contact's available hours, any meetings they were already added to remain unchanged — they are still listed as attendees.
 * **Input clean-up applies.** The same trimming and space-collapsing rules as `add` apply here — leading/trailing spaces are trimmed from all fields, and multiple consecutive internal spaces in **Name**, **Position**, and **Major** are collapsed into one.
 </div>
 
@@ -408,6 +411,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * **Filter keywords are not space-collapsed.** Leading/trailing spaces are trimmed, but internal multiple consecutive spaces are preserved — `John  Doe` (double space) will not match a contact named `John Doe`.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description (exact match), date, and time slot as an existing meeting.
 * **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added (if no matching contact, the list becomes empty). Run [`list`] to restore the full contact list.
+* **Availability is checked at scheduling time only.** If a contact's available hours are later edited, they remain in any meetings they were already added to — existing meetings are not retroactively affected.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -831,7 +835,7 @@ CampusLink saves your data automatically to the hard disk after every command th
 
 ### Editing the data file
 
-Your contacts are saved as a JSON file at `[JAR file location]/data/campuslink.json`. Advanced users are welcome to edit this file directly.
+Your contacts are saved as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users are welcome to edit this file directly.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If the data file is edited incorrectly, CampusLink may discard all data and start with an empty contact list, or exhibit unexpected behavior even if the file appears valid. Keep a backup before making any direct edits.
@@ -855,7 +859,7 @@ CampusLink's password protects you from casual access through the app itself, bu
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/campuslink.json` to the same location on the other computer.
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
