@@ -10,11 +10,14 @@ import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.person.Person;
 import seedu.address.testutil.AddressBookBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 public class ModelManagerTest {
 
@@ -87,9 +90,59 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void hasPerson_sameNameDifferentCase_returnsTrue() {
+        modelManager.addPerson(ALICE);
+        assertTrue(modelManager.hasPerson(new PersonBuilder(ALICE)
+                .withName(ALICE.getName().fullName.toUpperCase())
+                .withPhone("91234567")
+                .withEmail("different@example.com")
+                .build()));
+    }
+
+    @Test
+    public void hasPerson_sameEmailDifferentCase_returnsTrue() {
+        modelManager.addPerson(ALICE);
+        assertTrue(modelManager.hasPerson(new PersonBuilder(ALICE)
+                .withName("Different Name")
+                .withPhone("92345678")
+                .withEmail(ALICE.getEmail().value.toUpperCase())
+                .build()));
+    }
+
+    @Test
     public void getDisplayedPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getDisplayedPersonList().remove(0));
     }
+
+        @Test
+        public void setPerson_followUpEdited_keepsDisplayedOrder() {
+        Person first = new PersonBuilder().withName("Yeoh")
+            .withPhone("87438807")
+            .withEmail("yeoh@example.com")
+            .build();
+        Person second = new PersonBuilder().withName("Charlotte Oliveira")
+            .withPhone("93210283")
+            .withEmail("charlotte@example.com")
+            .withFollowUp("Ping next week")
+            .build();
+        Person third = new PersonBuilder().withName("Bernice Yu")
+            .withPhone("99272758")
+            .withEmail("bernice@example.com")
+            .withFollowUp("Prepare notes")
+            .build();
+
+        AddressBook addressBook = new AddressBookBuilder()
+            .withPerson(first)
+            .withPerson(second)
+            .withPerson(third)
+            .build();
+        ModelManager localModel = new ModelManager(addressBook, new UserPrefs());
+
+        Person editedSecond = new PersonBuilder(second).withFollowUp("").build();
+        localModel.setPerson(second, editedSecond);
+
+        assertEquals(List.of(first, editedSecond, third), localModel.getDisplayedPersonList());
+        }
 
     @Test
     public void equals() {

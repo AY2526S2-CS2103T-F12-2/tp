@@ -11,8 +11,11 @@ public class Phone {
 
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Phone numbers should only contain numbers, and it should be at least 3 digits long";
-    public static final String VALIDATION_REGEX = "\\d{3,}";
+        "Phone numbers should contain 3 to 15 digits, and may include a leading '+', spaces, dashes, "
+            + "or parentheses";
+    public static final String VALIDATION_REGEX = "\\+?[\\d()\\-\\s]+";
+    private static final int MIN_DIGIT_COUNT = 3;
+    private static final int MAX_DIGIT_COUNT = 15;
     public final String value;
 
     /**
@@ -30,7 +33,12 @@ public class Phone {
      * Returns true if a given string is a valid phone number.
      */
     public static boolean isValidPhone(String test) {
-        return test.matches(VALIDATION_REGEX);
+        if (!test.matches(VALIDATION_REGEX)) {
+            return false;
+        }
+
+        long digitCount = test.chars().filter(Character::isDigit).count();
+        return digitCount >= MIN_DIGIT_COUNT && digitCount <= MAX_DIGIT_COUNT;
     }
 
     @Override

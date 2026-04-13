@@ -255,6 +255,18 @@ public class PersonMatchesKeywordsPredicateTest {
         assertFalse(predicate.test(new PersonBuilder().withName("Alice Bob").build()));
     }
 
+        @Test
+        public void test_fuzzyName_irrelevantShortNameNotMatched() {
+                PersonMatchesKeywordsPredicate predicate =
+                                createPredicate(List.of(), Collections.singletonList("Alex"), List.of(), List.of(),
+                                                List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
+                                                List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
+
+                assertTrue(predicate.test(new PersonBuilder().withName("Alex Tan").build()));
+                assertTrue(predicate.test(new PersonBuilder().withName("Alec Tan").build()));
+                assertFalse(predicate.test(new PersonBuilder().withName("Bob Lee").build()));
+        }
+
     /**
      * Ensures tag matching does not use fuzzy search (typos should not match).
      */
@@ -395,7 +407,7 @@ public class PersonMatchesKeywordsPredicateTest {
     public void test_compulsoryEmailFuzzyKeyword_returnsTrue() {
         PersonMatchesKeywordsPredicate predicate =
                 createPredicate(List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
-                        List.of(), List.of(), List.of("alcie@example.com"), List.of(), List.of(), List.of(),
+                                                List.of(), List.of(), List.of("alce@example.com"), List.of(), List.of(), List.of(),
                         List.of(), List.of(), List.of(), List.of(), List.of(), List.of());
         assertTrue(predicate.test(new PersonBuilder().withEmail("alice@example.com").build()));
     }

@@ -43,8 +43,15 @@ public class ModelManager implements Model {
             if (pinCompare != 0) {
                 return pinCompare;
             }
-            // Stable tiebreaker: preserve the original order in the source list
-            return Integer.compare(filteredPersons.indexOf(p1), filteredPersons.indexOf(p2));
+
+            // Preserve source-list order for unpinned contacts.
+            // During replacement updates, transient stale objects may not be present in filteredPersons;
+            // push those to the end so existing visible order remains stable.
+            int firstIndex = filteredPersons.indexOf(p1);
+            int secondIndex = filteredPersons.indexOf(p2);
+            firstIndex = firstIndex == -1 ? Integer.MAX_VALUE : firstIndex;
+            secondIndex = secondIndex == -1 ? Integer.MAX_VALUE : secondIndex;
+            return Integer.compare(firstIndex, secondIndex);
         });
     }
 
