@@ -79,7 +79,7 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 * For commands that parse prefixed fields (e.g. `find`), prefixes unrelated to that command are treated as normal text input instead of parsed fields.<br>
   e.g. in `find`, `f/` is treated as text unless it appears under a supported `find` prefix such as `n/` or `a/`.
 
-* For timeslot/available hours, start time and end time are both inclusive and regarded as in the same day, and end time must be after start time.<br>
+* For timeslot/available hours, each person can have **at most one** timeslot. Start and end times are both inclusive, treated as the same day, and end time must be after start time.<br>
   e.g. `h/0900-1700` is valid but `h/1700-0900` is invalid.
 
 * Some commands (e.g. `find`, `meet`) filter the contact list displayed. To view all contacts again, use the [`list`](#listing-all-contacts--list) command.
@@ -249,7 +249,8 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 
 * **INDEX is relative to the displayed list.** After a `find` command, index 1 refers to the first contact *shown*, not the first contact in the full list. Always confirm which contact is at a given index before editing.
 * **Duplicate check applies.** If the edited name, phone, or email would match another existing contact, the edit is rejected with a duplicate warning. No changes are saved. Name and email matching is case-insensitive; phone matching is exact (e.g. `91234567` and `9123 4567` are not considered the same).
-* **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors, available hours) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Scalar fields (name, phone, email, address) are always overwritten regardless of flag.
+* **`-a` appends; default replaces.** Without any flag, multi-value fields (tags, groups, positions, majors) are fully replaced by what you supply. With `-a`, your new values are added on top of the existing ones. Fields including name, phone, email, address are always overwritten regardless of flag.
+* **Available hours is single-value per person.** A contact can have at most one `h/START-END` slot, so supplying a new `h/` value replaces the previous one.
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
 * **Editing available hours does not affect existing meetings.** If you change a contact's available hours, any meetings they were already added to remain unchanged — they are still listed as attendees.
 * **Input clean-up applies.** The same trimming and space-collapsing rules as `add` apply here — leading/trailing spaces are trimmed from all fields, and multiple consecutive internal spaces in **Name**, **Position**, and **Major** are collapsed into one.
