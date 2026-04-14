@@ -3,7 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -71,12 +71,12 @@ public class SortCommand extends Command {
             break;
         case RECENT:
             List<Person> unmodifiableList = model.getAddressBook().getPersonList();
-            Map<Person, Integer> indexMap = new HashMap<>();
+            Map<Person, Integer> indexMap = new IdentityHashMap<>();
             int idx = 0;
             for (Person p : unmodifiableList) {
                 indexMap.put(p, idx++);
             }
-            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, -1));
+            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, Integer.MAX_VALUE));
             break;
         default:
             fieldComparator = Comparator.comparing(

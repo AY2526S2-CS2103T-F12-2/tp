@@ -37,18 +37,26 @@ public class ModelManager implements Model {
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
-        filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        ObservableList<Person> rawPersonList = this.addressBook.getPersonList();
+        filteredPersons = new FilteredList<>(rawPersonList);
         sortedPersons = new SortedList<>(filteredPersons, (p1, p2) -> {
             int pinCompare = Boolean.compare(p2.isPinned(), p1.isPinned());
             if (pinCompare != 0) {
                 return pinCompare;
             }
 
-            // Preserve source-list order for unpinned contacts.
-            // During replacement updates, transient stale objects may not be present in filteredPersons;
-            // push those to the end so existing visible order remains stable.
-            int firstIndex = filteredPersons.indexOf(p1);
-            int secondIndex = filteredPersons.indexOf(p2);
+            // Preserve source-list order for unpinned contacts using reference equality (==)
+            // so that edited person objects (which differ by equals()) are still found correctly.
+            int firstIndex = -1;
+            int secondIndex = -1;
+            for (int i = 0; i < rawPersonList.size(); i++) {
+                if (rawPersonList.get(i) == p1) {
+                    firstIndex = i;
+                }
+                if (rawPersonList.get(i) == p2) {
+                    secondIndex = i;
+                }
+            }
             firstIndex = firstIndex == -1 ? Integer.MAX_VALUE : firstIndex;
             secondIndex = secondIndex == -1 ? Integer.MAX_VALUE : secondIndex;
             return Integer.compare(firstIndex, secondIndex);
