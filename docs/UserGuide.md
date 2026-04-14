@@ -900,6 +900,21 @@ CampusLink's password protects you from casual access through the app itself, bu
 
 --------------------------------------------------------------------------------------------------------------------
 
+## Glossary
+
+* **Alphanumeric**: Contains only letters (A-Z) and numbers (0-9). No special characters (like `@`, `#`, or `-`).
+* **Case-insensitive**: The system treats uppercase and lowercase letters the same. For example, finding `Alex` will also match `alex` or `ALEX`.
+* **CLI (Command Line Interface)**: A text-based way of interacting with a program, where you type commands manually instead of clicking buttons.
+* **Directory / File Path**: The folder location on your computer where files are saved (e.g., `data/team_contacts.json`).
+* **Fuzzy Search**: A forgiving search tool that tries to find matches even if there are minor typos or slight misspellings in your query.
+* **GUI (Graphical User Interface)**: The visual part of the app you interact with on your screen, featuring windows, lists, and layout panels.
+* **Index**: The positive number appearing next to a contact or meeting in the displayed list. It is used to target a specific item (e.g., `delete 1` targets the first person).
+* **JSON**: A standard file format used to store and transfer data. Your imported and exported contacts are saved in this format.
+* **Parameter**: Additional information you supply to a command to tell it exactly what to interact with (e.g., the `1` in `delete 1`).
+* **Prefix / Flag**: A short code (like `n/` for name, or `-c` for compulsory) placed before a parameter to tell the app which category of information you are providing.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## Command summary
 
 Action | Format, Examples
