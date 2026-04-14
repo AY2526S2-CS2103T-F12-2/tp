@@ -13,6 +13,7 @@ title: Developer Guide
 
 * This project is based on the [AddressBook-Level3](https://se-education.org/addressbook-level3/) project created by the [SE-EDU initiative](https://se-education.org).
 * Libraries used: [JavaFX](https://openjfx.io/), [Jackson](https://github.com/FasterXML/jackson), [JUnit5](https://github.com/junit-team/junit5)
+* AI-assisted development tools (such as GitHub Copilot, Gemini, and Claude) were used by the team as productivity aids for writing boilerplate code, auto-completing logic, and troubleshooting bugs throughout the development of this project.
 
 --------------------------------------------------------------------------------------------------------------------
 
