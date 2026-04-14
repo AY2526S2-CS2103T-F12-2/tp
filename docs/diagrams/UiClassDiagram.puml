@@ -13,6 +13,10 @@ Class HelpWindow
 Class ResultDisplay
 Class PersonListPanel
 Class PersonCard
+Class ContactDetailPanel
+Class MeetingListPanel
+Class MeetingListCard
+Class MeetingDetailPanel
 Class StatusBarFooter
 Class CommandBox
 }
@@ -33,10 +37,14 @@ UiManager -down-> "1" MainWindow
 MainWindow *-down->  "1" CommandBox
 MainWindow *-down-> "1" ResultDisplay
 MainWindow *-down-> "1" PersonListPanel
+MainWindow *-down-> "1" ContactDetailPanel
+MainWindow *-down-> "1" MeetingListPanel
+MainWindow *-down-> "1" MeetingDetailPanel
 MainWindow *-down-> "1" StatusBarFooter
 MainWindow --> "0..1" HelpWindow
 
 PersonListPanel -down-> "*" PersonCard
+MeetingListPanel -down-> "*" MeetingListCard
 
 MainWindow -left-|> UiPart
 
@@ -44,10 +52,15 @@ ResultDisplay --|> UiPart
 CommandBox --|> UiPart
 PersonListPanel --|> UiPart
 PersonCard --|> UiPart
+ContactDetailPanel --|> UiPart
+MeetingListPanel --|> UiPart
+MeetingListCard --|> UiPart
+MeetingDetailPanel --|> UiPart
 StatusBarFooter --|> UiPart
 HelpWindow --|> UiPart
 
 PersonCard ..> Model
+MeetingListCard ..> Model
 UiManager -right-> Logic
 MainWindow -left-> Logic
 

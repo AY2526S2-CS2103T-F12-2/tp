@@ -5,7 +5,7 @@ title: User Guide
 
 CampusLink is a **desktop app for managing contacts, optimized for use via a Command Line Interface** (CLI) while still having the benefits of a Graphical User Interface (GUI). If you can type fast, CampusLink can get your contact management tasks done faster than traditional GUI apps.
 
-Your data is saved automatically after every command — no manual saving needed. Contacts are stored at `[JAR file location]/data/addressbook.json`. Advanced users may edit this file directly, but doing so incorrectly may cause CampusLink to discard all data or behave unexpectedly — keep a backup before making any direct edits.
+# User Guide
 
 * Table of Contents
 {:toc}
@@ -32,7 +32,7 @@ Your data is saved automatically after every command — no manual saving needed
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to CampusLink.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -60,11 +60,13 @@ Your data is saved automatically after every command — no manual saving needed
 
 **:information_source: Notes about the command format:**<br>
 
+* **Prefixes** (like `n/`, `p/`) act as labels to tell the app which field you are filling out. For example, `p/91234567` explicitly tells the app the phone number is 91234567.
+
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 
 * Items in square brackets are optional.<br>
-  e.g `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  e.g. `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
 
 * Items with `…`​ after them can be used multiple times including zero times.<br>
   e.g. `[t/TAG]…​` can be used as ` ` (i.e. 0 times), `t/friend`, `t/friend t/family` etc.
@@ -122,7 +124,8 @@ Format: `help`
 
 Use this command when you meet someone new — a classmate, professor, or project teammate — and want to store their details for later. You must provide their name, phone number, email, and address. Everything else (tags, group, position, major, available hours) is optional and can be added now or edited later.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…`<br>
+`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
 
 **Arguments:**
 
@@ -164,7 +167,7 @@ Phone numbers must contain **3 to 15 digits**. They may optionally include a lea
 
 * **Email**: Must follow `local-part@domain` format. The local-part may contain alphanumeric characters and the special characters `+`, `_`, `.`, `-`, but cannot start or end with any of these special characters. The domain must be a valid domain name whose final label is at least 2 characters long (e.g. `example.com`, `nus.edu.sg`).
 * **Address**: Any non-blank value is accepted — no character restrictions apply.
-* **Tag**: Must be alphanumeric (Unicode letters and digits). No spaces or special characters allowed.
+* **Tag**: Must be alphanumeric. No spaces or special characters allowed.
 * **Group**: Must contain ASCII alphanumeric characters only (`A`–`Z`, `a`–`z`, `0`–`9`). No spaces or special characters allowed.
 * **Position**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
 * **Major**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
@@ -220,7 +223,8 @@ Format: `list`
 
 Use this when a classmate changes their phone number, you want to add a new tag, or you need to fix a typo in someone's name. You identify the contact by their position number in the currently displayed list, then specify only the fields you want to change.
 
-Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]… [g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
+Format: `edit [FLAG] INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…`<br>
+`[g/GROUP]… [po/POSITION]… [m/MAJOR]… [h/AVAILABLE_HOURS]`
 
 **Arguments:**
 
@@ -250,6 +254,7 @@ At least one field (besides the flag) must be provided. You cannot run `edit 1` 
 * **Editing a pinned contact** does not affect its pin status — the contact remains pinned after editing.
 * **Editing available hours does not affect existing meetings.** If you change a contact's available hours, any meetings they were already added to remain unchanged — they are still listed as attendees.
 * **Input clean-up applies.** The same trimming and space-collapsing rules as `add` apply here — leading/trailing spaces are trimmed from all fields, and multiple consecutive internal spaces in **Name**, **Position**, and **Major** are collapsed into one.
+* **Active filter is cleared on success.** After a successful `edit`, the contact list resets to show **all** contacts, regardless of any `find` filter that was active beforehand. If you need to continue working within a filtered view, re-run your `find` command after editing.
 </div>
 
 **Examples:**
@@ -299,11 +304,10 @@ Format: `find [-c/-o PREFIX/KEYWORD…]…`
 **How matching works:**
 * This section introduces the exact match rule, but in general typos are permitted, as explained in the **Fuzzy Search** section below.
 * Search is case-insensitive — `hans` matches `Hans`.
-* Keywords have leading/trailing spaces trimmed, but internal multiple consecutive spaces are **not** collapsed — `John  Doe` (double space) is a different keyword from `John Doe`.
-* Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as matched for `h/` filter.
+* Keywords for name, email, phone, and address are partial matches — `H` matches `Hans`. If a person's available hours are not set, they are always interpreted as available.
 * For name, email, address and phone, compulsory find requires the whole keyword to match, while optional find only requires any space-separated part of a keyword to match.
-* When both compulsory and optional prefixes are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
-* If only optional keywords are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
+* When both compulsory and optional fields are given, a contact must satisfy **all** compulsory conditions **and at least one** optional condition to appear in the results.
+* If only optional fields are given, a contact must satisfy at least one of them to appear in the results; if only compulsory fields are given, a contact must satisfy all of them to appear in the results.
 * Flags are **space-delimited** — a token is treated as a flag only if it appears after a space, and is followed by a space.
 * Repeated flags with no meaningful content between them are allowed. Blank space and intermediate chunks without any prefixes are ignored by later parsing.
 * A valid flag marks the end of the previous flagged segment. Once a valid flag appears, subsequent text is interpreted under the new flag.
@@ -320,8 +324,8 @@ Fuzzy search is built into the `find` command. When you search by name, phone, a
 *Details and behavior:*
 * Fuzzy matching allows up to **1 edit**. An "edit" is a single character-level change: inserting a character (e.g. `Aelx` → `Alex`), deleting a character (e.g. `Alx` → `Alex`), or substituting one character for another (e.g. `Alox` → `Alex`). A keyword with up to 1 such change will still match the intended field.
 * Fuzzy match will be applied only after exact match fails, and it is token-based: both the field value and keyword are split by spaces first.
-* For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
-* Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching — these must match exactly (case-insensitive).
+* For a multi-word keyword (e.g. `Alex Yeaa`): under `-c`, each keyword part must match; under `-o`, any one keyword part matching is sufficient.
+* Fields `t/`, `m/`, `po/`, and `g/` do not use fuzzy matching — these use case-insensitive substring matching only. `h/` also does not use fuzzy matching; it uses availability containment rules (time within slot or slot within slot).
 * Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
 **Examples:**
@@ -373,9 +377,10 @@ Fuzzy search is built into the `find` command. When you search by name, phone, a
 
 ### Scheduling a meeting : `meet`
 
-Creates a meeting at a specific time with contacts who satisfy your filters and are available in that time slot.
+**Creates a meeting at a specific time with contacts who satisfy your filters and are available in that time slot.**
 
-Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
+Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD]`<br>
+`[n/NAME] [g/GROUP] [m/MAJOR] [po/POSITION] [t/TAG]…`
 
 * `DESCRIPTION` is required and must come first as plain text (without a prefix).
 * `h/START-END` is required and must appear exactly once. Contacts must be available for the entire duration from START to END to be included in the meeting.
@@ -392,9 +397,9 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 
 * Schedule a meeting with specific attendee filters:
   ```
-  meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T m/Computer Science po/TA t/project
+  meet Project sync h/1200-1300 d/2026-04-01 n/Alex g/CS2103T t/project
   ```
-  *Outcome: Creates a meeting "Project sync" on 2026-04-01 from 12:00–13:00, including contacts who match any of: named Alex, in group CS2103T, majoring in Computer Science, with position TA, or tagged project — and who are free during that slot.*
+  *Outcome: Creates a meeting "Project sync" on 2026-04-01 from 12:00–13:00, including contacts who match any of: named Alex, in group CS2103T, or tagged project — and who are free during that slot.*
 
 * Schedule a meeting with all available contacts:
   ```
@@ -408,10 +413,11 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD] [n/NAME] [g/GROUP] [m/MAJOR
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
 * **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied keywords (`n/`, `g/`, `m/`, `po/`, `t/`).
 * **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
-* **Filter keywords are not space-collapsed.** Leading/trailing spaces are trimmed, but internal multiple consecutive spaces are preserved — `John  Doe` (double space) will not match a contact named `John Doe`.
-* **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description (exact match), date, and time slot as an existing meeting.
-* **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added (if no matching contact, the list becomes empty). Run [`list`] to restore the full contact list.
-* **Availability is checked at scheduling time only.** If a contact's available hours are later edited, they remain in any meetings they were already added to — existing meetings are not retroactively affected.
+* **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not fully cover the requested slot are excluded.
+* **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
+* **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
+* **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
+* **The contact panel is temporarily filtered** to show only the attendees of the newly created meeting. This is intentional — it lets you confirm who was added. Run `list` to restore the full contact list.
 </div>
 
 --------------------------------------------------------------------------------------------------------------------
@@ -538,9 +544,9 @@ Format: `sort CONDITION ORDER`
 |---|---|---|
 | `CONDITION` | `firstname` | Sorts by the **first word** of each contact's name (e.g. "Alice" in "Alice Tan"). |
 | | `lastname` | Sorts by the **last word** of each contact's name (e.g. "Tan" in "Alice Tan", or "Madonna" if that is the full name). |
-| | `recent` | Sorts by the order contacts were added or imported — newest first. |
-| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; newest first for `recent`). |
-| | `d` or `DESC` | Descending order (Z → A for names; oldest first for `recent`). |
+| | `recent` | Sorts by the order contacts were added or imported. |
+| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; oldest first for `recent`). |
+| | `d` or `DESC` | Descending order (Z → A for names; newest first for `recent`). |
 
 * The sort is case-insensitive.
 * Sorting is a **display preference only** — it does not modify the saved data and resets when you restart the app.
@@ -559,9 +565,9 @@ Format: `sort CONDITION ORDER`
   ```
   *Outcome: Contacts with surnames starting with Z appear first.*
 
-* Restore the list to the order contacts were originally added:
+* Show newest additions first:
   ```
-  sort recent a
+  sort recent d
   ```
   *Outcome: The most recently added or imported contacts appear at the top.*
 ![Ui](images/features/sortResult.png)
@@ -605,13 +611,13 @@ Format: `pic INDEX`
 
 ### Toggling dark / light mode : `toggle color mode`
 
-**Switches the app's colour theme between dark mode and light mode.**
+**Switches the app's color theme between dark mode and light mode.**
 
 Use this to make CampusLink more comfortable to read depending on your environment — dark mode for low-light settings, light mode for bright rooms. You can also click the ☀ / 🌙 button at the top-right corner of the window to do the same thing.
 
 Format: `toggle color mode`
 
-**What happens:** The entire app switches colour theme instantly. Your preference is saved and applied the next time you open CampusLink.
+**What happens:** The entire app switches color theme instantly. Your preference is saved and applied the next time you open CampusLink.
 ![Ui](images/features/darkMode.png)
 ![Ui](images/features/lightMode.png)
 
@@ -773,6 +779,11 @@ Format: `followup INDEX f/NOTE`
 
 * If a reminder already exists on that contact, it is **replaced** by the new note.
 * Reminders are shown automatically in the result display every time the app starts.
+* **Active filter is preserved on success.** After a successful `followup`, the contact list continues to show only the contacts that matched the previous `find` filter (if any). The filter is not cleared.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:**
+`followup` preserves the active `find` filter, while `edit` clears it. If you run `edit` and then want to continue working within a filtered view, re-run your `find` command.
+</div>
 
 **Examples:**
 
@@ -806,6 +817,7 @@ Format: `clearfollowup INDEX`
 | `INDEX` | The number shown next to the contact in the list. Must be a positive whole number (1, 2, 3, …). |
 
 * If the contact has no active reminder, an error message is shown and nothing changes.
+* **Active filter is preserved on success.** After a successful `clearfollowup`, the contact list continues to show only the contacts that matched the previous `find` filter (if any). The filter is not cleared.
 
 **Examples:**
 
@@ -848,8 +860,8 @@ If the data file is edited incorrectly, CampusLink may discard all data and star
 CampusLink's password protects you from casual access through the app itself, but it does **not** encrypt the underlying files. Anyone with direct access to your file system can bypass or reset the password without ever opening CampusLink:
 
 * **Bypassing the password:** The password hash is stored in `preferences.json` in the app's home folder. Deleting or editing this file removes password protection entirely — no password will be required on the next launch.
-* **Reading contact data directly:** All contacts are stored as plain JSON in `data/campuslink.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
-* **Corrupting or wiping data:** Deleting or truncating `data/campuslink.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
+* **Reading contact data directly:** All contacts are stored as plain JSON in `data/addressbook.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
+* **Corrupting or wiping data:** Deleting or truncating `data/addressbook.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
 
 **What this means:** CampusLink's password is a convenience lock, not a security boundary. If you store sensitive contact information, you should protect the entire folder at the operating system level — for example, using BitLocker (Windows), FileVault (macOS), or equivalent filesystem-level encryption. Do not rely on the in-app password alone as a substitute for OS-level access control.
 </div>
@@ -861,6 +873,21 @@ CampusLink's password protects you from casual access through the app itself, bu
 **Q**: How do I transfer my data to another computer?<br>
 **A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
 
+**Q**: Can I undo a mistake if I deleted the wrong contact?<br>
+**A**: Currently, there is no built-in `undo` command. We highly recommend generating a backup file regularly using the `export` command before making mass changes (e.g., `clear`). If a mistake happens, you can easily restore your contacts using the `import` command.
+
+**Q**: How do available hours (`h/`) work when scheduling a meeting (`meet`)?<br>
+**A**: When you specify available hours for a contact (e.g., `h/0900-1800`), the `meet` command ensures that the contact is only included if the meeting falls strictly within their availability window. If a contact has no available hours set, they are considered "always available" by default.
+
+**Q**: Why did my `find` command return contacts that aren't exact matches?<br>
+**A**: CampusLink features Advanced Fuzzy Find! It is designed to tolerate minor typos or missing letters (like searching `Jooh` instead of `John`), ensuring you can still find the right contacts quickly even if you misspelled their name slightly.
+
+**Q**: Do I need to save my data manually after making changes?<br>
+**A**: No. CampusLink automatically saves your modifications to your computer's hard disk immediately after any command that alters your contacts. You do not need to look for a save button!
+
+**Q**: What should I do if I forget my password?<br>
+**A**: For security purposes, there is no password recovery mechanism. If you forget your password, you must recreate your data by deleting the `preferences.json` (removes the password lock) and `data/addressbook.json` (removes the locked contacts) files in the application folder.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
@@ -870,6 +897,21 @@ CampusLink's password protects you from casual access through the app itself, bu
 3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 5. **Profile pictures may not load after moving files**: Profile picture paths are stored as absolute file paths. If the image file is moved, renamed, or deleted — or if the app's data file is transferred to another computer — the picture will no longer display. You can reassign the picture using `pic INDEX`.
+
+--------------------------------------------------------------------------------------------------------------------
+
+## Glossary
+
+* **Alphanumeric**: Contains only letters (A-Z) and numbers (0-9). No special characters (like `@`, `#`, or `-`).
+* **Case-insensitive**: The system treats uppercase and lowercase letters the same. For example, finding `Alex` will also match `alex` or `ALEX`.
+* **CLI (Command Line Interface)**: A text-based way of interacting with a program, where you type commands manually instead of clicking buttons.
+* **Directory / File Path**: The folder location on your computer where files are saved (e.g., `data/team_contacts.json`).
+* **Fuzzy Search**: A forgiving search tool that tries to find matches even if there are minor typos or slight misspellings in your query.
+* **GUI (Graphical User Interface)**: The visual part of the app you interact with on your screen, featuring windows, lists, and layout panels.
+* **Index**: The positive number appearing next to a contact or meeting in the displayed list. It is used to target a specific item (e.g., `delete 1` targets the first person).
+* **JSON**: A standard file format used to store and transfer data. Your imported and exported contacts are saved in this format.
+* **Parameter**: Additional information you supply to a command to tell it exactly what to interact with (e.g., the `1` in `delete 1`).
+* **Prefix / Flag**: A short code (like `n/` for name, or `-c` for compulsory) placed before a parameter to tell the app which category of information you are providing.
 
 --------------------------------------------------------------------------------------------------------------------
 

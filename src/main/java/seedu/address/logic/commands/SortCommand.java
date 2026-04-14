@@ -3,7 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -59,8 +59,9 @@ public class SortCommand extends Command {
 
         switch (sortField) {
         case FIRSTNAME:
-            fieldComparator = Comparator.comparing(
-                    p -> p.getName().fullName.split("\\s+")[0].toLowerCase());
+            fieldComparator = Comparator.<Person, String>comparing(
+                    p -> p.getName().fullName.split("\\s+")[0].toLowerCase())
+                    .thenComparing(p -> p.getName().fullName.toLowerCase());
             break;
         case LASTNAME:
             fieldComparator = Comparator.comparing(p -> {
@@ -70,12 +71,12 @@ public class SortCommand extends Command {
             break;
         case RECENT:
             List<Person> unmodifiableList = model.getAddressBook().getPersonList();
-            Map<Person, Integer> indexMap = new HashMap<>();
+            Map<Person, Integer> indexMap = new IdentityHashMap<>();
             int idx = 0;
             for (Person p : unmodifiableList) {
                 indexMap.put(p, idx++);
             }
-            fieldComparator = Comparator.<Person>comparingInt(p -> indexMap.getOrDefault(p, -1)).reversed();
+            fieldComparator = Comparator.comparingInt(p -> indexMap.getOrDefault(p, Integer.MAX_VALUE));
             break;
         default:
             fieldComparator = Comparator.comparing(
@@ -88,10 +89,10 @@ public class SortCommand extends Command {
 
         final Comparator<Person> finalFieldComparator = fieldComparator;
 
-        // Pinned contacts always come first, and are not affected by the sort mode
+        // Pinned contacts always come first, and are sorted among themselves
         Comparator<Person> fullComparator = (p1, p2) -> {
             if (p1.isPinned() && p2.isPinned()) {
-                return 0;
+                return finalFieldComparator.compare(p1, p2);
             } else if (p1.isPinned()) {
                 return -1;
             } else if (p2.isPinned()) {

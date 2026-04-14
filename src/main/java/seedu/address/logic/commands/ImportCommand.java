@@ -17,14 +17,15 @@ import seedu.address.storage.Storage;
 
 /**
  * Imports persons from a JSON file into the current address book without removing existing contacts.
- * Persons with the same name as an existing contact are skipped.
+ * Persons with the same name, phone number, or email as an existing contact are skipped.
  */
 public class ImportCommand extends StorageCommand {
 
     public static final String COMMAND_WORD = "import";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Imports contacts from a JSON file. "
-            + "Existing contacts are kept; entries with the same name as an existing contact are skipped.\n"
+            + "Existing contacts are kept; entries with the same name, phone number, or email as an existing "
+            + "contact are skipped.\n"
             + "Parameters: " + PREFIX_FILE_PATH + "FILE_PATH\n"
             + "Example: " + COMMAND_WORD + " " + PREFIX_FILE_PATH + "backup.json";
 
