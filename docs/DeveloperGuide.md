@@ -1,6 +1,6 @@
 ---
 layout: page
-title: CampusLink Developer Guide
+title: Developer Guide
 ---
 
 * Table of Contents
