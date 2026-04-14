@@ -1,8 +1,8 @@
 ---
 layout: page
-title: CampusLink Developer Guide
+title: Developer Guide
 ---
-# CampusLink Developer Guide
+# Developer Guide
 
 * Table of Contents
 {:toc}
@@ -146,7 +146,7 @@ The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object) and all `Meeting` objects (which are contained in a `UniqueMeetingList` object).
 * stores the currently ‘selected’ `Person` objects (e.g., results of a search query) as a separate _filtered_ list, which is further wrapped in a `SortedList` to support ordering (e.g. pinned contacts first, fuzzy score). This combined view is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be ‘observed’ e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
-* stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` object.
+* stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
@@ -164,7 +164,7 @@ The `Model` component,
 
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* inherits from both `AddressBookStorage` and `UserPrefStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
+* inherits from both `AddressBookStorage` and `UserPrefsStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
 ### Common classes
@@ -348,9 +348,9 @@ The pin feature allows users to pin up to 3 contacts to the top of the displayed
 
 #### Implementation
 
-The sort feature allows users to sort the contact list by first name or last name, in ascending or descending order. It works alongside the pin feature — pinned contacts always remain at the top.
+The sort feature allows users to sort the contact list by first name, last name, or recent addition, in ascending or descending order. It works alongside the pin feature — pinned contacts always remain at the top.
 
-`SortCommand` accepts a `SortField` (FIRSTNAME or LASTNAME) and an `isAscending` boolean. On execution, it builds a composite comparator:
+`SortCommand` accepts a `SortField` (FIRSTNAME, LASTNAME, or RECENT) and an `isAscending` boolean. On execution, it builds a composite comparator:
 
 1. **Primary:** Pinned contacts first (`!isPinned()` — false sorts before true).
 2. **Secondary:** The user-specified field sort.
@@ -358,6 +358,10 @@ The sort feature allows users to sort the contact list by first name or last nam
 For name extraction from `Name.fullName`:
 * `FIRSTNAME` = first word (`split("\\s+")[0]`)
 * `LASTNAME` = last word (`split("\\s+")[last]`)
+
+For `RECENT`:
+* Sorts by the internal list index, representing the order in which the contacts were added or imported into the address book.
+* An `isAscending` value of `true` (i.e. `ASC`) results in oldest contacts appearing first, while `false` (i.e. `DESC`) reverses the order so newest contacts appear first.
 
 The comparator is applied via `model.updateSortComparator(comparator)`, which calls `SortedList#setComparator()` in `ModelManager`. This uses the existing `SortedList` infrastructure introduced by the pin feature — no new data structures needed.
 
@@ -438,7 +442,7 @@ A `FollowUp` value class is added to `seedu.address.model.person`, following the
 * `FollowUp#value` — the note text (empty string represents "no reminder").
 * `FollowUp.EMPTY` — shared sentinel for the no-reminder state, avoiding repeated `new FollowUp("")` calls.
 * `FollowUp#isValidFollowUp(String)` — accepts either empty (no reminder) or any string not starting with whitespace.
-* `Person` gains a `followUp` field in all three constructors (existing two-arg and five-arg constructors delegate to the new full constructor, defaulting to `FollowUp.EMPTY`).
+* `Person` gains a `followUp` field in its overloaded constructors; constructors that do not receive a follow-up note delegate to the full constructor and default to `FollowUp.EMPTY`.
 * `Person#equals`, `hashCode`, and `toString` are updated to include the `followUp` field.
 
 **Storage layer**
@@ -471,7 +475,7 @@ Because this runs after `ui.start(primaryStage)` in `MainApp`, which is itself c
 
 #### Implementation
 
-The find feature allows users to filter the contact list by one or more fields using compulsory (`-c`) and optional (`-o`) flags. It also supports **fuzzy search** for the name, phone, address, and email fields, tolerating up to 2 character edits, and automatically sorts results by closeness of match.
+The find feature allows users to filter the contact list by one or more fields using compulsory (`-c`) and optional (`-o`) flags. It also supports **fuzzy search** for the name, phone, address, and email fields, tolerating up to 1 character edit, and automatically sorts results by closeness of match.
 
 The class diagram below shows the key classes involved:
 
@@ -491,7 +495,7 @@ The class diagram below shows the key classes involved:
 
 **Fuzzy matching** (name, phone, address, email fields only):
 * For all four fields, exact case-insensitive substring matching is attempted first. Fuzzy matching via `StringUtil.fuzzyMatchesWord(text, keyword, maxDistance)` is applied only if exact matching fails.
-* The edit distance used is **Levenshtein distance**, computed by `StringUtil.levenshteinDistance`. The maximum allowed distance is `StringUtil.FUZZY_MATCH_MAX_DISTANCE` (currently 2).
+* The edit distance used is **Levenshtein distance**, computed by `StringUtil.levenshteinDistance`. The maximum allowed distance is `StringUtil.FUZZY_MATCH_MAX_DISTANCE` (currently 1).
 * Tag, major, position, and group fields use exact case-insensitive substring matching only.
 
 **Result sorting by fuzzy score:**
@@ -691,7 +695,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User enters the add command with the contact's details (required fields: name, phone, email, and address, and optional fields such as position, major, available hours, and group)
+1.  User enters the add command with the contact's details (required fields: name, phone, email, and address, and optional fields such as tag, position, major, available hours, and group)
 2.  AddressBook validates the input
 3.  AddressBook adds the contact and displays a success message
 
@@ -948,7 +952,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User enters `sort CONDITION ORDER` (e.g., `sort firstname ASC` or `sort firstname a`)
+1. User enters `sort CONDITION ORDER` (e.g., `sort firstname ASC` or `sort recent a`)
 2. AddressBook sorts the displayed list accordingly, keeping pinned contacts at the top
 3. AddressBook displays a success message
 
@@ -1174,7 +1178,7 @@ testers are expected to do more *exploratory* testing.
    1. Prerequisites: Have a valid exported JSON file (e.g., created by running `export fp/test_export.json` with some contacts).
 
    1. Test case: `import fp/test_export.json`<br>
-      Expected: New contacts from the file are added to the address book. Duplicates (same name) are skipped. Success message shows counts of added and skipped contacts.
+      Expected: New contacts from the file are added to the address book. Duplicates (same name, phone number, or email) are skipped. Success message shows counts of added and skipped contacts.
 
 1. Importing from a non-existent file
 
@@ -1261,7 +1265,7 @@ testers are expected to do more *exploratory* testing.
       Expected behavior: When the application starts, it detects the corrupted file and initializes an empty AddressBook (or shows a warning).
 
    1. Missing file: Delete the `data/addressbook.json` file completely, then start the application.
-      Expected behavior: A new empty AddressBook will be initialized, creating a new JSON file on first exit or command.
+      Expected behavior: A new data file flow is initialized with sample contacts (not an empty AddressBook), and the JSON file is recreated on first exit or command.
 
 ### Meetings and Scheduling
 
@@ -1269,8 +1273,8 @@ testers are expected to do more *exploratory* testing.
 
    1. Prerequisites: Multiple contacts exist, with at least one having the group `CS2103T`.
 
-   1. Test case: `meet Project sync t/1200-1300 d/2026-04-01 g/CS2103T`<br>
-      Expected: A meeting named "Project sync" is created for 2026-04-01 at 12:00-13:00. Any contact matching the `CS2103T` group is successfully added as an attendee.
+   1. Test case: `meet Project sync h/1200-1300 d/2026-04-01 g/CS2103T`<br>
+      Expected: A meeting named "Project sync" is created for 2026-04-01 at 12:00-13:00. Contacts matching the `CS2103T` group and available during that slot are added as attendees.
 
    1. Test case: `unmeet 1`<br>
       Expected: The first meeting in the meeting list is deleted. Expected success message shown.
@@ -1302,7 +1306,7 @@ testers are expected to do more *exploratory* testing.
 
    1. Prerequisites: App is running in the default Light (or Dark) theme.
 
-   1. Test case: `toggle`<br>
+   1. Test case: `toggle color mode`<br>
       Expected: The interface immediately switches to the opposite color mode (e.g., from Light to Dark mode), applying new colors to all panels and fonts.
 
 ### Advanced Fuzzy Find

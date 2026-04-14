@@ -1,11 +1,11 @@
 ---
 layout: page
-title: CampusLink User Guide
+title: User Guide
 ---
 
 CampusLink is a **desktop app for managing contacts, optimized for use via a Command Line Interface** (CLI) while still having the benefits of a Graphical User Interface (GUI). If you can type fast, CampusLink can get your contact management tasks done faster than traditional GUI apps.
 
-# CampusLink User Guide
+# User Guide
 
 * Table of Contents
 {:toc}
@@ -165,7 +165,7 @@ Phone numbers must contain **3 to 15 digits**. They may optionally include a lea
 
 * **Email**: Must follow `local-part@domain` format. The local-part may contain alphanumeric characters and the special characters `+`, `_`, `.`, `-`, but cannot start or end with any of these special characters. The domain must be a valid domain name whose final label is at least 2 characters long (e.g. `example.com`, `nus.edu.sg`).
 * **Address**: Any non-blank value is accepted — no character restrictions apply.
-* **Tag**: Must be alphanumeric (Unicode letters and digits). No spaces or special characters allowed.
+* **Tag**: Must be alphanumeric. No spaces or special characters allowed.
 * **Group**: Must contain ASCII alphanumeric characters only (`A`–`Z`, `a`–`z`, `0`–`9`). No spaces or special characters allowed.
 * **Position**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
 * **Major**: Must start with an ASCII alphanumeric character (`A`–`Z`, `a`–`z`, `0`–`9`) and may contain letters, digits, and spaces after that.
@@ -322,8 +322,8 @@ Fuzzy search is built into the `find` command. When you search by name, phone, a
 *Details and behavior:*
 * Fuzzy matching allows up to **1 edit**. An "edit" is a single character-level change: inserting a character (e.g. `Aelx` → `Alex`), deleting a character (e.g. `Alx` → `Alex`), or substituting one character for another (e.g. `Alox` → `Alex`). A keyword with up to 1 such change will still match the intended field.
 * Fuzzy match will be applied only after exact match fails, and it is token-based: both the field value and keyword are split by spaces first.
-* For a multi-word keyword (e.g. `Alex Yeaa`), each keyword part must fuzzy-match at least one token in the field.
-* Fields `t/`, `m/`, `po/`, `g/`, `h/` do not use fuzzy matching — these must match exactly (case-insensitive).
+* For a multi-word keyword (e.g. `Alex Yeaa`): under `-c`, each keyword part must match; under `-o`, any one keyword part matching is sufficient.
+* Fields `t/`, `m/`, `po/`, and `g/` do not use fuzzy matching — these use case-insensitive substring matching only. `h/` also does not use fuzzy matching; it uses availability containment rules (time within slot or slot within slot).
 * Result order after filtering keeps pinned contacts first, then sorts by fuzzy score (the proximity between the field and search keywords).
 
 **Examples:**
@@ -411,7 +411,7 @@ Format: `meet DESCRIPTION h/START-END [d/YYYY-MM-DD]`<br>
 * **`d/` date format must be `YYYY-MM-DD`** (e.g. `2026-04-15`). Invalid dates such as `2026-13-01` are rejected. But old dates (e.g. `2020-01-01`) are accepted — the app does not restrict you from scheduling meetings in the past.
 * **Filter matching is OR, not AND (i.e., optional flag).** A contact is included if they match *any* of the supplied keywords (`n/`, `g/`, `m/`, `po/`, `t/`).
 * **Filter matching is exact (no fuzzy search).** Unlike `find`, the `meet` command uses case-insensitive substring matching only. Typos in filter keywords will not match contacts.
-* **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not overlap the requested slot are excluded.
+* **Contacts with no `availableHours` set are always treated as free.** Only contacts who have `availableHours` set *and* whose hours do not fully cover the requested slot are excluded.
 * **The command fails if no contacts are free** for the given time slot and filters. No meeting is created.
 * **Duplicate meetings are rejected.** A meeting is considered identical if it has the same description, date, and time slot as an existing meeting.
 * **Prefixes not recognized by `meet`** (e.g. `a/`) are silently absorbed into the description rather than being parsed as filters.
@@ -542,9 +542,9 @@ Format: `sort CONDITION ORDER`
 |---|---|---|
 | `CONDITION` | `firstname` | Sorts by the **first word** of each contact's name (e.g. "Alice" in "Alice Tan"). |
 | | `lastname` | Sorts by the **last word** of each contact's name (e.g. "Tan" in "Alice Tan", or "Madonna" if that is the full name). |
-| | `recent` | Sorts by the order contacts were added or imported — newest first. |
-| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; newest first for `recent`). |
-| | `d` or `DESC` | Descending order (Z → A for names; oldest first for `recent`). |
+| | `recent` | Sorts by the order contacts were added or imported. |
+| `ORDER` | `a` or `ASC` | Ascending order (A → Z for names; oldest first for `recent`). |
+| | `d` or `DESC` | Descending order (Z → A for names; newest first for `recent`). |
 
 * The sort is case-insensitive.
 * Sorting is a **display preference only** — it does not modify the saved data and resets when you restart the app.
@@ -563,9 +563,9 @@ Format: `sort CONDITION ORDER`
   ```
   *Outcome: Contacts with surnames starting with Z appear first.*
 
-* Restore the list to the order contacts were originally added:
+* Show newest additions first:
   ```
-  sort recent a
+  sort recent d
   ```
   *Outcome: The most recently added or imported contacts appear at the top.*
 ![Ui](images/features/sortResult.png)
@@ -858,8 +858,8 @@ If the data file is edited incorrectly, CampusLink may discard all data and star
 CampusLink's password protects you from casual access through the app itself, but it does **not** encrypt the underlying files. Anyone with direct access to your file system can bypass or reset the password without ever opening CampusLink:
 
 * **Bypassing the password:** The password hash is stored in `preferences.json` in the app's home folder. Deleting or editing this file removes password protection entirely — no password will be required on the next launch.
-* **Reading contact data directly:** All contacts are stored as plain JSON in `data/campuslink.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
-* **Corrupting or wiping data:** Deleting or truncating `data/campuslink.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
+* **Reading contact data directly:** All contacts are stored as plain JSON in `data/addressbook.json`. Anyone who can read the file can read your contacts, regardless of whether a password is set.
+* **Corrupting or wiping data:** Deleting or truncating `data/addressbook.json` destroys all contacts. CampusLink will start with an empty list on next launch and will not warn you that data was lost externally.
 
 **What this means:** CampusLink's password is a convenience lock, not a security boundary. If you store sensitive contact information, you should protect the entire folder at the operating system level — for example, using BitLocker (Windows), FileVault (macOS), or equivalent filesystem-level encryption. Do not rely on the in-app password alone as a substitute for OS-level access control.
 </div>
@@ -869,7 +869,7 @@ CampusLink's password protects you from casual access through the app itself, bu
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/campuslink.json` to the same location on the other computer.
+**A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -878,7 +878,7 @@ CampusLink's password protects you from casual access through the app itself, bu
 1. **Pressing Enter twice for templated commands**: When you type a partial command word (e.g. `sort`) and press `Enter` to accept the autocomplete suggestion, the command field is filled with a template (e.g. `sort firstname a`). Edit the placeholders and press `Enter` **once** to execute. The first `Enter` only applies the template; it does not execute the command.
 2. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
 3. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
-4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/campuslink.json` (removes all contacts) from the app's home folder.
+4. **If you forget your password**, there is currently no password recovery mechanism. You can reset the app by deleting `preferences.json` (removes password) and `data/addressbook.json` (removes all contacts) from the app's home folder.
 5. **Profile pictures may not load after moving files**: Profile picture paths are stored as absolute file paths. If the image file is moved, renamed, or deleted — or if the app's data file is transferred to another computer — the picture will no longer display. You can reassign the picture using `pic INDEX`.
 
 --------------------------------------------------------------------------------------------------------------------
