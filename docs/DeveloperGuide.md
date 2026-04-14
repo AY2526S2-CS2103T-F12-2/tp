@@ -9,20 +9,20 @@ title: Developer Guide
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Acknowledgements**
+## Acknowledgements
 
 * This project is based on the [AddressBook-Level3](https://se-education.org/addressbook-level3/) project created by the [SE-EDU initiative](https://se-education.org).
 * Libraries used: [JavaFX](https://openjfx.io/), [Jackson](https://github.com/FasterXML/jackson), [JUnit5](https://github.com/junit-team/junit5)
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Setting up, getting started**
+## Setting up, getting started
 
 Refer to the guide [_Setting up and getting started_](SettingUp.md).
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Design**
+## Design
 
 <div markdown="span" class="alert alert-primary">
 
@@ -173,7 +173,7 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Implementation**
+## Implementation
 
 This section describes some noteworthy details on how certain features are implemented.
 
@@ -622,7 +622,7 @@ For no-argument commands (e.g. `list`, `clear`), the `insertText` equals the `ma
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Documentation, logging, testing, configuration, dev-ops**
+## Documentation, logging, testing, configuration, dev-ops
 
 * [Documentation guide](Documentation.md)
 * [Testing guide](Testing.md)
@@ -632,7 +632,7 @@ For no-argument commands (e.g. `list`, `clear`), the `insertText` equals the `ma
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Appendix: Requirements**
+## Appendix: Requirements
 
 ### Product scope
 
@@ -1060,7 +1060,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 --------------------------------------------------------------------------------------------------------------------
 
-## **Appendix: Instructions for manual testing**
+## Appendix: Instructions for manual testing
 
 Given below are instructions to test the app manually.
 
@@ -1321,7 +1321,7 @@ testers are expected to do more *exploratory* testing.
 
 --------------------------------------------------------------------------------
 
-## **Appendix: Effort**
+## Appendix: Effort
 
 **Difficulty Level and Reference to AB3**
 AddressBook-Level 3 (AB3) served as the baseline for this project. While AB3 manages a single standard entity (`Person`) with basic CRUD operations, CampusLink significantly increases the complexity by introducing a secondary entity (`Meeting`) and establishing relationships between them. This required a major overhaul of the `Model` and `Storage` components to handle relational constraints, such as cascading updates (e.g., when a contact is deleted or edited, their attendee records in meetings must automatically update).
@@ -1340,7 +1340,7 @@ A significant part of the effort (~20%) was saved by reusing the core Model-View
 
 --------------------------------------------------------------------------------
 
-## **Appendix: Planned Enhancements**
+## Appendix: Planned Enhancements
 
 Team size: 4
 

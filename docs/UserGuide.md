@@ -60,6 +60,8 @@ CampusLink is a **desktop app for managing contacts, optimized for use via a Com
 
 **:information_source: Notes about the command format:**<br>
 
+* **Prefixes** (like `n/`, `p/`) act as labels to tell the app which field you are filling out. For example, `p/91234567` explicitly tells the app the phone number is 91234567.
+
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
 
@@ -870,6 +872,21 @@ CampusLink's password protects you from casual access through the app itself, bu
 
 **Q**: How do I transfer my data to another computer?<br>
 **A**: On your current computer, run `export fp/backup.json` to save all contacts to a file. Copy `backup.json` to the other computer, then run `import fp/backup.json` in CampusLink there. Alternatively, you can manually copy the data file at `[JAR file location]/data/addressbook.json` to the same location on the other computer.
+
+**Q**: Can I undo a mistake if I deleted the wrong contact?<br>
+**A**: Currently, there is no built-in `undo` command. We highly recommend generating a backup file regularly using the `export` command before making mass changes (e.g., `clear`). If a mistake happens, you can easily restore your contacts using the `import` command.
+
+**Q**: How do available hours (`h/`) work when scheduling a meeting (`meet`)?<br>
+**A**: When you specify available hours for a contact (e.g., `h/0900-1800`), the `meet` command ensures that the contact is only included if the meeting falls strictly within their availability window. If a contact has no available hours set, they are considered "always available" by default.
+
+**Q**: Why did my `find` command return contacts that aren't exact matches?<br>
+**A**: CampusLink features Advanced Fuzzy Find! It is designed to tolerate minor typos or missing letters (like searching `Jooh` instead of `John`), ensuring you can still find the right contacts quickly even if you misspelled their name slightly.
+
+**Q**: Do I need to save my data manually after making changes?<br>
+**A**: No. CampusLink automatically saves your modifications to your computer's hard disk immediately after any command that alters your contacts. You do not need to look for a save button!
+
+**Q**: What should I do if I forget my password?<br>
+**A**: For security purposes, there is no password recovery mechanism. If you forget your password, you must recreate your data by deleting the `preferences.json` (removes the password lock) and `data/addressbook.json` (removes the locked contacts) files in the application folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
