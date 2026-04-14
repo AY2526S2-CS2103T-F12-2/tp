@@ -1,8 +1,7 @@
 ---
 layout: page
-title: Developer Guide
+title: CampusLink Developer Guide
 ---
-# Developer Guide
 
 * Table of Contents
 {:toc}
