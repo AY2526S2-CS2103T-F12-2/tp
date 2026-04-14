@@ -736,7 +736,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. No contacts match the specified group.
 
-    * 3a1. AddressBook displays "0 persons found!".
+    * 3a1. AddressBook displays "0 persons listed!".
 
       Use case ends.
 
@@ -784,7 +784,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. No contacts match the keyword.
 
-    * 3a1. AddressBook displays "0 persons found!".
+    * 3a1. AddressBook displays "0 persons listed!".
 
       Use case ends.
 
