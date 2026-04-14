@@ -19,8 +19,10 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
+import seedu.address.model.person.Major;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Position;
 import seedu.address.model.tag.Tag;
 
 public class ParserUtilTest {
@@ -29,6 +31,8 @@ public class ParserUtilTest {
     private static final String INVALID_ADDRESS = " ";
     private static final String INVALID_EMAIL = "example.com";
     private static final String INVALID_TAG = "#friend";
+    private static final String INVALID_POSITION = "@Engineer";
+    private static final String INVALID_MAJOR = "#ComputerScience";
 
     private static final String VALID_NAME = "Rachel Walker";
     private static final String VALID_PHONE = "123456";
@@ -36,6 +40,10 @@ public class ParserUtilTest {
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_TAG_1 = "friend";
     private static final String VALID_TAG_2 = "neighbour";
+    private static final String VALID_POSITION_1 = "Software Engineer";
+    private static final String VALID_POSITION_2 = "Product Manager";
+    private static final String VALID_MAJOR_1 = "Computer Science";
+    private static final String VALID_MAJOR_2 = "Information Systems";
 
     private static final String WHITESPACE = " \t\r\n";
 
@@ -195,6 +203,136 @@ public class ParserUtilTest {
         Set<Tag> expectedTagSet = new HashSet<Tag>(Arrays.asList(new Tag(VALID_TAG_1), new Tag(VALID_TAG_2)));
 
         assertEquals(expectedTagSet, actualTagSet);
+    }
+
+    @Test
+    public void parsePosition_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parsePosition(null));
+    }
+
+    @Test
+    public void parsePosition_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parsePosition(INVALID_POSITION));
+    }
+
+    @Test
+    public void parsePosition_emptyString_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parsePosition(""));
+    }
+
+    @Test
+    public void parsePosition_blankString_throwsParseException() {
+        // All-whitespace collapses to empty after trim, which fails the regex
+        assertThrows(ParseException.class, () -> ParserUtil.parsePosition("   "));
+    }
+
+    @Test
+    public void parsePosition_validValueWithoutWhitespace_returnsPosition() throws Exception {
+        Position expectedPosition = new Position(VALID_POSITION_1);
+        assertEquals(expectedPosition, ParserUtil.parsePosition(VALID_POSITION_1));
+    }
+
+    @Test
+    public void parsePosition_validValueWithLeadingTrailingWhitespace_returnsTrimmedPosition() throws Exception {
+        String positionWithWhitespace = WHITESPACE + VALID_POSITION_1 + WHITESPACE;
+        Position expectedPosition = new Position(VALID_POSITION_1);
+        assertEquals(expectedPosition, ParserUtil.parsePosition(positionWithWhitespace));
+    }
+
+    @Test
+    public void parsePosition_validValueWithMultipleInternalSpaces_returnsCollapsedPosition() throws Exception {
+        // Multiple consecutive spaces are collapsed into one
+        Position expectedPosition = new Position("Software Engineer");
+        assertEquals(expectedPosition, ParserUtil.parsePosition("Software  Engineer"));
+    }
+
+    @Test
+    public void parsePositions_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parsePositions(null));
+    }
+
+    @Test
+    public void parsePositions_collectionWithInvalidPosition_throwsParseException() {
+        assertThrows(ParseException.class, () ->
+                ParserUtil.parsePositions(Arrays.asList(VALID_POSITION_1, INVALID_POSITION)));
+    }
+
+    @Test
+    public void parsePositions_emptyCollection_returnsEmptySet() throws Exception {
+        assertTrue(ParserUtil.parsePositions(Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void parsePositions_collectionWithValidPositions_returnsPositionSet() throws Exception {
+        Set<Position> actualPositionSet = ParserUtil.parsePositions(
+                Arrays.asList(VALID_POSITION_1, VALID_POSITION_2));
+        Set<Position> expectedPositionSet = new HashSet<>(
+                Arrays.asList(new Position(VALID_POSITION_1), new Position(VALID_POSITION_2)));
+        assertEquals(expectedPositionSet, actualPositionSet);
+    }
+
+    @Test
+    public void parseMajor_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseMajor(null));
+    }
+
+    @Test
+    public void parseMajor_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseMajor(INVALID_MAJOR));
+    }
+
+    @Test
+    public void parseMajor_emptyString_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseMajor(""));
+    }
+
+    @Test
+    public void parseMajor_blankString_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseMajor("   "));
+    }
+
+    @Test
+    public void parseMajor_validValueWithoutWhitespace_returnsMajor() throws Exception {
+        Major expectedMajor = new Major(VALID_MAJOR_1);
+        assertEquals(expectedMajor, ParserUtil.parseMajor(VALID_MAJOR_1));
+    }
+
+    @Test
+    public void parseMajor_validValueWithLeadingTrailingWhitespace_returnsTrimmedMajor() throws Exception {
+        String majorWithWhitespace = WHITESPACE + VALID_MAJOR_1 + WHITESPACE;
+        Major expectedMajor = new Major(VALID_MAJOR_1);
+        assertEquals(expectedMajor, ParserUtil.parseMajor(majorWithWhitespace));
+    }
+
+    @Test
+    public void parseMajor_validValueWithMultipleInternalSpaces_returnsCollapsedMajor() throws Exception {
+        // Multiple consecutive spaces are collapsed into one
+        Major expectedMajor = new Major("Computer Science");
+        assertEquals(expectedMajor, ParserUtil.parseMajor("Computer  Science"));
+    }
+
+    @Test
+    public void parseMajors_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseMajors(null));
+    }
+
+    @Test
+    public void parseMajors_collectionWithInvalidMajor_throwsParseException() {
+        assertThrows(ParseException.class, () ->
+                ParserUtil.parseMajors(Arrays.asList(VALID_MAJOR_1, INVALID_MAJOR)));
+    }
+
+    @Test
+    public void parseMajors_emptyCollection_returnsEmptySet() throws Exception {
+        assertTrue(ParserUtil.parseMajors(Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void parseMajors_collectionWithValidMajors_returnsMajorSet() throws Exception {
+        Set<Major> actualMajorSet = ParserUtil.parseMajors(Arrays.asList(VALID_MAJOR_1, VALID_MAJOR_2));
+        Set<Major> expectedMajorSet = new HashSet<>(
+                Arrays.asList(new Major(VALID_MAJOR_1), new Major(VALID_MAJOR_2)));
+        assertEquals(expectedMajorSet, actualMajorSet);
     }
 
     @Test
